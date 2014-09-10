@@ -54,7 +54,7 @@ var session;
 
 $('#form').submit(function(event) {
   event.preventDefault();
-  var n = $('#inputN').val();
+  var n = +$('#inputN').val();
 
   ocpu.call('rnorm', {n: n}, function(session1) {
     session = session1;
@@ -94,8 +94,6 @@ $('#variance').click(function(event) {
     });
   });
 })
-
-
 
 </script>
 </body>
