@@ -1,0 +1,22 @@
+{
+  "name": "opencpu-ec2",
+  "version": "1.0.0",
+  "homepage": "https://github.com/walkerjeffd/umass-climate-stress-tool",
+  "authors": [
+    "Jeff Walker <walker.jeff.d@gmail.com>"
+  ],
+  "description": "test opencpu on ec2",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "opencpu-0.5": "https://raw.githubusercontent.com/jeroenooms/opencpu.js/master/opencpu-0.5.js",
+    "jquery": "~2.1.1",
+    "bootstrap": "~3.2.0"
+  }
+}

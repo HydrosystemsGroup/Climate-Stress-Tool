@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OpenCPU on EC2</title>
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>OpenCPU on EC2 Example</h1>
+  <hr>
+  <h2>Input N</h2>
+  <form class="form-inline" id="form">
+    <div class="form-group">
+      <input type="text" name="n" id="inputN" class="form-control" value="10">  
+    </div>
+    <button type="submit" id="submitForm" class="btn btn-primary">Submit</button>
+  </form>
+  <hr>
+  <h2>Generate Random Data</h2>
+  <ul class="list-unstyled">
+    <li><b>Key</b>: <span id="key"></span></li>
+    <li><b>Location</b>: <span id="location"></span></li>
+  </ul>
+  <b>Console</b>
+  <pre id="output"></pre>
+  <b>Values</b>
+  <pre id="values"></pre>
+  <hr>
+  <h2>Compute Variance</h2>
+  <button class="btn btn-primary" id="variance">Compute</button>
+  <ul class="list-unstyled">
+    <li><b>Key</b>: <span id="key-var"></span></li>
+    <li><b>Location</b>: <span id="location-var"></span></li>
+  </ul>
+  <b>Console</b>
+  <pre id="output-var"></pre>
+  <b>Values</b>
+  <pre id="values-var"></pre>
+  <hr>
+</div>
+
+
+
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/opencpu-0.5/index.js"></script>
+
+<script>
+ocpu.seturl("//54.84.225.145/ocpu/library/stats/R");
+
+var session;
+
+$('#form').submit(function(event) {
+  event.preventDefault();
+  var n = $('#inputN').val();
+
+  ocpu.call('rnorm', {n: n}, function(session1) {
+    session = session1;
+
+    //read the session1 properties (just for fun)
+    $("#key").text(session1.getKey());
+    $("#location").text(session1.getLoc());
+
+    //retrieve session1 console (stdout) async
+    session1.getConsole(function(outtxt){
+        $("#output").text(outtxt);
+    });
+
+    //retrieve the returned object async
+    session1.getObject(function(data){
+        //data is the object returned by the R function
+        $("#values").text(JSON.stringify(data));
+        console.log("Array of length " + data.length + ".\nFirst few values:" + data.slice(0,3));
+    });
+  });
+});
+
+$('#variance').click(function(event) {
+  if (!session) {
+    console.log('No generated data');
+    return null;
+  }
+
+  ocpu.call('var', {x: session}, function(session2) {
+    $("#key-var").text(session2.getKey());
+    $("#location-var").text(session2.getLoc());
+    session2.getConsole(function(outtxt){
+        $("#output-var").text(outtxt);
+    });
+    session2.getObject(function(data){
+        $("#values-var").text(JSON.stringify(data));
+    });
+  });
+})
+
+
+
+</script>
+</body>
+</html>
