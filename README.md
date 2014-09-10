@@ -1,9 +1,9 @@
 UMass Climate Stress Tool
 =========================
 
-Climate Stress Tool for the [UMass HydroSystems Research Group](http://cee.umass.edu/cee/hydrosystems)
+Climate Stress Tool developed by the [UMass HydroSystems Research Group](http://cee.umass.edu/cee/hydrosystems)
 
-Jeffrey D. Walker, PhD  
+Jeffrey D. Walker, PhD
 2014-07-23
 
 ## Specifications
@@ -19,3 +19,10 @@ Jeffrey D. Walker, PhD
 - Backbone.js for client-side web application
 - Node.js for server-side web application
 - Database (Mongo or MySQL?)
+
+
+# Set Up for Heroku
+
+```
+heroku config:set NODE_ENV=production
+```
