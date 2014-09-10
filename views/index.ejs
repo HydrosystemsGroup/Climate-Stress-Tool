@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="CST">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,15 +17,14 @@
   </head>
   <body>
     <%- include partials/nav.ejs %>
-    <div class="container">
-      <div class="jumbotron">
-        <h1>Climate Stress Tool</h1>
-        <p>This application is used to perform a climate stress test for evaluating water resources system vulnerability.</p>
-        <button class="btn btn-primary">Learn More</button>
-      </div>
+    <div class="container" ng-view>
+      
     </div>
 
     <script src="libs/jquery/dist/jquery.min.js"></script>
     <script src="libs/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="libs/angular/angular.min.js"></script>
+    <script src="libs/angular-route/angular-route.min.js"></script>
+    <script src="app/app.js"></script>
   </body>
 </html>
