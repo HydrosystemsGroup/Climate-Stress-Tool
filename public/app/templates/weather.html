@@ -26,52 +26,63 @@
 </form>
 <hr>
 <div ng-show="session">
-  <div class="col-sm-6">
-    <h2>Monthly</h2>
-    <p><b>Session Key:</b> {{session}}</p>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Precip (mm)</th>
-          <th>Tmax (degC)</th>
-          <th>Tmin (degC)</th>
-          <th>Wind (m/s)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="d in data | limitTo: 100">
-          <td>{{d.DATE}}</td>
-          <td>{{d.PRCP}}</td>
-          <td>{{d.TMAX}}</td>
-          <td>{{d.TMIN}}</td>
-          <td>{{d.WIND}}</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="row">
+    <div class="col-sm-12">
+      <timeseries-chart data="data" accessor-x="DATE" accessor-y="PRCP" label-y="Precip (mm)" min-y="0"></timeseries-chart>
+      <timeseries-chart data="data" accessor-x="DATE" accessor-y="TMAX" label-y="Max Temp (degC)"></timeseries-chart>
+      <timeseries-chart data="data" accessor-x="DATE" accessor-y="TMIN" label-y="Min Temp (degC)"></timeseries-chart>
+      <timeseries-chart data="data" accessor-x="DATE" accessor-y="WIND" label-y="Wind (m/s)" min-y="0"></timeseries-chart>
+    </div>
   </div>
-  <div class="col-sm-6">
-    <h2>Annual</h2>
-    <p><b>Session Key:</b> {{session_yr}}</p>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Year</th>
-          <th>Precip (mm)</th>
-          <th>Tmax (degC)</th>
-          <th>Tmin (degC)</th>
-          <th>Wind (m/s)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="d in data_yr | limitTo: 100">
-          <td>{{d.YEAR}}</td>
-          <td>{{d.PRCP}}</td>
-          <td>{{d.TMAX}}</td>
-          <td>{{d.TMIN}}</td>
-          <td>{{d.WIND}}</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="row">
+    <div class="col-sm-6">
+      <h2>Monthly</h2>
+      <p><b>Session Key:</b> {{session}}</p>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Precip (mm)</th>
+            <th>Tmax (degC)</th>
+            <th>Tmin (degC)</th>
+            <th>Wind (m/s)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="d in data | limitTo: 100">
+            <td>{{d.DATE | date:'yyyy-MM-dd'}}</td>
+            <td>{{d.PRCP}}</td>
+            <td>{{d.TMAX}}</td>
+            <td>{{d.TMIN}}</td>
+            <td>{{d.WIND}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-sm-6">
+      <h2>Annual</h2>
+      <p><b>Session Key:</b> {{session_yr}}</p>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Precip (mm)</th>
+            <th>Tmax (degC)</th>
+            <th>Tmin (degC)</th>
+            <th>Wind (m/s)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="d in data_yr | limitTo: 100">
+            <td>{{d.YEAR}}</td>
+            <td>{{d.PRCP}}</td>
+            <td>{{d.TMAX}}</td>
+            <td>{{d.TMIN}}</td>
+            <td>{{d.WIND}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
   </div>
 </div>

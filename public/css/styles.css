@@ -1,0 +1,16 @@
+svg .axis path,
+svg .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+/*svg .x.axis path {
+  display: none;
+}*/
+
+svg .line {
+  fill: none;
+  stroke: black;
+  stroke-width: 1px;
+}
