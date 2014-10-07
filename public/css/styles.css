@@ -14,3 +14,8 @@ svg .line {
   stroke: black;
   stroke-width: 1px;
 }
+
+#diagram {
+  border: 1px solid black;
+  border-radius: 10px;
+}
