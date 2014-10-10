@@ -171,8 +171,8 @@ app.factory('JointService', [function () {
       var m1 = this.createReservoir({
           position: initial.position,
           size: { width: 90, height: 90 },
-          inPorts: ['inflow','demand'],
-          outPorts: ['outflow'],
+          inPorts: ['inflow'],
+          outPorts: ['outflow', 'demand'],
           attrs: {
               '.label': { text: cfg.name || 'Reservoir', 'ref-x': 0.5, 'ref-y': .2 },
               rect: { fill: '#2ECC71' },
