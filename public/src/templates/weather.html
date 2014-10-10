@@ -1,29 +1,37 @@
-<form class="form-horizontal" role="form">
-  <div class="form-group">
-    <legend>Weather Generator</legend>
-  </div>
-  
-  <div class="form-group">
-    <label for="inputLatitude" class="col-sm-2 control-label">Latitude</label>
-    <div class="col-sm-6">
-      <input type="text" class="form-control" id="inputLatitude" ng-model="latitude">
-      <p class="help-block">Enter latitude in decimal degrees North.</p>
-    </div>
-  </div>
-  <div class="form-group">
-    <label for="inputLongitude" class="col-sm-2 control-label">Longitude</label>
-    <div class="col-sm-6">
-      <input type="text" class="form-control" id="inputLongitude" ng-model="longitude">
-      <p class="help-block">Enter longitude in decimal degrees East (negative values for West).</p>
-    </div>
-  </div>
+<div class="row">
+  <div class="col-sm-6">
+    <form class="form-horizontal" role="form">
+      <div class="form-group">
+        <legend>Weather Generator</legend>
+      </div>
+      
+      <div class="form-group">
+        <label for="inputLatitude" class="col-sm-2 control-label">Latitude</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="inputLatitude" ng-model="coordinate[1]">
+          <p class="help-block">Enter latitude in decimal degrees North.</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputLongitude" class="col-sm-2 control-label">Longitude</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="inputLongitude" ng-model="coordinate[0]">
+          <p class="help-block">Enter longitude in decimal degrees East (negative values for West).</p>
+        </div>
+      </div>
 
-  <div class="form-group">
-    <div class="col-sm-10 col-sm-offset-2">
-      <button type="submit" class="btn btn-primary" ng-click="getDataset()">Submit</button>
-    </div>
+      <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-2">
+          <button type="submit" class="btn btn-primary loadinggif" ng-click="getDataset()">Submit<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate" ng-show='loading'></span></button>
+          <button class="btn btn-danger" ng-click="clearCoordinate()">Clear</button>
+        </div>
+      </div>
+    </form>
   </div>
-</form>
+  <div class="col-sm-6" height="200px">
+    <map></map>
+  </div>
+</div>
 <hr>
 <div ng-show="session">
   <div class="row">

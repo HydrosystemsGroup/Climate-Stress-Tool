@@ -1,4 +1,4 @@
-var app = angular.module('CST', ['ngRoute']);
+var app = angular.module('CST', ['ngRoute', 'CST.templates']);
 
 app.value('ocpuUrl', 'http://xps420.local/ocpu');
 
@@ -48,12 +48,19 @@ app.service('ocpuService', ['$http', 'ocpuUrl', function($http, url) {
 app.controller('IndexCtrl', ['$scope', function($scope) { }]);
 
 app.controller('WeatherCtrl', ['$scope', 'ocpuService', function($scope, ocpu) { 
-  $scope.latitude = 42;
-  $scope.longitude = -72;
+  $scope.coordinate = [];
+  $scope.loading = false;
+
+  $scope.clearCoordinate = function() {
+    $scope.coordinate = [];
+  };
+
   $scope.session = null;
+  
   $scope.getDataset = function() {
     console.log('getDataset()');
-    ocpu.getMaurerMon(+$scope.latitude, +$scope.longitude, function(data, headers) {
+    $scope.loading = true;
+    ocpu.getMaurerMon(+$scope.coordinate[1], +$scope.coordinate[0], function(data, headers) {
       $scope.session = headers['x-ocpu-session'];
 
       ocpu.aggregateMaurerMon($scope.session, function(data, headers) {
@@ -61,6 +68,7 @@ app.controller('WeatherCtrl', ['$scope', 'ocpuService', function($scope, ocpu) {
         $scope.session_yr = sessionAnnual;
 
         ocpu.getData(sessionAnnual, 'json', function(data) {
+          $scope.loading = false;
           $scope.data_yr = data;
         });
       });
@@ -79,7 +87,7 @@ app.controller('WeatherCtrl', ['$scope', 'ocpuService', function($scope, ocpu) {
 app.factory('JointService', [function () {
   var Models = {};
 
-  Models['reservoir'] = joint.shapes.basic.Generic.extend(_.extend({}, joint.shapes.basic.PortsModelInterface, {
+  Models.reservoir = joint.shapes.basic.Generic.extend(_.extend({}, joint.shapes.basic.PortsModelInterface, {
     markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
     portMarkup: '<g class="port port<%= id %>"><circle class="port-body"/><text class="port-label"/></g>',
 
@@ -106,7 +114,7 @@ app.factory('JointService', [function () {
           fill: 'black',
           'pointer-events': 'none'
         },
-        '.label': { text: 'Model', 'ref-x': .3, 'ref-y': .2 },
+        '.label': { text: 'Model', 'ref-x': 0.3, 'ref-y': 0.2 },
         '.inPorts .port-label': { x:-15, dy: 4, 'text-anchor': 'end' },
         '.outPorts .port-label':{ x: 15, dy: 4 }
       }
@@ -141,7 +149,7 @@ app.factory('JointService', [function () {
 
   return {
     init: function(el) {
-      this.graph = new joint.dia.Graph;
+      this.graph = new joint.dia.Graph();
       this.paper = new joint.dia.Paper({ el: el, width: 650, height: 400, gridSize: 1, model: this.graph });
       
       window.graph = this.graph;
@@ -174,7 +182,7 @@ app.factory('JointService', [function () {
           inPorts: ['inflow'],
           outPorts: ['outflow', 'demand'],
           attrs: {
-              '.label': { text: cfg.name || 'Reservoir', 'ref-x': 0.5, 'ref-y': .2 },
+              '.label': { text: cfg.name || 'Reservoir', 'ref-x': 0.5, 'ref-y': 0.2 },
               rect: { fill: '#2ECC71' },
               '.inPorts circle': { fill: '#16A085' },
               '.outPorts circle': { fill: '#E74C3C' }
@@ -184,7 +192,7 @@ app.factory('JointService', [function () {
 
       initial.position = {x: initial.position.x+50, y: initial.position.y+50};
     }
-  }
+  };
 }]);
 
 app.controller('ModelCtrl', ['$scope', 'JointService', function($scope, joint) {
@@ -192,72 +200,81 @@ app.controller('ModelCtrl', ['$scope', 'JointService', function($scope, joint) {
 
   $scope.addReservoir = function () {
     joint.addReservoir({name: 'New Model'});
-  }
+  };
 }]);
 
 app.controller('MapCtrl', ['$scope', function($scope) {
-  $scope.map = {};
-
-  var feature = new ol.Feature({
-    geometry: null,
-    name: 'Null Island',
-    population: 4000,
-    rainfall: 500
-  });
-  window.feature = feature;
-
-  var vectorSource = new ol.source.Vector({
-    features: [feature]
-  });
-
-  var vectorLayer = new ol.layer.Vector({
-    source: vectorSource,
-    style: new ol.style.Style({
-      image: new ol.style.Circle({
-        radius: 5,
-        fill: new ol.style.Fill({color: '#ff0000'}),
-        stroke: new ol.style.Stroke({color: '#ffffff', width: 1})
-      })
-    })
-  });
-
-  // window.layer = layer;
-  var map = new ol.Map({
-    target: 'map',
-    layers: [
-      new ol.layer.Tile({
-        // source: new ol.source.MapQuest({layer: 'sat'})
-        source: new ol.source.OSM()
-      }),
-      vectorLayer
-    ],
-    view: new ol.View({
-      center: ol.proj.transform([-72, 42], 'EPSG:4326', 'EPSG:3857'),
-      zoom: 6
-    })
-  });
-
-  map.on('click', function(evt) {
-    var coordinate = evt.coordinate;
-    var wgs84 = ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326');
-    // var hdms = ol.coordinate.toStringHDMS(wgs84);
-    $scope.map.coordinate = wgs84;
-    $scope.$digest();
-  });
-
-  $scope.$watch('map.coordinate', function(value) {
-    if (value) {
-      value = ol.proj.transform(value, 'EPSG:4326', 'EPSG:3857');
-      feature.setGeometry(new ol.geom.Point(value));  
-    } else {
-      feature.setGeometry();
-    }
-  });
+  $scope.coordinate = [];
 
   $scope.clearCoordinate = function() {
-    delete $scope.map.coordinate;
+    $scope.coordinate = [];
   };
-}])
+}]);
+
+app.directive('map', function() {
+  return {
+    restrict: 'E',
+    replace: true,
+    link: function (scope, element, attr) {
+      var feature = new ol.Feature({
+        geometry: null
+      });
+      window.feature = feature;
+
+      var vectorSource = new ol.source.Vector({
+        features: [feature]
+      });
+
+      var vectorLayer = new ol.layer.Vector({
+        source: vectorSource,
+        style: new ol.style.Style({
+          image: new ol.style.Circle({
+            radius: 5,
+            fill: new ol.style.Fill({color: '#ff0000'}),
+            stroke: new ol.style.Stroke({color: '#ffffff', width: 1})
+          })
+        })
+      });
+
+      // window.layer = layer;
+      var map = new ol.Map({
+        layers: [
+          new ol.layer.Tile({
+            // source: new ol.source.MapQuest({layer: 'sat'})
+            source: new ol.source.OSM()
+          }),
+          vectorLayer
+        ],
+        view: new ol.View({
+          center: ol.proj.transform([-72, 42], 'EPSG:4326', 'EPSG:3857'),
+          zoom: 6
+        })
+      });
+
+      map.setTarget(element[0]);
+
+      map.on('click', function(evt) {
+        var coordinate = evt.coordinate;
+        var wgs84 = ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326');
+        // var hdms = ol.coordinate.toStringHDMS(wgs84);
+        scope.coordinate = wgs84;
+        scope.$digest();
+      });
+
+      scope.$watch('coordinate', function(value) {
+        if (value) {
+          value = [+value[0], +value[1]];
+          console.log(value);
+          var coordinate = ol.proj.transform(value, 'EPSG:4326', 'EPSG:3857');
+          feature.setGeometry(new ol.geom.Point(coordinate));  
+        } else {
+          feature.setGeometry();
+        }
+      }, true);
+    },
+    template: '<div class="map" style="height: 300px"></div>'
+  };
+});
 
 app.directive('timeseriesChart', function() {
   function link(scope, element, attr) {
@@ -331,26 +348,26 @@ app.directive('timeseriesChart', function() {
       accessorY: '&',
       accessorX: '&'
     }
-  }
+  };
 });
 
 app.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
       when('/', {
-        templateUrl: 'app/templates/index.html',
+        templateUrl: 'templates/index.html',
         controller: 'IndexCtrl'
       }).
       when('/weather', {
-        templateUrl: 'app/templates/weather.html',
+        templateUrl: 'templates/weather.html',
         controller: 'WeatherCtrl'
       }).
       when('/model', {
-        templateUrl: 'app/templates/model.html',
+        templateUrl: 'templates/model.html',
         controller: 'ModelCtrl'
       }).
       when('/map', {
-        templateUrl: 'app/templates/map.html',
+        templateUrl: 'templates/map.html',
         controller: 'MapCtrl'
       }).
       otherwise({
