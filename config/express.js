@@ -5,9 +5,10 @@ var express = require('express'),
     logger = require('morgan'),
     cookieParser = require('cookie-parser'),
     bodyParser = require('body-parser'),
-    pkg = require('../package.json');
+    pkg = require('../package.json'),
+    compression = require('compression');
 
-var env = process.env.NODE_ENV || 'development'
+var env = process.env.NODE_ENV || 'development';
 
 module.exports = function (app, config) {
 
@@ -21,10 +22,12 @@ module.exports = function (app, config) {
   //   level: 9
   // }))
 
+  app.use(compression());
+
   app.use(favicon());
   if (config.env !== 'test') app.use(logger('dev'));
 
-  app.use(express.static(config.root + '/public'))
+  app.use(express.static(config.root + '/public'));
 
   // set views path, template engine and default layout
   app.set('views', config.root + '/views');
@@ -32,9 +35,9 @@ module.exports = function (app, config) {
 
   // expose package.json to views
   app.use(function (req, res, next) {
-    res.locals.pkg = pkg
-    next()
-  })
+    res.locals.pkg = pkg;
+    next();
+  });
 
   // cookieParser should be above session
   app.use(cookieParser());
@@ -121,7 +124,7 @@ module.exports = function (app, config) {
       });
   });
 
-}
+};
 
 
 
