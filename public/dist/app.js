@@ -233,7 +233,7 @@ app.directive('map', function() {
 
       var huc8Layer = new ol.layer.Vector({
         source: new ol.source.TopoJSON({
-          url: 'gis/WBDHU8_east_topo.json'
+          url: 'https://s3.amazonaws.com/climate-stress-tool/WBDHU8_east_topo.json'
         }),
         name: 'HUC8',
         style: [new ol.style.Style({
@@ -249,7 +249,7 @@ app.directive('map', function() {
 
       var huc12Layer = new ol.layer.Vector({
         source: new ol.source.TopoJSON({
-          url: 'gis/WBDHU12_east_topo.json'
+          url: 'https://s3.amazonaws.com/climate-stress-tool/WBDHU12_east_topo.json'
         }),
         name: 'HUC12',
 
