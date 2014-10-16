@@ -9,7 +9,7 @@ module.exports = function(grunt) {
         separator: ';'
       },
       dist: {
-        src: [ 'public/src/*.js', 'public/tmp/*.js' ],
+        src: [ 'public/src/**/*module*.js', 'public/src/**/*.js', 'public/tmp/*.js' ],
         dest: 'public/dist/app.js'
       }
     },
@@ -27,10 +27,10 @@ module.exports = function(grunt) {
     html2js: {
       options: {
         base: 'public/src',
-        module: 'CST.templates'
+        module: 'templates'
       },
       dist: {
-        src: [ 'public/src/templates/*.html' ],
+        src: [ 'public/src/**/*.html' ],
         dest: 'public/tmp/templates.js'
       }
     },
