@@ -3,99 +3,44 @@ angular.module('model')
   .factory('Reservoir', [function () {
     var reservoirNode = joint.shapes.basic.Generic.extend(_.extend({}, 
       joint.shapes.basic.PortsModelInterface, {
-      markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
-      portMarkup: '<g class="port port<%= id %>"><circle class="port-body"/><text class="port-label"/></g>',
-
-      defaults: joint.util.deepSupplement({
-
-        type: 'devs.Model',
-        size: { width: 1, height: 1 },
-        
-        inPorts: [],
-        outPorts: [],
-
-        attrs: {
-          '.': { magnet: false },
-          '.body': {
-            width: 150, height: 250,
-            stroke: 'black'
-          },
-          '.port-body': {
-            r: 10,
-            magnet: true,
-            stroke: 'black'
-          },
-          text: {
-            fill: 'black',
-            'pointer-events': 'none'
-          },
-          '.label': { text: 'Model', 'ref-x': 0.3, 'ref-y': 0.2 },
-          '.inPorts .port-label': { x:-15, dy: 4, 'text-anchor': 'end' },
-          '.outPorts .port-label':{ x: 15, dy: 4 }
-        }
-
-      }, joint.shapes.basic.Generic.prototype.defaults),
-
-      getPortAttrs: function(portName, index, total, selector, type) {
-        var attrs = {};
-
-        var portClass = 'port' + index;
-        var portSelector = selector + '>.' + portClass;
-        var portLabelSelector = portSelector + '>.port-label';
-        var portBodySelector = portSelector + '>.port-body';
-
-        attrs[portLabelSelector] = { text: portName };
-        attrs[portBodySelector] = { port: { id: portName || _.uniqueId(type) , type: type } };
-        attrs[portSelector] = { ref: '.body', 'ref-y': (index + 0.5) * (1 / total) };
-
-        if (selector === '.outPorts') { attrs[portSelector]['ref-dx'] = 0; }
-
-        return attrs;
-      }
-    }));
-
-    return {
-      create: function(cfg) {
-        return new reservoirNode(cfg);
-      }
-    };
-  }])
-  .factory('Demand', [function () {
-    var demandNode = joint.shapes.basic.Generic.extend(_.extend({}, 
-      joint.shapes.basic.PortsModelInterface, {
-        markup: '<g class="scalable"><rect class="body"/></g><text class="label"/><g class="outPorts"/>',
+        markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
         portMarkup: '<g class="port port<%= id %>"><circle class="port-body"/><text class="port-label"/></g>',
 
         defaults: joint.util.deepSupplement({
-          size: { width: 90, height: 90 },
           type: 'devs.Model',
-          outPorts: ['demand'],
+          nodeType: 'reservoir',
+
+          size: { width: 90, height: 90 },
+          
+          inPorts: ['inflow'],
+          outPorts: ['outflow', 'demand'],
+          
           attrs: {
+
+            rect: { fill: '#A6CEE3' },
             '.': { magnet: false },
             '.body': {
-              width: 200, height: 250,
+              width: 150, height: 250,
               stroke: 'black'
             },
-            rect: { fill: '#B2DF8A' },
+
             text: {
               fill: 'black',
               'pointer-events': 'none'
             },
-            '.label': { 
-              // text: cfg.name || 'Demand'
-              text: 'Demand',
-              'ref-x': 0.2,
-              'ref-y': 0.2
-            },
+
+            '.label': { text: 'Reservoir', 'ref-x': 0.4, 'ref-y': 0.2},
+            // '.label': { text: 'Model', 'ref-x': 0.3, 'ref-y': 0.2 },
+
             '.port-body': {
               r: 10,
               magnet: true,
               stroke: 'black'
             },
+            '.inPorts circle': { fill: '#FF7F00' },
             '.outPorts circle': { fill: '#FF7F00' },
-            '.outPorts .port-label': { 
-              x: 15, dy: 4 
-            }
+            '.inPorts .port-label': { x:-15, dy: 4, 'text-anchor': 'end' },
+            '.outPorts .port-label':{ x: 15, dy: 4 }
           }
         }, joint.shapes.basic.Generic.prototype.defaults),
 
@@ -115,13 +60,77 @@ angular.module('model')
 
           return attrs;
         }
-      }));
+    }));
 
-      return {
-        create: function(cfg) {
-          return new demandNode(cfg);
+    return {
+      create: function(cfg) {
+        return new reservoirNode(cfg);
+      }
+    };
+  }])
+  .factory('Demand', [function () {
+    var demandNode = joint.shapes.basic.Generic.extend(_.extend({}, 
+      joint.shapes.basic.PortsModelInterface, {
+        markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><text class="label"/><g class="inPorts"/></g>',
+        portMarkup: '<g class="port port<%= id %>"><circle class="port-body"/><text class="port-label"/></g>',
+
+        defaults: joint.util.deepSupplement({
+          type: 'devs.Model',
+          nodeType: 'demand',
+
+          size: { width: 90, height: 90 },
+          
+          inPorts: ['demand'],
+
+          attrs: {
+            rect: { fill: '#B2DF8A' },
+            '.': { magnet: false },
+            '.body': {
+              width: 150, height: 250,
+              stroke: 'black'
+            },
+
+            text: {
+              fill: 'black',
+              'pointer-events': 'none'
+            },
+
+            '.label': { text: 'Demand', 'ref-x': 0.5, 'ref-y': 0.2},
+            // '.label': { text: 'Model', 'ref-x': 0.3, 'ref-y': 0.2 },
+
+            '.port-body': {
+              r: 10,
+              magnet: true,
+              stroke: 'black'
+            },
+            '.inPorts circle': { fill: '#FF7F00' },
+            '.inPorts .port-label': { x:-15, dy: 4, 'text-anchor': 'end' },
+          }
+        }, joint.shapes.basic.Generic.prototype.defaults),
+
+        getPortAttrs: function(portName, index, total, selector, type) {
+          var attrs = {};
+
+          var portClass = 'port' + index;
+          var portSelector = selector + '>.' + portClass;
+          var portLabelSelector = portSelector + '>.port-label';
+          var portBodySelector = portSelector + '>.port-body';
+
+          attrs[portLabelSelector] = { text: portName };
+          attrs[portBodySelector] = { port: { id: portName || _.uniqueId(type) , type: type } };
+          attrs[portSelector] = { ref: '.body', 'ref-y': (index + 0.5) * (1 / total) };
+
+          if (selector === '.outPorts') { attrs[portSelector]['ref-dx'] = 0; }
+
+          return attrs;
         }
-      };
+    }));
+
+    return {
+      create: function(cfg) {
+        return new demandNode(cfg);
+      }
+    };
   }])
   .factory('Inflow', [function () {
     var inflowNode = joint.shapes.basic.Generic.extend(_.extend({}, 
@@ -130,9 +139,13 @@ angular.module('model')
         portMarkup: '<g class="port port<%= id %>"><circle class="port-body"/><text class="port-label"/></g>',
 
         defaults: joint.util.deepSupplement({
-          size: { width: 90, height: 90 },
           type: 'devs.Model',
+          nodeType: 'inflow',
+
+          size: { width: 90, height: 90 },
+          
           outPorts: ['outflow'],
+
           attrs: {
             '.': { magnet: false },
             '.body': {
@@ -185,27 +198,58 @@ angular.module('model')
         }
       };
   }])
-  .factory('ModelService', ['Reservoir', 'Demand', 'Inflow', function (reservoir, demand, inflow) {
+  .factory('ModelService', ['$window', 'Reservoir', 'Demand', 'Inflow', function ($window, reservoir, demand, inflow) {
     var nodes = [];
-
-    function out(m) {
-      console.log(m);
-    }
 
     var initial = {
       position: { x: 80, y: 50 } 
     };
 
+    function validateConnection(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
+      if (!magnetT) {
+        return false;
+      }
+
+      var sourcePort = magnetS.getAttributeNode('port').value,
+          targetPort = magnetT.getAttributeNode('port').value;
+
+      if (cellViewS.id === cellViewT.id) {
+        return false;
+      }
+
+      if (((sourcePort==='outflow') && (targetPort==='inflow')) || 
+          ((sourcePort==='inflow') && (targetPort==='outflow'))) {
+        return true;
+      } 
+
+      if ((sourcePort==='demand') && (targetPort==='demand')) {
+        return true;
+      } 
+
+      return false;
+    }
+
     return {
       init: function(el) {
         this.graph = new joint.dia.Graph();
-        this.paper = new joint.dia.Paper({ el: el, width: 650, height: 400, gridSize: 1, model: this.graph });
+        this.paper = new joint.dia.Paper({ 
+          el: el, 
+          width: 650, 
+          height: 400, 
+          gridSize: 1, 
+          model: this.graph,
+          validateConnection: validateConnection,
+          linkView: joint.dia.LinkView.extend({
+            style: {
+              '.marker-arrowheads .marker-arrowhead-group .marker-arrowhead': {
+                fill: 'red'
+              }
+            }
+          })
+        });
         
         window.graph = this.graph;
 
-        // this.graph.on('all', function(link) {
-        //   console.log(arguments);
-        // });
         this.graph.on('change:source change:target', function(link) {
           var sourcePort = link.get('source').port;
           var sourceId = link.get('source').id;
@@ -222,30 +266,34 @@ angular.module('model')
                 '</b> of element with ID <b>' + targetId + '</b>'
             ].join('');
             
-            out(m);
+            console.log(m);
           }
-
         });
+
+        // remove links without source or target
+        this.graph.on('batch:stop', function () {
+          var links = this.getLinks();
+          _.each(links, function (link) {
+            var source = link.get('source');
+            var target = link.get('target');
+            if (source.id === undefined || target.id === undefined) {
+              link.remove();
+            }
+          });
+        });
+        return this.graph;
+      },
+
+      onClick: function(evt, cb) {
+        this.paper.on(evt, cb);
       },
 
       addReservoir: function(cfg) {
         var newReservoir = reservoir.create({
-            position: initial.position,
-            size: { width: 90, height: 90 },
-            inPorts: ['inflow'],
-            outPorts: ['outflow', 'demand'],
-            attrs: {
-                '.label': { text: cfg.name || 'Reservoir', 'ref-x': 0.5, 'ref-y': 0.2 },
-                rect: { fill: '#A6CEE3' },
-                '.inPorts circle': { fill: '#FF7F00' },
-                '.outPorts circle': { fill: '#FF7F00' }
-            }
+            position: initial.position
         });
-
         nodes.push(newReservoir);
-
         this.graph.addCell(newReservoir);
-
         initial.position = {x: initial.position.x+50, y: initial.position.y+50};
       },
 
@@ -253,11 +301,8 @@ angular.module('model')
         var newDemand = demand.create({
             position: initial.position
         });
-
         nodes.push(newDemand);
-
         this.graph.addCell(newDemand);
-
         initial.position = {x: initial.position.x+50, y: initial.position.y+50};
       },
 
@@ -265,11 +310,8 @@ angular.module('model')
         var newInflow = inflow.create({
             position: initial.position
         });
-
         nodes.push(newInflow);
-
         this.graph.addCell(newInflow);
-
         initial.position = {x: initial.position.x+50, y: initial.position.y+50};
       },
 
