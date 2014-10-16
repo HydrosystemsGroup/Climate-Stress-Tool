@@ -229,6 +229,12 @@ angular.module('model')
       return false;
     }
 
+    var link = joint.dia.Link.extend({
+        defaults: {
+          smooth: true
+        }
+    });
+
     return {
       init: function(el) {
         this.graph = new joint.dia.Graph();
@@ -238,14 +244,13 @@ angular.module('model')
           height: 400, 
           gridSize: 1, 
           model: this.graph,
-          validateConnection: validateConnection,
-          linkView: joint.dia.LinkView.extend({
-            style: {
-              '.marker-arrowheads .marker-arrowhead-group .marker-arrowhead': {
-                fill: 'red'
-              }
-            }
-          })
+          snapLinks: true,
+          defaultLink: new joint.dia.Link({
+            smooth: true,
+            router: { name: 'manhattan' },
+            connector: { name: 'rounded' }
+          }),
+          validateConnection: validateConnection
         });
         
         window.graph = this.graph;
