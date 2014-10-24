@@ -24,27 +24,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
         templateUrl: 'weathergen/templates/weather.html',
         controller: 'WeatherCtrl'
       })
-      .state('model', {
-        url: '/simulation-model',
-        views: {
-          '': {
-            templateUrl: 'model/templates/model.html',
-            controller: 'ModelCtrl'
-          },
-          'diagram@model': {
-            templateUrl: 'model/templates/diagram.html',
-            controller: 'DiagramCtrl'
-          },
-          'nodelist@model': {
-            templateUrl: 'model/templates/node_list.html'
-          }
-        }
-      })
-      .state('model.node', {
-        url: '/node/{nodeId}',
-        templateUrl: 'model/templates/node_detail.html',
-        controller: 'NodeDetailCtrl'
-      })
       .state('map', {
         url: '/map',
         controller: 'MapCtrl',

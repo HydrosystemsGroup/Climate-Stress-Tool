@@ -5,7 +5,9 @@ angular.module('model')
       joint.shapes.basic.PortsModelInterface, {
         markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
         portMarkup: '<g class="port port<%= id %>"><circle class="port-body"/><text class="port-label"/></g>',
-
+        getName: function() {
+          return this.get('name');
+        },
         defaults: joint.util.deepSupplement({
           type: 'devs.Model',
           nodeType: 'reservoir',
@@ -64,13 +66,16 @@ angular.module('model')
 
           return attrs;
         }
-    }));
+      }));
 
     return {
       create: function(cfg) {
         var reservoir = new reservoirNode(cfg);
         reservoir.attr('.label/text', cfg.name || 'New Reservoir');
         return reservoir;
+      },
+      getName: function() {
+        console.log(this.get('name'));
       }
     };
   }])
@@ -212,13 +217,7 @@ angular.module('model')
         }
       };
   }])
-  .factory('ModelService', ['$window', 'Reservoir', 'Demand', 'Inflow', function ($window, reservoir, demand, inflow) {
-    var nodes = [];
-
-    var initial = {
-      position: { x: 80, y: 50 } 
-    };
-
+  .factory('Graph', [function () {
     function validateConnection(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
       if (!magnetT) {
         return false;
@@ -267,8 +266,6 @@ angular.module('model')
           validateConnection: validateConnection
         });
         
-        window.graph = this.graph;
-
         this.graph.on('change:source change:target', function(link) {
           var sourcePort = link.get('source').port;
           var sourceId = link.get('source').id;
@@ -300,11 +297,37 @@ angular.module('model')
             }
           });
         });
+        
         return this.graph;
       },
 
       onClick: function(evt, cb) {
         this.paper.on(evt, cb);
+      },
+
+      getGraph: function() {
+        return this.graph;
+      },
+
+      getPaper: function() {
+        return this.paper;
+      }
+    };
+  }])
+  .factory('ModelService', ['Reservoir', 'Demand', 'Inflow', 'Graph', function (reservoir, demand, inflow, graph) {
+    var nodes = [];
+
+    var initial = {
+      position: { x: 80, y: 50 } 
+    };
+
+    return {
+      init: function (el) {
+        this.graph = graph.init(el);
+      },
+
+      getGraph: function() {
+        return this.graph;
       },
 
       addReservoir: function(cfg) {
@@ -339,18 +362,7 @@ angular.module('model')
 
       getNodes: function() {
         return nodes;
-      },
-
-      getGraph: function() {
-        return this.graph;
-      },
-
-      getCell: function(id) {
-        return this.graph.getCell(id);
-      },
-
-      getPaper: function() {
-        return this.paper;
       }
     };
+
   }]);

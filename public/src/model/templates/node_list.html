@@ -1,5 +1,15 @@
 <div class="col-sm-12">
+  <b>Reservoirs</b>
   <ul>
-    <li ng-repeat='node in nodes'><a ui-sref="model.node({nodeId:node.id})">{{node.get('name')}}</a></li>
+    <li ng-repeat="node in nodes|NodeType:'reservoir'"><a ui-sref="model.node({nodeId:node.id})">{{ node.get('name') }} - {{ node.get('nodeType') }}</a></li>
   </ul>
+  <b>Demands</b>
+  <ul>
+    <li ng-repeat="node in nodes|NodeType:'demand'"><a ui-sref="model.node({nodeId:node.id})">{{ node.get('name') }} - {{ node.get('nodeType') }}</a></li>
+  </ul>
+  <b>Inflows</b>
+  <ul>
+    <li ng-repeat="node in nodes|NodeType:'inflow'"><a ui-sref="model.node({nodeId:node.id})">{{ node.get('name') }} - {{ node.get('nodeType') }}</a></li>
+  </ul>
+
 </div>

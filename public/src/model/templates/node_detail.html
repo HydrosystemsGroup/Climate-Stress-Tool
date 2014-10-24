@@ -1,6 +1,5 @@
 <div class="col-sm-12">
   <h1>{{node.name}}</h1>
-  <p><small>ID: {{nodeId}}</small></p>
 
   <form class="form-horizontal" novalidate>
     <div class="form-group">
@@ -16,6 +15,8 @@
       </div>
     </div>
   </form>
+  <hr>
+  <button class="btn btn-danger" ng-click="remove()">Delete</button>
   <hr>
   <pre>{{node | json}}</pre>
   <pre>{{cell | json}}</pre>
