@@ -11,10 +11,6 @@ app.config(['$stateProvider', '$urlRouterProvider',
             templateUrl: 'model/templates/model.html',
             controller: 'ModelCtrl'
           },
-          'diagram@model': {
-            templateUrl: 'model/templates/diagram.html',
-            controller: 'DiagramCtrl'
-          },
           'nodelist@model': {
             templateUrl: 'model/templates/node_list.html'
           }

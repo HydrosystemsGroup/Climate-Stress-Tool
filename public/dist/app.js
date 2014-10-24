@@ -17,10 +17,6 @@ app.config(['$stateProvider', '$urlRouterProvider',
             templateUrl: 'model/templates/model.html',
             controller: 'ModelCtrl'
           },
-          'diagram@model': {
-            templateUrl: 'model/templates/diagram.html',
-            controller: 'DiagramCtrl'
-          },
           'nodelist@model': {
             templateUrl: 'model/templates/node_list.html'
           }
@@ -321,19 +317,17 @@ angular.module('map')
     };
   });;
 angular.module('model')
-  .controller('DiagramCtrl', ['$scope', '$state', 'Graph', 'ModelService', function($scope, $state, graph, model) {
-    model.init($('#diagram'));
+  .controller('ModelCtrl', ['$scope', 'ModelService', 'Graph', function($scope, model, graph) {
+    console.log('ModelCtrl');
 
+    graph.init($('#diagram'));
+    
     // register click event for clicking element
     graph.onClick('cell:pointerdblclick', function(cellView, evt, x, y) { 
       console.log('cell view ' + cellView.model.get('nodeType') + ' was clicked with id ' + cellView.model.get('id')); 
       $state.go('model.node', {nodeId: cellView.model.get('id')});
     });
-  }]);
-;
-angular.module('model')
-  .controller('ModelCtrl', ['$scope', 'ModelService', function($scope, model) {
-    
+
     $scope.addReservoir = function () {
       model.addReservoir({name: 'New Reservoir'});
     };
@@ -351,7 +345,7 @@ angular.module('model')
     };
 
     $scope.toJSON = function () {
-      console.log(model.getGraph().toJSON());
+      console.log(graph.getGraph().toJSON());
     };
     
     $scope.selected = {};
@@ -365,10 +359,11 @@ angular.module('model')
     
   }]);
 ;angular.module('model')
-  .controller('NodeDetailCtrl', ['$scope', '$stateParams', '$state', '$window', 'ModelService', function($scope, $stateParams, $state, $window, model) {
+  .controller('NodeDetailCtrl', ['$scope', '$stateParams', '$state', '$window', 'ModelService', 'Graph', 
+              function($scope, $stateParams, $state, $window, model, graph) {
     $scope.nodeId = $stateParams.nodeId;
     $scope.node = {name: '', type: ''};
-    $scope.cell = model.getGraph().getCell($scope.nodeId);
+    $scope.cell = graph.getGraph().getCell($scope.nodeId);
     
     if (!$scope.cell) {
       $state.go('model');
@@ -722,21 +717,13 @@ angular.module('model')
     };
 
     return {
-      init: function (el) {
-        this.graph = graph.init(el);
-      },
-
-      getGraph: function() {
-        return this.graph;
-      },
-
       addReservoir: function(cfg) {
         var newReservoir = reservoir.create({
             position: initial.position,
             name: cfg.name || 'New Reservoir'
         });
         nodes.push(newReservoir);
-        this.graph.addCell(newReservoir);
+        graph.getGraph().addCell(newReservoir);
         initial.position = {x: initial.position.x+50, y: initial.position.y+50};
       },
 
@@ -746,7 +733,7 @@ angular.module('model')
             name: cfg.name || 'New Demand'
         });
         nodes.push(newDemand);
-        this.graph.addCell(newDemand);
+        graph.getGraph().addCell(newDemand);
         initial.position = {x: initial.position.x+50, y: initial.position.y+50};
       },
 
@@ -756,7 +743,7 @@ angular.module('model')
             name: cfg.name || 'New Inflow'
         });
         nodes.push(newInflow);
-        this.graph.addCell(newInflow);
+        graph.getGraph().addCell(newInflow);
         initial.position = {x: initial.position.x+50, y: initial.position.y+50};
       },
 
@@ -850,7 +837,7 @@ angular.module('weathergen')
       });
     };
   }]);
-;angular.module('templates', ['home/templates/home.html', 'map/templates/map.html', 'model/templates/diagram.html', 'model/templates/model.html', 'model/templates/node_detail.html', 'model/templates/node_list.html', 'weathergen/templates/weather.html']);
+;angular.module('templates', ['home/templates/home.html', 'map/templates/map.html', 'model/templates/model.html', 'model/templates/node_detail.html', 'model/templates/node_list.html', 'weathergen/templates/weather.html']);
 
 angular.module("home/templates/home.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("home/templates/home.html",
@@ -904,11 +891,6 @@ angular.module("map/templates/map.html", []).run(["$templateCache", function($te
     "");
 }]);
 
-angular.module("model/templates/diagram.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("model/templates/diagram.html",
-    "<div id=\"diagram\"></div>");
-}]);
-
 angular.module("model/templates/model.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("model/templates/model.html",
     "<h1>Reservoir Simulation Model</h1>\n" +
@@ -923,7 +905,7 @@ angular.module("model/templates/model.html", []).run(["$templateCache", function
     "    <button class=\"btn btn-primary btn-block\" ng-click=\"toJSON()\">Log JSON</button>\n" +
     "  </div>\n" +
     "  <div class=\"col-sm-6\">\n" +
-    "    <div ui-view=\"diagram\"></div>    \n" +
+    "    <div id=\"diagram\"></div>\n" +
     "  </div>\n" +
     "  <div class=\"col-sm-4\" ui-view=\"nodelist\"></div>\n" +
     "</div>\n" +

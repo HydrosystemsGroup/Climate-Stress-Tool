@@ -322,21 +322,13 @@ angular.module('model')
     };
 
     return {
-      init: function (el) {
-        this.graph = graph.init(el);
-      },
-
-      getGraph: function() {
-        return this.graph;
-      },
-
       addReservoir: function(cfg) {
         var newReservoir = reservoir.create({
             position: initial.position,
             name: cfg.name || 'New Reservoir'
         });
         nodes.push(newReservoir);
-        this.graph.addCell(newReservoir);
+        graph.getGraph().addCell(newReservoir);
         initial.position = {x: initial.position.x+50, y: initial.position.y+50};
       },
 
@@ -346,7 +338,7 @@ angular.module('model')
             name: cfg.name || 'New Demand'
         });
         nodes.push(newDemand);
-        this.graph.addCell(newDemand);
+        graph.getGraph().addCell(newDemand);
         initial.position = {x: initial.position.x+50, y: initial.position.y+50};
       },
 
@@ -356,7 +348,7 @@ angular.module('model')
             name: cfg.name || 'New Inflow'
         });
         nodes.push(newInflow);
-        this.graph.addCell(newInflow);
+        graph.getGraph().addCell(newInflow);
         initial.position = {x: initial.position.x+50, y: initial.position.y+50};
       },
 
