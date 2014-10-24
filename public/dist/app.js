@@ -806,11 +806,11 @@ angular.module("model/templates/model.html", []).run(["$templateCache", function
     "  <hr>\n" +
     "  <div class=\"row\">\n" +
     "    <div class=\"col-sm-2\">\n" +
-    "      <button class=\"btn btn-primary\" ng-click=\"addReservoir()\">Add Reservoir</button>\n" +
-    "      <button class=\"btn btn-primary\" ng-click=\"addDemand()\">Add Demand</button>\n" +
-    "      <button class=\"btn btn-primary\" ng-click=\"addInflow()\">Add Inflow</button>\n" +
+    "      <button class=\"btn btn-primary btn-block\" ng-click=\"addReservoir()\">Add Reservoir</button>\n" +
+    "      <button class=\"btn btn-primary btn-block\" ng-click=\"addDemand()\">Add Demand</button>\n" +
+    "      <button class=\"btn btn-primary btn-block\" ng-click=\"addInflow()\">Add Inflow</button>\n" +
     "      <hr>\n" +
-    "      <button class=\"btn btn-primary\" ng-click=\"logNodes()\">Show Nodes</button>\n" +
+    "      <button class=\"btn btn-primary btn-block\" ng-click=\"logNodes()\">Show Nodes</button>\n" +
     "    </div>\n" +
     "    <div class=\"col-sm-10\">\n" +
     "      <div id=\"diagram\"></div>    \n" +
