@@ -18,17 +18,33 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
         url: '/home',
         controller: 'HomeCtrl',
         templateUrl: 'home/templates/home.html'
-      }).
-      state('weather', {
+      })
+      .state('weather', {
         url: '/weather-generator',
         templateUrl: 'weathergen/templates/weather.html',
         controller: 'WeatherCtrl'
-      }).
-      state('model', {
+      })
+      .state('model', {
         url: '/simulation-model',
-        templateUrl: 'model/templates/model.html',
-        controller: 'ModelCtrl'
-      })      
+        views: {
+          '': {
+            templateUrl: 'model/templates/model.html',
+            controller: 'ModelCtrl'
+          },
+          'diagram@model': {
+            templateUrl: 'model/templates/diagram.html',
+            controller: 'DiagramCtrl'
+          },
+          'nodelist@model': {
+            templateUrl: 'model/templates/node_list.html'
+          }
+        }
+      })
+      .state('model.node', {
+        url: '/node/{nodeId}',
+        templateUrl: 'model/templates/node_detail.html',
+        controller: 'NodeDetailCtrl'
+      })
       .state('map', {
         url: '/map',
         controller: 'MapCtrl',

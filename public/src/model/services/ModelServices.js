@@ -29,7 +29,11 @@ angular.module('model')
               'pointer-events': 'none'
             },
 
-            '.label': { text: 'Reservoir', 'ref-x': 0.4, 'ref-y': 0.2},
+            '.label': { 
+              text: 'Reservoir'
+              // 'ref-x': 0.4, 
+              // 'ref-y': 0.2
+            },
             // '.label': { text: 'Model', 'ref-x': 0.3, 'ref-y': 0.2 },
 
             '.port-body': {
@@ -64,7 +68,9 @@ angular.module('model')
 
     return {
       create: function(cfg) {
-        return new reservoirNode(cfg);
+        var reservoir = new reservoirNode(cfg);
+        reservoir.attr('.label/text', cfg.name || 'New Reservoir');
+        return reservoir;
       }
     };
   }])
@@ -95,8 +101,11 @@ angular.module('model')
               'pointer-events': 'none'
             },
 
-            '.label': { text: 'Demand', 'ref-x': 0.5, 'ref-y': 0.2},
-            // '.label': { text: 'Model', 'ref-x': 0.3, 'ref-y': 0.2 },
+            '.label': { 
+              text: 'Demand'
+              // 'ref-x': 0.5, 
+              // 'ref-y': 0.2
+            },
 
             '.port-body': {
               r: 10,
@@ -128,7 +137,9 @@ angular.module('model')
 
     return {
       create: function(cfg) {
-        return new demandNode(cfg);
+        var demand = new demandNode(cfg);
+        demand.attr('.label/text', cfg.name || 'New Demand');
+        return demand;
       }
     };
   }])
@@ -158,9 +169,9 @@ angular.module('model')
               'pointer-events': 'none'
             },
             '.label': { 
-              text: 'Inflow',
-              'ref-x': 0.2,
-              'ref-y': 0.2
+              text: 'Inflow'
+              // 'ref-x': 0.2,
+              // 'ref-y': 0.2
             },
             '.port-body': {
               r: 10,
@@ -194,7 +205,10 @@ angular.module('model')
 
       return {
         create: function(cfg) {
-          return new inflowNode(cfg);
+          console.log(cfg.name);
+          var inflow = new inflowNode(cfg);
+          inflow.attr('.label/text', cfg.name || 'New Inflow');
+          return inflow;
         }
       };
   }])
@@ -295,7 +309,8 @@ angular.module('model')
 
       addReservoir: function(cfg) {
         var newReservoir = reservoir.create({
-            position: initial.position
+            position: initial.position,
+            name: cfg.name || 'New Reservoir'
         });
         nodes.push(newReservoir);
         this.graph.addCell(newReservoir);
@@ -304,7 +319,8 @@ angular.module('model')
 
       addDemand: function(cfg) {
         var newDemand = demand.create({
-            position: initial.position
+            position: initial.position,
+            name: cfg.name || 'New Demand'
         });
         nodes.push(newDemand);
         this.graph.addCell(newDemand);
@@ -313,7 +329,8 @@ angular.module('model')
 
       addInflow: function(cfg) {
         var newInflow = inflow.create({
-            position: initial.position
+            position: initial.position,
+            name: cfg.name || 'New Inflow'
         });
         nodes.push(newInflow);
         this.graph.addCell(newInflow);
@@ -326,6 +343,10 @@ angular.module('model')
 
       getGraph: function() {
         return this.graph;
+      },
+
+      getCell: function(id) {
+        return this.graph.getCell(id);
       },
 
       getPaper: function() {
