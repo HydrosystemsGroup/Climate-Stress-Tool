@@ -1,6 +1,6 @@
 
 var app = angular.module('climate-stress-tool', 
-  ['ngRoute',
+  ['ui.router',
    'templates',
    'home',
    'ocpu',
@@ -9,31 +9,33 @@ var app = angular.module('climate-stress-tool',
    'charts',
    'map']);
 
-app.config(['$routeProvider', '$locationProvider',
-  function($routeProvider, $locationProvider) {
-    $routeProvider.
-      when('/', {
-        templateUrl: 'home/templates/home.html',
-        controller: 'HomeCtrl'
+app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
+  function($stateProvider, $urlRouterProvider, $locationProvider) {
+    $urlRouterProvider.otherwise('/home');
+
+    $stateProvider
+      .state('home', {
+        url: '/home',
+        controller: 'HomeCtrl',
+        templateUrl: 'home/templates/home.html'
       }).
-      when('/weather', {
+      state('weather', {
+        url: '/weather-generator',
         templateUrl: 'weathergen/templates/weather.html',
         controller: 'WeatherCtrl'
       }).
-      when('/model', {
+      state('model', {
+        url: '/simulation-model',
         templateUrl: 'model/templates/model.html',
         controller: 'ModelCtrl'
-      }).
-      when('/map', {
-        templateUrl: 'map/templates/map.html',
-        controller: 'MapCtrl'
-      }).
-      otherwise({
-        redirectTo: '/'
+      })      
+      .state('map', {
+        url: '/map',
+        controller: 'MapCtrl',
+        templateUrl: 'map/templates/map.html'
       });
-
     $locationProvider.html5Mode({
       enabled: true,
       requireBase: false
     });
-  }]);
+}]);
