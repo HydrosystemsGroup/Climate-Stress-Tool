@@ -1,15 +1,16 @@
-<div class="col-sm-12">
-  <b>Reservoirs</b>
-  <ul>
-    <li ng-repeat="node in nodes|NodeType:'reservoir'"><a ui-sref="model.node({nodeId:node.id})">{{ node.get('name') }} - {{ node.get('nodeType') }}</a></li>
+<div class="well">
+  <h4>Reservoirs</h4>
+  <ul class="list-unstyled">
+    <li ng-repeat="node in nodes|NodeType:'reservoir'"><a ui-sref="model.node({nodeId:node.id})">{{ node.get('name') }}</a></li>
   </ul>
-  <b>Demands</b>
-  <ul>
-    <li ng-repeat="node in nodes|NodeType:'demand'"><a ui-sref="model.node({nodeId:node.id})">{{ node.get('name') }} - {{ node.get('nodeType') }}</a></li>
+  <hr>
+  <h4>Demands</h4>
+  <ul class="list-unstyled">
+    <li ng-repeat="node in nodes|NodeType:'demand'"><a ui-sref="model.node({nodeId:node.id})">{{ node.get('name') }}</a></li>
   </ul>
-  <b>Inflows</b>
-  <ul>
-    <li ng-repeat="node in nodes|NodeType:'inflow'"><a ui-sref="model.node({nodeId:node.id})">{{ node.get('name') }} - {{ node.get('nodeType') }}</a></li>
+  <hr>
+  <h4>Inflows</h4>
+  <ul class="list-unstyled">
+    <li ng-repeat="node in nodes|NodeType:'inflow'"><a ui-sref="model.node({nodeId:node.id})">{{ node.get('name') }}</a></li>
   </ul>
-
 </div>

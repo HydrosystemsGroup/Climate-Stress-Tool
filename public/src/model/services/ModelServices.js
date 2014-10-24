@@ -73,9 +73,6 @@ angular.module('model')
         var reservoir = new reservoirNode(cfg);
         reservoir.attr('.label/text', cfg.name || 'New Reservoir');
         return reservoir;
-      },
-      getName: function() {
-        console.log(this.get('name'));
       }
     };
   }])
@@ -210,7 +207,6 @@ angular.module('model')
 
       return {
         create: function(cfg) {
-          console.log(cfg.name);
           var inflow = new inflowNode(cfg);
           inflow.attr('.label/text', cfg.name || 'New Inflow');
           return inflow;
@@ -354,6 +350,11 @@ angular.module('model')
 
       getNodes: function() {
         return nodes;
+      },
+
+      clear: function () {
+        graph.getGraph().clear();
+        nodes = [];
       }
     };
 

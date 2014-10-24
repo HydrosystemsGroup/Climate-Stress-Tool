@@ -317,16 +317,18 @@ angular.module('map')
     };
   });;
 angular.module('model')
-  .controller('ModelCtrl', ['$scope', 'ModelService', 'Graph', function($scope, model, graph) {
-    console.log('ModelCtrl');
+  .controller('ModelCtrl', ['$scope', '$state', 'ModelService', 'Graph', function($scope, $state, model, graph) {
+    // console.log('ModelCtrl');
 
     graph.init($('#diagram'));
     
     // register click event for clicking element
     graph.onClick('cell:pointerdblclick', function(cellView, evt, x, y) { 
-      console.log('cell view ' + cellView.model.get('nodeType') + ' was clicked with id ' + cellView.model.get('id')); 
+      // console.log('cell view ' + cellView.model.get('nodeType') + ' was clicked with id ' + cellView.model.get('id')); 
       $state.go('model.node', {nodeId: cellView.model.get('id')});
     });
+
+    $scope.nodes = model.getNodes();
 
     $scope.addReservoir = function () {
       model.addReservoir({name: 'New Reservoir'});
@@ -347,16 +349,11 @@ angular.module('model')
     $scope.toJSON = function () {
       console.log(graph.getGraph().toJSON());
     };
-    
-    $scope.selected = {};
-    
-    $scope.nodes = model.getNodes();
 
-    $scope.$watch('nodes', function() {
-      console.log('change to nodes');
-      console.log($scope.nodes);
-    });
-    
+    $scope.clear = function () {
+      model.clear();
+      $scope.nodes = [];
+    };
   }]);
 ;angular.module('model')
   .controller('NodeDetailCtrl', ['$scope', '$stateParams', '$state', '$window', 'ModelService', 'Graph', 
@@ -468,9 +465,6 @@ angular.module('model')
         var reservoir = new reservoirNode(cfg);
         reservoir.attr('.label/text', cfg.name || 'New Reservoir');
         return reservoir;
-      },
-      getName: function() {
-        console.log(this.get('name'));
       }
     };
   }])
@@ -605,7 +599,6 @@ angular.module('model')
 
       return {
         create: function(cfg) {
-          console.log(cfg.name);
           var inflow = new inflowNode(cfg);
           inflow.attr('.label/text', cfg.name || 'New Inflow');
           return inflow;
@@ -749,6 +742,11 @@ angular.module('model')
 
       getNodes: function() {
         return nodes;
+      },
+
+      clear: function () {
+        graph.getGraph().clear();
+        nodes = [];
       }
     };
 
@@ -903,6 +901,7 @@ angular.module("model/templates/model.html", []).run(["$templateCache", function
     "    <hr>\n" +
     "    <button class=\"btn btn-primary btn-block\" ng-click=\"logNodes()\">Show Nodes</button>\n" +
     "    <button class=\"btn btn-primary btn-block\" ng-click=\"toJSON()\">Log JSON</button>\n" +
+    "    <button class=\"btn btn-danger btn-block\" ng-click=\"clear()\">Clear</button>\n" +
     "  </div>\n" +
     "  <div class=\"col-sm-6\">\n" +
     "    <div id=\"diagram\"></div>\n" +
@@ -944,20 +943,21 @@ angular.module("model/templates/node_detail.html", []).run(["$templateCache", fu
 
 angular.module("model/templates/node_list.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("model/templates/node_list.html",
-    "<div class=\"col-sm-12\">\n" +
-    "  <b>Reservoirs</b>\n" +
-    "  <ul>\n" +
-    "    <li ng-repeat=\"node in nodes|NodeType:'reservoir'\"><a ui-sref=\"model.node({nodeId:node.id})\">{{ node.get('name') }} - {{ node.get('nodeType') }}</a></li>\n" +
+    "<div class=\"well\">\n" +
+    "  <h4>Reservoirs</h4>\n" +
+    "  <ul class=\"list-unstyled\">\n" +
+    "    <li ng-repeat=\"node in nodes|NodeType:'reservoir'\"><a ui-sref=\"model.node({nodeId:node.id})\">{{ node.get('name') }}</a></li>\n" +
     "  </ul>\n" +
-    "  <b>Demands</b>\n" +
-    "  <ul>\n" +
-    "    <li ng-repeat=\"node in nodes|NodeType:'demand'\"><a ui-sref=\"model.node({nodeId:node.id})\">{{ node.get('name') }} - {{ node.get('nodeType') }}</a></li>\n" +
+    "  <hr>\n" +
+    "  <h4>Demands</h4>\n" +
+    "  <ul class=\"list-unstyled\">\n" +
+    "    <li ng-repeat=\"node in nodes|NodeType:'demand'\"><a ui-sref=\"model.node({nodeId:node.id})\">{{ node.get('name') }}</a></li>\n" +
     "  </ul>\n" +
-    "  <b>Inflows</b>\n" +
-    "  <ul>\n" +
-    "    <li ng-repeat=\"node in nodes|NodeType:'inflow'\"><a ui-sref=\"model.node({nodeId:node.id})\">{{ node.get('name') }} - {{ node.get('nodeType') }}</a></li>\n" +
+    "  <hr>\n" +
+    "  <h4>Inflows</h4>\n" +
+    "  <ul class=\"list-unstyled\">\n" +
+    "    <li ng-repeat=\"node in nodes|NodeType:'inflow'\"><a ui-sref=\"model.node({nodeId:node.id})\">{{ node.get('name') }}</a></li>\n" +
     "  </ul>\n" +
-    "\n" +
     "</div>\n" +
     "");
 }]);
