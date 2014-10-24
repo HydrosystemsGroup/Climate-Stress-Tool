@@ -1,6 +1,6 @@
 
 angular.module('ocpu')
-  .value('ocpuUrl', 'http://xps420.local/ocpu')
+  .value('ocpuUrl', '//xps420.local/ocpu')
   .service('ocpuService', ['$http', 'ocpuUrl', function($http, url) {
     this.getData = function(sessionKey, format, cb) {
       $http.get(url+'/tmp/' + sessionKey + '/R/.val/' + format).
