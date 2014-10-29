@@ -8,7 +8,7 @@ angular.module('model')
     // register click event for clicking element
     graph.onClick('cell:pointerdblclick', function(cellView, evt, x, y) { 
       // console.log('cell view ' + cellView.model.get('nodeType') + ' was clicked with id ' + cellView.model.get('id')); 
-      $state.go('model.node', {nodeId: cellView.model.get('id')});
+      $state.go('model.'+cellView.model.get('nodeType'), {nodeId: cellView.model.get('id')});
     });
 
     $scope.nodes = model.getNodes();
