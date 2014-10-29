@@ -1,6 +1,9 @@
 
 var app = angular.module('climate-stress-tool', 
   ['ui.router',
+   'ui.grid',
+   'ui.grid.edit',
+   'ui.grid.cellNav',
    'templates',
    'home',
    'ocpu',

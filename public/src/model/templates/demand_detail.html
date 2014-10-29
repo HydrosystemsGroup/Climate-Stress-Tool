@@ -1,4 +1,4 @@
-<div class="col-sm-12">
+<div class="col-sm-6">
   <h1>Demand: {{node.name}}</h1>
 
   <form class="form-horizontal" novalidate>
@@ -20,4 +20,7 @@
   <hr>
   <pre>{{node | json}}</pre>
   <pre>{{cell | json}}</pre>
+</div>
+<div class="col-sm-3">
+  <div class="gridStyle" ui-grid-edit ui-grid-cellNav ui-grid="gridOptions"></div>
 </div>
