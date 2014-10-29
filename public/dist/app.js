@@ -335,19 +335,8 @@ angular.module('map')
     $scope.node = {
       name: '', 
       type: '',
-      demands: [{month: 1, demand: 0},
-               {month: 2, demand: 0},
-               {month: 3, demand: 0},
-               {month: 4, demand: 0},
-               {month: 5, demand: 0},
-               {month: 6, demand: 0},
-               {month: 7, demand: 0},
-               {month: 8, demand: 0},
-               {month: 9, demand: 0},
-               {month: 10, demand: 0},
-               {month: 11, demand: 0},
-               {month: 12, demand: 0}]
-             };
+      demands: []
+    };
     
     $scope.graphCell = graph.getGraph().getCell($scope.nodeId);
 
@@ -356,14 +345,16 @@ angular.module('map')
     } else {
       $scope.node.name = $scope.graphCell.get('name');
       $scope.node.type = $scope.graphCell.get('nodeType');
+      $scope.node.demands = $scope.graphCell.get('demands');
     }
 
     $scope.gridOptions = { 
       data: 'node.demands',
       enableSorting: false,
       enableCellEditOnFocus: true,
+      enableColumnMenus: false,
       columnDefs: [
-        {displayName: 'Month', field: 'month'},
+        {displayName: 'Month', field: 'month', enableCellEdit: false},
         {displayName: "Demand (MGD)", field: 'demand', enableCellEdit: true}
       ]
     };
@@ -375,6 +366,7 @@ angular.module('map')
 
     $scope.$watch('node.demands', function(newDemands) {
       console.log('update node.demands', newDemands);
+      $scope.graphCell.set('demands', newDemands);
     }, true);
 
     $scope.remove = function() {
@@ -578,6 +570,18 @@ angular.module('model')
         defaults: joint.util.deepSupplement({
           type: 'devs.Model',
           nodeType: 'demand',
+          demands: [ {month: 1, demand: 0},
+                     {month: 2, demand: 0},
+                     {month: 3, demand: 0},
+                     {month: 4, demand: 0},
+                     {month: 5, demand: 0},
+                     {month: 6, demand: 0},
+                     {month: 7, demand: 0},
+                     {month: 8, demand: 0},
+                     {month: 9, demand: 0},
+                     {month: 10, demand: 0},
+                     {month: 11, demand: 0},
+                     {month: 12, demand: 0} ],
 
           size: { width: 90, height: 90 },
           
