@@ -5,7 +5,9 @@ angular.module('model')
       joint.shapes.basic.PortsModelInterface, {
         markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
         portMarkup: '<g class="port port<%= id %>"><circle class="port-body"/><text class="port-label"/></g>',
-
+        getName: function() {
+          return this.get('name');
+        },
         defaults: joint.util.deepSupplement({
           type: 'devs.Model',
           nodeType: 'reservoir',
@@ -29,7 +31,11 @@ angular.module('model')
               'pointer-events': 'none'
             },
 
-            '.label': { text: 'Reservoir', 'ref-x': 0.4, 'ref-y': 0.2},
+            '.label': { 
+              text: 'Reservoir'
+              // 'ref-x': 0.4, 
+              // 'ref-y': 0.2
+            },
             // '.label': { text: 'Model', 'ref-x': 0.3, 'ref-y': 0.2 },
 
             '.port-body': {
@@ -60,11 +66,13 @@ angular.module('model')
 
           return attrs;
         }
-    }));
+      }));
 
     return {
       create: function(cfg) {
-        return new reservoirNode(cfg);
+        var reservoir = new reservoirNode(cfg);
+        reservoir.attr('.label/text', cfg.name || 'New Reservoir');
+        return reservoir;
       }
     };
   }])
@@ -95,8 +103,11 @@ angular.module('model')
               'pointer-events': 'none'
             },
 
-            '.label': { text: 'Demand', 'ref-x': 0.5, 'ref-y': 0.2},
-            // '.label': { text: 'Model', 'ref-x': 0.3, 'ref-y': 0.2 },
+            '.label': { 
+              text: 'Demand'
+              // 'ref-x': 0.5, 
+              // 'ref-y': 0.2
+            },
 
             '.port-body': {
               r: 10,
@@ -128,7 +139,9 @@ angular.module('model')
 
     return {
       create: function(cfg) {
-        return new demandNode(cfg);
+        var demand = new demandNode(cfg);
+        demand.attr('.label/text', cfg.name || 'New Demand');
+        return demand;
       }
     };
   }])
@@ -158,9 +171,9 @@ angular.module('model')
               'pointer-events': 'none'
             },
             '.label': { 
-              text: 'Inflow',
-              'ref-x': 0.2,
-              'ref-y': 0.2
+              text: 'Inflow'
+              // 'ref-x': 0.2,
+              // 'ref-y': 0.2
             },
             '.port-body': {
               r: 10,
@@ -194,17 +207,13 @@ angular.module('model')
 
       return {
         create: function(cfg) {
-          return new inflowNode(cfg);
+          var inflow = new inflowNode(cfg);
+          inflow.attr('.label/text', cfg.name || 'New Inflow');
+          return inflow;
         }
       };
   }])
-  .factory('ModelService', ['$window', 'Reservoir', 'Demand', 'Inflow', function ($window, reservoir, demand, inflow) {
-    var nodes = [];
-
-    var initial = {
-      position: { x: 80, y: 50 } 
-    };
-
+  .factory('Graph', [function () {
     function validateConnection(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
       if (!magnetT) {
         return false;
@@ -253,8 +262,6 @@ angular.module('model')
           validateConnection: validateConnection
         });
         
-        window.graph = this.graph;
-
         this.graph.on('change:source change:target', function(link) {
           var sourcePort = link.get('source').port;
           var sourceId = link.get('source').id;
@@ -286,42 +293,12 @@ angular.module('model')
             }
           });
         });
+        
         return this.graph;
       },
 
       onClick: function(evt, cb) {
         this.paper.on(evt, cb);
-      },
-
-      addReservoir: function(cfg) {
-        var newReservoir = reservoir.create({
-            position: initial.position
-        });
-        nodes.push(newReservoir);
-        this.graph.addCell(newReservoir);
-        initial.position = {x: initial.position.x+50, y: initial.position.y+50};
-      },
-
-      addDemand: function(cfg) {
-        var newDemand = demand.create({
-            position: initial.position
-        });
-        nodes.push(newDemand);
-        this.graph.addCell(newDemand);
-        initial.position = {x: initial.position.x+50, y: initial.position.y+50};
-      },
-
-      addInflow: function(cfg) {
-        var newInflow = inflow.create({
-            position: initial.position
-        });
-        nodes.push(newInflow);
-        this.graph.addCell(newInflow);
-        initial.position = {x: initial.position.x+50, y: initial.position.y+50};
-      },
-
-      getNodes: function() {
-        return nodes;
       },
 
       getGraph: function() {
@@ -332,4 +309,53 @@ angular.module('model')
         return this.paper;
       }
     };
+  }])
+  .factory('ModelService', ['Reservoir', 'Demand', 'Inflow', 'Graph', function (reservoir, demand, inflow, graph) {
+    var nodes = [];
+
+    var initial = {
+      position: { x: 80, y: 50 } 
+    };
+
+    return {
+      addReservoir: function(cfg) {
+        var newReservoir = reservoir.create({
+            position: initial.position,
+            name: cfg.name || 'New Reservoir'
+        });
+        nodes.push(newReservoir);
+        graph.getGraph().addCell(newReservoir);
+        initial.position = {x: initial.position.x+50, y: initial.position.y+50};
+      },
+
+      addDemand: function(cfg) {
+        var newDemand = demand.create({
+            position: initial.position,
+            name: cfg.name || 'New Demand'
+        });
+        nodes.push(newDemand);
+        graph.getGraph().addCell(newDemand);
+        initial.position = {x: initial.position.x+50, y: initial.position.y+50};
+      },
+
+      addInflow: function(cfg) {
+        var newInflow = inflow.create({
+            position: initial.position,
+            name: cfg.name || 'New Inflow'
+        });
+        nodes.push(newInflow);
+        graph.getGraph().addCell(newInflow);
+        initial.position = {x: initial.position.x+50, y: initial.position.y+50};
+      },
+
+      getNodes: function() {
+        return nodes;
+      },
+
+      clear: function () {
+        graph.getGraph().clear();
+        nodes = [];
+      }
+    };
+
   }]);

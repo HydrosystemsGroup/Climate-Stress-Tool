@@ -1,0 +1,16 @@
+<div class="well">
+  <h4>Reservoirs</h4>
+  <ul class="list-unstyled">
+    <li ng-repeat="node in nodes|NodeType:'reservoir'"><a ui-sref="model.node({nodeId:node.id})">{{ node.get('name') }}</a></li>
+  </ul>
+  <hr>
+  <h4>Demands</h4>
+  <ul class="list-unstyled">
+    <li ng-repeat="node in nodes|NodeType:'demand'"><a ui-sref="model.node({nodeId:node.id})">{{ node.get('name') }}</a></li>
+  </ul>
+  <hr>
+  <h4>Inflows</h4>
+  <ul class="list-unstyled">
+    <li ng-repeat="node in nodes|NodeType:'inflow'"><a ui-sref="model.node({nodeId:node.id})">{{ node.get('name') }}</a></li>
+  </ul>
+</div>

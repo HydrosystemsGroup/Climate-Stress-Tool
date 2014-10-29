@@ -18,17 +18,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
         url: '/home',
         controller: 'HomeCtrl',
         templateUrl: 'home/templates/home.html'
-      }).
-      state('weather', {
+      })
+      .state('weather', {
         url: '/weather-generator',
         templateUrl: 'weathergen/templates/weather.html',
         controller: 'WeatherCtrl'
-      }).
-      state('model', {
-        url: '/simulation-model',
-        templateUrl: 'model/templates/model.html',
-        controller: 'ModelCtrl'
-      })      
+      })
       .state('map', {
         url: '/map',
         controller: 'MapCtrl',

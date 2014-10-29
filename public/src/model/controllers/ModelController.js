@@ -1,32 +1,40 @@
 
 angular.module('model')
-  .controller('ModelCtrl', ['$scope', '$window', 'ModelService', function($scope, $window, model) {
-    model.init($('#diagram'));
-    
-    $scope.element = undefined;
-    
-    $window.scope = $scope;
-    $window.model = model.getGraph();
+  .controller('ModelCtrl', ['$scope', '$state', 'ModelService', 'Graph', function($scope, $state, model, graph) {
+    // console.log('ModelCtrl');
 
+    graph.init($('#diagram'));
+    
     // register click event for clicking element
-    model.onClick('cell:pointerdown', function(cellView, evt, x, y) { 
-      console.log('cell view ' + cellView.model.get('nodeType') + ' was clicked with id ' + cellView.model.id); 
-      $scope.element = cellView.model;
+    graph.onClick('cell:pointerdblclick', function(cellView, evt, x, y) { 
+      // console.log('cell view ' + cellView.model.get('nodeType') + ' was clicked with id ' + cellView.model.get('id')); 
+      $state.go('model.node', {nodeId: cellView.model.get('id')});
     });
 
+    $scope.nodes = model.getNodes();
+
     $scope.addReservoir = function () {
-      model.addReservoir({name: 'Reservoir'});
+      model.addReservoir({name: 'New Reservoir'});
     };
 
     $scope.addDemand = function () {
-      model.addDemand({name: 'Demand'});
+      model.addDemand({name: 'New Demand'});
     };
 
     $scope.addInflow = function () {
-      model.addInflow({name: 'Inflow'});
+      model.addInflow({name: 'New Inflow'});
     };
 
     $scope.logNodes = function () {
       console.log('Nodes:', model.getNodes());
+    };
+
+    $scope.toJSON = function () {
+      console.log(graph.getGraph().toJSON());
+    };
+
+    $scope.clear = function () {
+      model.clear();
+      $scope.nodes = [];
     };
   }]);
