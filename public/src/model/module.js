@@ -16,9 +16,19 @@ app.config(['$stateProvider', '$urlRouterProvider',
           }
         }
       })
-      .state('model.node', {
-        url: '/node/{nodeId}',
-        templateUrl: 'model/templates/node_detail.html',
-        controller: 'NodeDetailCtrl'
+      .state('model.reservoir', {
+        url: '/reservoir/{nodeId}',
+        templateUrl: 'model/templates/reservoir_detail.html',
+        controller: 'ReservoirDetailCtrl'
+      })
+      .state('model.demand', {
+        url: '/demand/{nodeId}',
+        templateUrl: 'model/templates/demand_detail.html',
+        controller: 'DemandDetailCtrl'
+      })
+      .state('model.inflow', {
+        url: '/inflow/{nodeId}',
+        templateUrl: 'model/templates/inflow_detail.html',
+        controller: 'InflowDetailCtrl'
       });
 }]);

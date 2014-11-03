@@ -85,6 +85,18 @@ angular.module('model')
         defaults: joint.util.deepSupplement({
           type: 'devs.Model',
           nodeType: 'demand',
+          demands: [ {month: 1, demand: 0},
+                     {month: 2, demand: 0},
+                     {month: 3, demand: 0},
+                     {month: 4, demand: 0},
+                     {month: 5, demand: 0},
+                     {month: 6, demand: 0},
+                     {month: 7, demand: 0},
+                     {month: 8, demand: 0},
+                     {month: 9, demand: 0},
+                     {month: 10, demand: 0},
+                     {month: 11, demand: 0},
+                     {month: 12, demand: 0} ],
 
           size: { width: 90, height: 90 },
           

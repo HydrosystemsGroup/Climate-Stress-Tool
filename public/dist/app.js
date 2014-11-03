@@ -22,10 +22,20 @@ app.config(['$stateProvider', '$urlRouterProvider',
           }
         }
       })
-      .state('model.node', {
-        url: '/node/{nodeId}',
-        templateUrl: 'model/templates/node_detail.html',
-        controller: 'NodeDetailCtrl'
+      .state('model.reservoir', {
+        url: '/reservoir/{nodeId}',
+        templateUrl: 'model/templates/reservoir_detail.html',
+        controller: 'ReservoirDetailCtrl'
+      })
+      .state('model.demand', {
+        url: '/demand/{nodeId}',
+        templateUrl: 'model/templates/demand_detail.html',
+        controller: 'DemandDetailCtrl'
+      })
+      .state('model.inflow', {
+        url: '/inflow/{nodeId}',
+        templateUrl: 'model/templates/inflow_detail.html',
+        controller: 'InflowDetailCtrl'
       });
 }]);
 ;
@@ -35,6 +45,9 @@ angular.module('weathergen', ['ocpu']);
 ;
 var app = angular.module('climate-stress-tool', 
   ['ui.router',
+   'ui.grid',
+   'ui.grid.edit',
+   'ui.grid.cellNav',
    'templates',
    'home',
    'ocpu',
@@ -315,7 +328,53 @@ angular.module('map')
       },
       template: '<div class="map" style="height: 300px"></div>'
     };
-  });;
+  });;angular.module('model')
+  .controller('DemandDetailCtrl', ['$scope', '$stateParams', '$state', '$window', 'ModelService', 'Graph', 
+              function($scope, $stateParams, $state, $window, model, graph) {
+    $scope.nodeId = $stateParams.nodeId;
+    $scope.node = {
+      name: '', 
+      type: '',
+      demands: []
+    };
+    
+    $scope.graphCell = graph.getGraph().getCell($scope.nodeId);
+
+    if (!$scope.graphCell) {
+      $state.go('model');
+    } else {
+      $scope.node.name = $scope.graphCell.get('name');
+      $scope.node.type = $scope.graphCell.get('nodeType');
+      $scope.node.demands = $scope.graphCell.get('demands');
+    }
+
+    $scope.gridOptions = { 
+      data: 'node.demands',
+      enableSorting: false,
+      enableCellEditOnFocus: true,
+      enableColumnMenus: false,
+      columnDefs: [
+        {displayName: 'Month', field: 'month', enableCellEdit: false},
+        {displayName: "Demand (MGD)", field: 'demand', enableCellEdit: true}
+      ]
+    };
+
+    $scope.$watch('node.name', function(newName) {
+      $scope.graphCell.set('name', newName);
+      $scope.graphCell.attr('.label/text', newName);
+    });
+
+    $scope.$watch('node.demands', function(newDemands) {
+      console.log('update node.demands', newDemands);
+      $scope.graphCell.set('demands', newDemands);
+    }, true);
+
+    $scope.remove = function() {
+      $scope.graphCell.remove();
+      $state.go('model');
+    };
+
+  }]);;
 angular.module('model')
   .controller('DiagramCtrl', ['$scope', '$state', 'Graph', 'ModelService', function($scope, $state, graph, model) {
     model.init($('#diagram'));
@@ -326,7 +385,30 @@ angular.module('model')
       $state.go('model.node', {nodeId: cellView.model.get('id')});
     });
   }]);
-;
+;angular.module('model')
+  .controller('InflowDetailCtrl', ['$scope', '$stateParams', '$state', '$window', 'ModelService', 'Graph', 
+              function($scope, $stateParams, $state, $window, model, graph) {
+    $scope.nodeId = $stateParams.nodeId;
+    $scope.node = {name: '', type: ''};
+    $scope.cell = graph.getGraph().getCell($scope.nodeId);
+    
+    if (!$scope.cell) {
+      $state.go('model');
+    } else {
+      $scope.node.name = $scope.cell.get('name');
+      $scope.node.type = $scope.cell.get('nodeType');
+    }
+
+    $scope.$watch('node.name', function(newName) {
+      $scope.cell.set('name', newName);
+      $scope.cell.attr('.label/text', newName);
+    });
+
+    $scope.remove = function() {
+      $scope.cell.remove();
+      $state.go('model');
+    };
+  }]);;
 angular.module('model')
   .controller('ModelCtrl', ['$scope', '$state', 'ModelService', 'Graph', function($scope, $state, model, graph) {
     // console.log('ModelCtrl');
@@ -336,7 +418,7 @@ angular.module('model')
     // register click event for clicking element
     graph.onClick('cell:pointerdblclick', function(cellView, evt, x, y) { 
       // console.log('cell view ' + cellView.model.get('nodeType') + ' was clicked with id ' + cellView.model.get('id')); 
-      $state.go('model.node', {nodeId: cellView.model.get('id')});
+      $state.go('model.'+cellView.model.get('nodeType'), {nodeId: cellView.model.get('id')});
     });
 
     $scope.nodes = model.getNodes();
@@ -367,7 +449,7 @@ angular.module('model')
     };
   }]);
 ;angular.module('model')
-  .controller('NodeDetailCtrl', ['$scope', '$stateParams', '$state', '$window', 'ModelService', 'Graph', 
+  .controller('ReservoirDetailCtrl', ['$scope', '$stateParams', '$state', '$window', 'ModelService', 'Graph', 
               function($scope, $stateParams, $state, $window, model, graph) {
     $scope.nodeId = $stateParams.nodeId;
     $scope.node = {name: '', type: ''};
@@ -488,6 +570,18 @@ angular.module('model')
         defaults: joint.util.deepSupplement({
           type: 'devs.Model',
           nodeType: 'demand',
+          demands: [ {month: 1, demand: 0},
+                     {month: 2, demand: 0},
+                     {month: 3, demand: 0},
+                     {month: 4, demand: 0},
+                     {month: 5, demand: 0},
+                     {month: 6, demand: 0},
+                     {month: 7, demand: 0},
+                     {month: 8, demand: 0},
+                     {month: 9, demand: 0},
+                     {month: 10, demand: 0},
+                     {month: 11, demand: 0},
+                     {month: 12, demand: 0} ],
 
           size: { width: 90, height: 90 },
           
@@ -846,7 +940,7 @@ angular.module('weathergen')
       });
     };
   }]);
-;angular.module('templates', ['home/templates/home.html', 'map/templates/map.html', 'model/templates/model.html', 'model/templates/node_detail.html', 'model/templates/node_list.html', 'weathergen/templates/weather.html']);
+;angular.module('templates', ['home/templates/home.html', 'map/templates/map.html', 'model/templates/demand_detail.html', 'model/templates/inflow_detail.html', 'model/templates/model.html', 'model/templates/node_list.html', 'model/templates/reservoir_detail.html', 'weathergen/templates/weather.html']);
 
 angular.module("home/templates/home.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("home/templates/home.html",
@@ -900,34 +994,40 @@ angular.module("map/templates/map.html", []).run(["$templateCache", function($te
     "");
 }]);
 
-angular.module("model/templates/model.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("model/templates/model.html",
-    "<h1>Reservoir Simulation Model</h1>\n" +
-    "<hr>\n" +
-    "<div class=\"row\">\n" +
-    "  <div class=\"col-sm-2\">\n" +
-    "    <button class=\"btn btn-primary btn-block\" ng-click=\"addReservoir()\">Add Reservoir</button>\n" +
-    "    <button class=\"btn btn-primary btn-block\" ng-click=\"addDemand()\">Add Demand</button>\n" +
-    "    <button class=\"btn btn-primary btn-block\" ng-click=\"addInflow()\">Add Inflow</button>\n" +
-    "    <hr>\n" +
-    "    <button class=\"btn btn-primary btn-block\" ng-click=\"logNodes()\">Show Nodes</button>\n" +
-    "    <button class=\"btn btn-primary btn-block\" ng-click=\"toJSON()\">Log JSON</button>\n" +
-    "    <button class=\"btn btn-danger btn-block\" ng-click=\"clear()\">Clear</button>\n" +
-    "  </div>\n" +
-    "  <div class=\"col-sm-6\">\n" +
-    "    <div id=\"diagram\"></div>\n" +
-    "  </div>\n" +
-    "  <div class=\"col-sm-4\" ui-view=\"nodelist\"></div>\n" +
+angular.module("model/templates/demand_detail.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("model/templates/demand_detail.html",
+    "<div class=\"col-sm-6\">\n" +
+    "  <h1>Demand: {{node.name}}</h1>\n" +
+    "\n" +
+    "  <form class=\"form-horizontal\" novalidate>\n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label class=\"col-sm-2 control-label\">Name</label>\n" +
+    "      <div class=\"col-sm-4\">\n" +
+    "        <input class=\"form-control\" type=\"text\" ng-model=\"node.name\">\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label class=\"col-sm-2 control-label\">Type</label>\n" +
+    "      <div class=\"col-sm-4\">\n" +
+    "        <p class=\"form-control-static\">{{node.type}}</p>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "  </form>\n" +
+    "  <hr>\n" +
+    "  <button class=\"btn btn-danger\" ng-click=\"remove()\">Delete</button>\n" +
+    "  <hr>\n" +
+    "  <pre>{{node | json}}</pre>\n" +
+    "  <pre>{{cell | json}}</pre>\n" +
     "</div>\n" +
-    "<hr>\n" +
-    "<div class=\"row\" ui-view></div>\n" +
-    "");
+    "<div class=\"col-sm-3\">\n" +
+    "  <div class=\"gridStyle\" ui-grid-edit ui-grid-cellNav ui-grid=\"gridOptions\"></div>\n" +
+    "</div>");
 }]);
 
-angular.module("model/templates/node_detail.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("model/templates/node_detail.html",
+angular.module("model/templates/inflow_detail.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("model/templates/inflow_detail.html",
     "<div class=\"col-sm-12\">\n" +
-    "  <h1>{{node.name}}</h1>\n" +
+    "  <h1>Inflow: {{node.name}}</h1>\n" +
     "\n" +
     "  <form class=\"form-horizontal\" novalidate>\n" +
     "    <div class=\"form-group\">\n" +
@@ -952,23 +1052,75 @@ angular.module("model/templates/node_detail.html", []).run(["$templateCache", fu
     "");
 }]);
 
+angular.module("model/templates/model.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("model/templates/model.html",
+    "<h1>Reservoir Simulation Model</h1>\n" +
+    "<hr>\n" +
+    "<div class=\"row\">\n" +
+    "  <div class=\"col-sm-2\">\n" +
+    "    <button class=\"btn btn-primary btn-block\" ng-click=\"addReservoir()\">Add Reservoir</button>\n" +
+    "    <button class=\"btn btn-primary btn-block\" ng-click=\"addDemand()\">Add Demand</button>\n" +
+    "    <button class=\"btn btn-primary btn-block\" ng-click=\"addInflow()\">Add Inflow</button>\n" +
+    "    <hr>\n" +
+    "    <button class=\"btn btn-primary btn-block\" ng-click=\"logNodes()\">Show Nodes</button>\n" +
+    "    <button class=\"btn btn-primary btn-block\" ng-click=\"toJSON()\">Log JSON</button>\n" +
+    "    <button class=\"btn btn-danger btn-block\" ng-click=\"clear()\">Clear</button>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-sm-6\">\n" +
+    "    <div id=\"diagram\"></div>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-sm-4\" ui-view=\"nodelist\"></div>\n" +
+    "</div>\n" +
+    "<hr>\n" +
+    "<div class=\"row\" ui-view></div>\n" +
+    "");
+}]);
+
 angular.module("model/templates/node_list.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("model/templates/node_list.html",
     "<div class=\"well\">\n" +
     "  <h4>Reservoirs</h4>\n" +
     "  <ul class=\"list-unstyled\">\n" +
-    "    <li ng-repeat=\"node in nodes|NodeType:'reservoir'\"><a ui-sref=\"model.node({nodeId:node.id})\">{{ node.get('name') }}</a></li>\n" +
+    "    <li ng-repeat=\"node in nodes|NodeType:'reservoir'\"><a ui-sref=\"model.reservoir({nodeId:node.id})\">{{ node.get('name') }}</a></li>\n" +
     "  </ul>\n" +
     "  <hr>\n" +
     "  <h4>Demands</h4>\n" +
     "  <ul class=\"list-unstyled\">\n" +
-    "    <li ng-repeat=\"node in nodes|NodeType:'demand'\"><a ui-sref=\"model.node({nodeId:node.id})\">{{ node.get('name') }}</a></li>\n" +
+    "    <li ng-repeat=\"node in nodes|NodeType:'demand'\"><a ui-sref=\"model.demand({nodeId:node.id})\">{{ node.get('name') }}</a></li>\n" +
     "  </ul>\n" +
     "  <hr>\n" +
     "  <h4>Inflows</h4>\n" +
     "  <ul class=\"list-unstyled\">\n" +
-    "    <li ng-repeat=\"node in nodes|NodeType:'inflow'\"><a ui-sref=\"model.node({nodeId:node.id})\">{{ node.get('name') }}</a></li>\n" +
+    "    <li ng-repeat=\"node in nodes|NodeType:'inflow'\"><a ui-sref=\"model.inflow({nodeId:node.id})\">{{ node.get('name') }}</a></li>\n" +
     "  </ul>\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("model/templates/reservoir_detail.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("model/templates/reservoir_detail.html",
+    "<div class=\"col-sm-12\">\n" +
+    "  <h1>Reservoir: {{node.name}}</h1>\n" +
+    "\n" +
+    "  <form class=\"form-horizontal\" novalidate>\n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label class=\"col-sm-2 control-label\">Name</label>\n" +
+    "      <div class=\"col-sm-4\">\n" +
+    "        <input class=\"form-control\" type=\"text\" ng-model=\"node.name\">\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"form-group\">\n" +
+    "      <label class=\"col-sm-2 control-label\">Type</label>\n" +
+    "      <div class=\"col-sm-4\">\n" +
+    "        <p class=\"form-control-static\">{{node.type}}</p>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "  </form>\n" +
+    "  <hr>\n" +
+    "  <button class=\"btn btn-danger\" ng-click=\"remove()\">Delete</button>\n" +
+    "  <hr>\n" +
+    "  <pre>{{node | json}}</pre>\n" +
+    "  <pre>{{cell | json}}</pre>\n" +
     "</div>\n" +
     "");
 }]);
