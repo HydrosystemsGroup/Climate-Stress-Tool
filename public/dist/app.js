@@ -41,6 +41,39 @@ app.config(['$stateProvider', '$urlRouterProvider',
 ;
 angular.module('ocpu', []);
 ;
+var app = angular.module('sim', []);
+
+app.config(['$stateProvider', '$urlRouterProvider', 
+  function($stateProvider, $urlRouterProvider) {
+    $stateProvider
+      .state('sim', {
+        url: '/sim',
+        abstract: true,
+        templateUrl: 'sim/templates/sim.html',
+        controller: 'SimCtrl'
+      })
+      .state('sim.home', {
+        url: '/home',
+        templateUrl: 'sim/templates/home.html',
+        controller: 'HomeCtrl'
+      })
+      .state('sim.location', {
+        url: '/location',
+        templateUrl: 'sim/templates/location.html',
+        controller: 'LocationCtrl'
+      })
+      .state('sim.flow', {
+        url: '/flow',
+        templateUrl: 'sim/templates/flow.html',
+        controller: 'FlowCtrl'
+      })
+      .state('sim.system', {
+        url: '/system',
+        templateUrl: 'sim/templates/system.html',
+        controller: 'SystemCtrl'
+      });
+}]);
+;
 angular.module('weathergen', ['ocpu']);
 ;
 var app = angular.module('climate-stress-tool', 
@@ -48,13 +81,15 @@ var app = angular.module('climate-stress-tool',
    'ui.grid',
    'ui.grid.edit',
    'ui.grid.cellNav',
+   'angularFileUpload',
    'templates',
    'home',
    'ocpu',
    'weathergen',
    'model',
    'charts',
-   'map']);
+   'map',
+   'sim']);
 
 app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
   function($stateProvider, $urlRouterProvider, $locationProvider) {
@@ -80,7 +115,20 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       enabled: true,
       requireBase: false
     });
-}]);
+}])
+.run(
+  [          '$rootScope', '$state', '$stateParams',
+    function ($rootScope,   $state,   $stateParams) {
+
+    // It's very handy to add references to $state and $stateParams to the $rootScope
+    // so that you can access them from any scope within your applications.For example,
+    // <li ng-class="{ active: $state.includes('contacts.list') }"> will set the <li>
+    // to active whenever 'contacts.list' or one of its decendents is active.
+    $rootScope.$state = $state;
+    $rootScope.$stateParams = $stateParams;
+    }
+  ]
+);
 ;
 angular.module('charts')
   .directive('timeseriesChart', function() {
@@ -176,11 +224,15 @@ angular.module('map')
     return {
       restrict: 'E',
       replace: true,
+      scope: {
+        coordinate: "="
+      },
       link: function (scope, element, attr) {
         var feature = new ol.Feature({
           geometry: null
         });
         window.feature = feature;
+
 
         var vectorSource = new ol.source.Vector({
           features: [feature]
@@ -257,13 +309,16 @@ angular.module('map')
           var coordinate = evt.coordinate;
           var wgs84 = ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326');
           // var hdms = ol.coordinate.toStringHDMS(wgs84);
-          scope.coordinate = wgs84;
+          scope.$apply(function() {
+            scope.coordinate = wgs84;
+          });
+          // console.log(scope.coordinate);
 
           // moved to watch(coordinate)
           // var pixel = map.getEventPixel(evt.originalEvent);
           // scope.features = getFeaturesFromPixel(pixel);
 
-          scope.$digest();
+          // scope.$digest();
         });
         window.map = map;
 
@@ -901,6 +956,78 @@ angular.module('ocpu')
         });
     };
   }]);;
+angular.module('sim')
+  .controller('FlowCtrl', ['$scope', '$state', function($scope, $state) {
+    $scope.gridOptions = {
+      data: 'model.flow',
+      enableColumnMenu: false,
+      columnDefs: []
+    };
+
+
+    $scope.onFileSelect = function($files) {
+      console.log($files);
+      if ($files.length > 1) {
+        alert("Only one file may be selected, got " + $files.length);
+        return;
+      }
+      Papa.parse($files[0], {
+        header: true,
+        complete: function(results) {
+          if (results.errors.length > 0) {
+            console.log('Error parsing csv file');
+            // flash.error = 'Error parsing file';
+            console.log(results.errors);
+          } else {
+            $scope.$apply(function() {
+              $scope.headers = results.meta.fields;
+              $scope.model.flow = results.data;
+
+              $scope.gridOptions.columnDefs = [];
+              angular.forEach($scope.headers, function(field) {
+                $scope.gridOptions.columnDefs.push({name: field, displayName: field});
+              });
+            });
+          }
+        }
+      });
+    };
+  }]);
+;
+angular.module('sim')
+  .controller('HomeCtrl', ['$scope', '$state', function($scope, $state) {
+    $scope.message = 'Hello home';    
+  }]);
+;
+angular.module('sim')
+  .controller('LocationCtrl', ['$scope', '$state', function($scope, $state) {
+    $scope.model.location.coordinate = [];
+    $scope.features = {};
+
+    $scope.clearCoordinate = function() {
+      $scope.model.location.coordinate = [];
+      $scope.features = {};
+    };
+  }]);
+;
+angular.module('sim')
+  .controller('SimCtrl', ['$scope', '$state', function($scope, $state) {
+    $scope.message = 'Hello sim';    
+    $scope.model = {
+      location: {
+        coordinate: []
+      },
+      flow: [],
+      climate: [],
+      system: []
+    };
+  }]);
+;
+angular.module('sim')
+  .controller('SystemCtrl', ['$scope', '$state', function($scope, $state) {
+    $scope.message = 'Hello system';    
+  }]);
+;
 angular.module('weathergen')
   .controller('WeatherCtrl', ['$scope', '$filter', 'ocpuService', function($scope, $filter, ocpu) { 
     $scope.coordinate = [];
@@ -940,7 +1067,7 @@ angular.module('weathergen')
       });
     };
   }]);
-;angular.module('templates', ['home/templates/home.html', 'map/templates/map.html', 'model/templates/demand_detail.html', 'model/templates/inflow_detail.html', 'model/templates/model.html', 'model/templates/node_list.html', 'model/templates/reservoir_detail.html', 'weathergen/templates/weather.html']);
+;angular.module('templates', ['home/templates/home.html', 'map/templates/map.html', 'model/templates/demand_detail.html', 'model/templates/inflow_detail.html', 'model/templates/model.html', 'model/templates/node_list.html', 'model/templates/reservoir_detail.html', 'sim/templates/flow.html', 'sim/templates/home.html', 'sim/templates/location.html', 'sim/templates/sim.html', 'sim/templates/system.html', 'weathergen/templates/weather.html']);
 
 angular.module("home/templates/home.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("home/templates/home.html",
@@ -1122,6 +1249,108 @@ angular.module("model/templates/reservoir_detail.html", []).run(["$templateCache
     "  <pre>{{node | json}}</pre>\n" +
     "  <pre>{{cell | json}}</pre>\n" +
     "</div>\n" +
+    "");
+}]);
+
+angular.module("sim/templates/flow.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("sim/templates/flow.html",
+    "<h1>Upload Flow Data</h1>\n" +
+    "\n" +
+    "<form class=\"form-horizontal\" enctype=\"multipart/form-data\">\n" +
+    "  <div class=\"form-group\">\n" +
+    "    <label for=\"inputFile\" class=\"col-sm-2 control-label\">Select File</label>\n" +
+    "    <div class=\"col-sm-4\">\n" +
+    "      <input name=\"file\" type=\"file\" class=\"form-control\" id=\"inputFile\" ng-file-select=\"onFileSelect($files)\" >\n" +
+    "      <p class=\"help-block\">Select the data file</p>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "  <div class=\"form-group\">\n" +
+    "    <div class=\"col-sm-offset-2 col-sm-10\">\n" +
+    "      <button class=\"btn btn-primary\" type='button' ng-click='uploadFile($files)'>Submit</button>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "</form>\n" +
+    "\n" +
+    "\n" +
+    "<div class=\"col-sm-6\" ng-show=\"model.flow.length\">\n" +
+    "  <div ui-grid=\"gridOptions\"></div>\n" +
+    "</div>\n" +
+    "\n" +
+    "\n" +
+    "<button class=\"btn btn-success\" ui-sref=\"sim.system\">Next: System</button>");
+}]);
+
+angular.module("sim/templates/home.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("sim/templates/home.html",
+    "<h1>State: sim.home</h1>\n" +
+    "<p>{{message}}</p>\n" +
+    "<button class=\"btn btn-success\" ui-sref=\"sim.location\">Next: Location</button>");
+}]);
+
+angular.module("sim/templates/location.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("sim/templates/location.html",
+    "<h1>Set Location</h1>\n" +
+    "<div class=\"row\">\n" +
+    "  <div class=\"col-sm-6\">\n" +
+    "    <map coordinate=\"model.location.coordinate\"></map>\n" +
+    "  </div>\n" +
+    "  \n" +
+    "  <div class=\"col-sm-6\">\n" +
+    "    <form class=\"form-horizontal\" role=\"form\">  \n" +
+    "      <div class=\"form-group\">\n" +
+    "        <label for=\"inputLatitude\" class=\"col-sm-2 control-label\">Latitude</label>\n" +
+    "        <div class=\"col-sm-6\">\n" +
+    "          <input type=\"text\" class=\"form-control\" id=\"inputLatitude\" ng-model=\"model.location.coordinate[1]\">\n" +
+    "          <p class=\"help-block\">Enter latitude in decimal degrees North.</p>\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "      <div class=\"form-group\">\n" +
+    "        <label for=\"inputLongitude\" class=\"col-sm-2 control-label\">Longitude</label>\n" +
+    "        <div class=\"col-sm-6\">\n" +
+    "          <input type=\"text\" class=\"form-control\" id=\"inputLongitude\" ng-model=\"model.location.coordinate[0]\">\n" +
+    "          <p class=\"help-block\">Enter longitude in decimal degrees East (negative values for West).</p>\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "        <div class=\"form-group\">\n" +
+    "          <div class=\"col-sm-10 col-sm-offset-2\">\n" +
+    "            <button class=\"btn btn-primary\" ng-click=\"clearCoordinate()\">Clear</button>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
+    "    </form>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "\n" +
+    "\n" +
+    "<button class=\"btn btn-success\" ui-sref=\"sim.flow\">Next: Flows</button>");
+}]);
+
+angular.module("sim/templates/sim.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("sim/templates/sim.html",
+    "<div class=\"row\">\n" +
+    "  <div class=\"col-sm-2\">\n" +
+    "    <ul class=\"nav nav-pills nav-stacked\" role=\"tablist\">\n" +
+    "      <li ui-sref-active=\"active\"><a ui-sref=\"sim.home\">Home</a></li>\n" +
+    "      <li ui-sref-active=\"active\"><a ui-sref=\"sim.location\">Location<span ng-show=\"model.location.coordinate.length\" class=\"glyphicon glyphicon-ok pull-right\"></span></a></li>\n" +
+    "      <li ui-sref-active=\"active\"><a ui-sref=\"sim.flow\">Flow<span ng-show=\"model.flow.length\" class=\"glyphicon glyphicon-ok pull-right\"></span></a></li>\n" +
+    "      <li ui-sref-active=\"active\"><a ui-sref=\"sim.system\">System</a></li>\n" +
+    "    </ul>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-sm-10\">\n" +
+    "    <div ui-view>Hello</div>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "\n" +
+    "<hr>\n" +
+    "<pre>location: {{ model.location | json }}\n" +
+    "flow: {{ model.flow | json }}\n" +
+    "climate: {{ model.climate | json }}\n" +
+    "system: {{ model.system | json }}</pre>");
+}]);
+
+angular.module("sim/templates/system.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("sim/templates/system.html",
+    "<h1>State: sim.system</h1>\n" +
+    "<p>{{message}}</p>\n" +
     "");
 }]);
 

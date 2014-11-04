@@ -1,0 +1,24 @@
+<h1>Upload Flow Data</h1>
+
+<form class="form-horizontal" enctype="multipart/form-data">
+  <div class="form-group">
+    <label for="inputFile" class="col-sm-2 control-label">Select File</label>
+    <div class="col-sm-4">
+      <input name="file" type="file" class="form-control" id="inputFile" ng-file-select="onFileSelect($files)" >
+      <p class="help-block">Select the data file</p>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button class="btn btn-primary" type='button' ng-click='uploadFile($files)'>Submit</button>
+    </div>
+  </div>
+</form>
+
+
+<div class="col-sm-6" ng-show="model.flow.length">
+  <div ui-grid="gridOptions"></div>
+</div>
+
+
+<button class="btn btn-success" ui-sref="sim.system">Next: System</button>

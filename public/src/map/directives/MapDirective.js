@@ -4,11 +4,15 @@ angular.module('map')
     return {
       restrict: 'E',
       replace: true,
+      scope: {
+        coordinate: "="
+      },
       link: function (scope, element, attr) {
         var feature = new ol.Feature({
           geometry: null
         });
         window.feature = feature;
+
 
         var vectorSource = new ol.source.Vector({
           features: [feature]
@@ -85,13 +89,16 @@ angular.module('map')
           var coordinate = evt.coordinate;
           var wgs84 = ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326');
           // var hdms = ol.coordinate.toStringHDMS(wgs84);
-          scope.coordinate = wgs84;
+          scope.$apply(function() {
+            scope.coordinate = wgs84;
+          });
+          // console.log(scope.coordinate);
 
           // moved to watch(coordinate)
           // var pixel = map.getEventPixel(evt.originalEvent);
           // scope.features = getFeaturesFromPixel(pixel);
 
-          scope.$digest();
+          // scope.$digest();
         });
         window.map = map;
 

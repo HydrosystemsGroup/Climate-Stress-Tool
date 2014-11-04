@@ -1,0 +1,33 @@
+<h1>Set Location</h1>
+<div class="row">
+  <div class="col-sm-6">
+    <map coordinate="model.location.coordinate"></map>
+  </div>
+  
+  <div class="col-sm-6">
+    <form class="form-horizontal" role="form">  
+      <div class="form-group">
+        <label for="inputLatitude" class="col-sm-2 control-label">Latitude</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="inputLatitude" ng-model="model.location.coordinate[1]">
+          <p class="help-block">Enter latitude in decimal degrees North.</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputLongitude" class="col-sm-2 control-label">Longitude</label>
+        <div class="col-sm-6">
+          <input type="text" class="form-control" id="inputLongitude" ng-model="model.location.coordinate[0]">
+          <p class="help-block">Enter longitude in decimal degrees East (negative values for West).</p>
+        </div>
+      </div>
+        <div class="form-group">
+          <div class="col-sm-10 col-sm-offset-2">
+            <button class="btn btn-primary" ng-click="clearCoordinate()">Clear</button>
+          </div>
+        </div>
+    </form>
+  </div>
+</div>
+
+
+<button class="btn btn-success" ui-sref="sim.flow">Next: Flows</button>

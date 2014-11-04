@@ -1,0 +1,19 @@
+<div class="row">
+  <div class="col-sm-2">
+    <ul class="nav nav-pills nav-stacked" role="tablist">
+      <li ui-sref-active="active"><a ui-sref="sim.home">Home</a></li>
+      <li ui-sref-active="active"><a ui-sref="sim.location">Location<span ng-show="model.location.coordinate.length" class="glyphicon glyphicon-ok pull-right"></span></a></li>
+      <li ui-sref-active="active"><a ui-sref="sim.flow">Flow<span ng-show="model.flow.length" class="glyphicon glyphicon-ok pull-right"></span></a></li>
+      <li ui-sref-active="active"><a ui-sref="sim.system">System</a></li>
+    </ul>
+  </div>
+  <div class="col-sm-10">
+    <div ui-view>Hello</div>
+  </div>
+</div>
+
+<hr>
+<pre>location: {{ model.location | json }}
+flow: {{ model.flow | json }}
+climate: {{ model.climate | json }}
+system: {{ model.system | json }}</pre>

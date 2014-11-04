@@ -22,17 +22,22 @@
     <%- include partials/nav.ejs %>
     <div class="container">
       <div ui-view></div>
+      <hr>
+      <pre>$state: {{ $state.current.name | json }}</pre>
     </div>
 
     <script src="/libs/jquery/dist/jquery.js"></script>
+    <script src="/libs/papaparse/papaparse.min.js"></script>
     <script src="/libs/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/libs/d3/d3.min.js"></script>
     <script src="/libs/joint/dist/joint.nojquery.js"></script>
     <script src="/libs/joint/dist/joint.shapes.devs.js"></script>
     <script src="/libs/ol3/build/ol.js"></script>
+    <script src='/libs/ng-file-upload/angular-file-upload-shim.min.js'></script>
     <script src="/libs/angular/angular.min.js"></script>
     <script src="/libs/angular-ui-router/release/angular-ui-router.min.js"></script>
     <script src="/libs/angular-ui-grid/ui-grid.js"></script>
+    <script src='/libs/ng-file-upload/angular-file-upload.min.js'></script>
     <script src="/dist/app.js"></script>
   </body>
 </html>
