@@ -958,12 +958,37 @@ angular.module('ocpu')
   }]);;
 angular.module('sim')
   .controller('FlowCtrl', ['$scope', '$state', function($scope, $state) {
+    $scope.flow = {
+      data: [],
+      drainage_area: null
+    };
+
+    if ($scope.model.flow && $scope.model.flow.data) {
+      $scope.flow.data = $scope.model.flow.data;
+    }
+    if ($scope.model.flow && $scope.model.flow.drainage_area) {
+      $scope.flow.drainage_area = $scope.model.flow.drainage_area;
+    }
+
     $scope.gridOptions = {
-      data: 'model.flow',
+      data: 'model.flow.data',
       enableColumnMenu: false,
       columnDefs: []
     };
 
+    $scope.saveFlows = function() {
+      if (!($scope.model.flow)) {
+        $scope.model.flow = {};
+      }
+      $scope.model.flow.data = $scope.flow.data;
+      $scope.model.flow.drainage_area = $scope.flow.drainage_area;
+    };
+
+    $scope.clearFlows = function() {
+      $scope.flow.data = [];
+      $scope.flow.drainage_area = null;
+      $scope.model.flow = null;
+    };
 
     $scope.onFileSelect = function($files) {
       console.log($files);
@@ -981,7 +1006,7 @@ angular.module('sim')
           } else {
             $scope.$apply(function() {
               $scope.headers = results.meta.fields;
-              $scope.model.flow = results.data;
+              $scope.flow.data = results.data;
 
               $scope.gridOptions.columnDefs = [];
               angular.forEach($scope.headers, function(field) {
@@ -1001,12 +1026,24 @@ angular.module('sim')
 ;
 angular.module('sim')
   .controller('LocationCtrl', ['$scope', '$state', function($scope, $state) {
-    $scope.model.location.coordinate = [];
     $scope.features = {};
+    if ($scope.model.location && $scope.model.location.coordinates) {
+      $scope.coordinates = $scope.model.location.coordinates;
+    } else {
+      $scope.coordinates = [];
+    }
 
     $scope.clearCoordinate = function() {
-      $scope.model.location.coordinate = [];
+      $scope.coordinates = [];
       $scope.features = {};
+      $scope.model.location = null;
+    };
+
+    $scope.saveLocation = function() {
+      if (!$scope.model.location) {
+        $scope.model.location = {};
+      }
+      $scope.model.location.coordinates = $scope.coordinates;
     };
   }]);
 ;
@@ -1014,12 +1051,10 @@ angular.module('sim')
   .controller('SimCtrl', ['$scope', '$state', function($scope, $state) {
     $scope.message = 'Hello sim';    
     $scope.model = {
-      location: {
-        coordinate: []
-      },
-      flow: [],
-      climate: [],
-      system: []
+      location: null,
+      flow: null,
+      climate: null,
+      system: null
     };
   }]);
 ;
@@ -1265,17 +1300,23 @@ angular.module("sim/templates/flow.html", []).run(["$templateCache", function($t
     "    </div>\n" +
     "  </div>\n" +
     "  <div class=\"form-group\">\n" +
+    "    <label for=\"inputDrainage\" class=\"col-sm-2 control-label\">Drainage Area</label>\n" +
+    "    <div class=\"col-sm-4\">\n" +
+    "      <input name=\"drainage_area\" type=\"number\" class=\"form-control\" id=\"inputDrainage\" ng-model=\"flow.drainage_area\">\n" +
+    "      <p class=\"help-block\">Enter the drainage area of the flow data in square miles.</p>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "  <div class=\"form-group\">\n" +
     "    <div class=\"col-sm-offset-2 col-sm-10\">\n" +
-    "      <button class=\"btn btn-primary\" type='button' ng-click='uploadFile($files)'>Submit</button>\n" +
+    "      <button class=\"btn btn-primary\" type='button' ng-click='saveFlows()'>Load</button>\n" +
+    "      <button class=\"btn btn-danger\" type='button' ng-click='clearFlows()'>Clear</button>\n" +
     "    </div>\n" +
     "  </div>\n" +
     "</form>\n" +
     "\n" +
-    "\n" +
-    "<div class=\"col-sm-6\" ng-show=\"model.flow.length\">\n" +
+    "<div class=\"col-sm-6\" ng-show=\"model.flow.data.length\">\n" +
     "  <div ui-grid=\"gridOptions\"></div>\n" +
     "</div>\n" +
-    "\n" +
     "\n" +
     "<button class=\"btn btn-success\" ui-sref=\"sim.system\">Next: System</button>");
 }]);
@@ -1289,10 +1330,9 @@ angular.module("sim/templates/home.html", []).run(["$templateCache", function($t
 
 angular.module("sim/templates/location.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("sim/templates/location.html",
-    "<h1>Set Location</h1>\n" +
     "<div class=\"row\">\n" +
     "  <div class=\"col-sm-6\">\n" +
-    "    <map coordinate=\"model.location.coordinate\"></map>\n" +
+    "    <map coordinate=\"coordinates\"></map>\n" +
     "  </div>\n" +
     "  \n" +
     "  <div class=\"col-sm-6\">\n" +
@@ -1300,28 +1340,28 @@ angular.module("sim/templates/location.html", []).run(["$templateCache", functio
     "      <div class=\"form-group\">\n" +
     "        <label for=\"inputLatitude\" class=\"col-sm-2 control-label\">Latitude</label>\n" +
     "        <div class=\"col-sm-6\">\n" +
-    "          <input type=\"text\" class=\"form-control\" id=\"inputLatitude\" ng-model=\"model.location.coordinate[1]\">\n" +
+    "          <input type=\"text\" class=\"form-control\" id=\"inputLatitude\" ng-model=\"coordinates[1]\">\n" +
     "          <p class=\"help-block\">Enter latitude in decimal degrees North.</p>\n" +
     "        </div>\n" +
     "      </div>\n" +
     "      <div class=\"form-group\">\n" +
     "        <label for=\"inputLongitude\" class=\"col-sm-2 control-label\">Longitude</label>\n" +
     "        <div class=\"col-sm-6\">\n" +
-    "          <input type=\"text\" class=\"form-control\" id=\"inputLongitude\" ng-model=\"model.location.coordinate[0]\">\n" +
+    "          <input type=\"text\" class=\"form-control\" id=\"inputLongitude\" ng-model=\"coordinates[0]\">\n" +
     "          <p class=\"help-block\">Enter longitude in decimal degrees East (negative values for West).</p>\n" +
     "        </div>\n" +
     "      </div>\n" +
     "        <div class=\"form-group\">\n" +
     "          <div class=\"col-sm-10 col-sm-offset-2\">\n" +
-    "            <button class=\"btn btn-primary\" ng-click=\"clearCoordinate()\">Clear</button>\n" +
+    "            <button class=\"btn btn-primary\" ng-click=\"saveLocation()\">Save</button>\n" +
+    "            <button class=\"btn btn-danger\" ng-click=\"clearCoordinate()\">Clear</button>\n" +
     "          </div>\n" +
     "        </div>\n" +
     "    </form>\n" +
     "  </div>\n" +
     "</div>\n" +
     "\n" +
-    "\n" +
-    "<button class=\"btn btn-success\" ui-sref=\"sim.flow\">Next: Flows</button>");
+    "<!-- <button class=\"btn btn-success\" ui-sref=\"sim.flow\">Next: Flows</button> -->");
 }]);
 
 angular.module("sim/templates/sim.html", []).run(["$templateCache", function($templateCache) {
@@ -1329,10 +1369,10 @@ angular.module("sim/templates/sim.html", []).run(["$templateCache", function($te
     "<div class=\"row\">\n" +
     "  <div class=\"col-sm-2\">\n" +
     "    <ul class=\"nav nav-pills nav-stacked\" role=\"tablist\">\n" +
-    "      <li ui-sref-active=\"active\"><a ui-sref=\"sim.home\">Home</a></li>\n" +
-    "      <li ui-sref-active=\"active\"><a ui-sref=\"sim.location\">Location<span ng-show=\"model.location.coordinate.length\" class=\"glyphicon glyphicon-ok pull-right\"></span></a></li>\n" +
-    "      <li ui-sref-active=\"active\"><a ui-sref=\"sim.flow\">Flow<span ng-show=\"model.flow.length\" class=\"glyphicon glyphicon-ok pull-right\"></span></a></li>\n" +
-    "      <li ui-sref-active=\"active\"><a ui-sref=\"sim.system\">System</a></li>\n" +
+    "      <li ui-sref-active=\"active\" role=\"presentation\"><a ui-sref=\"sim.home\">Home</a></li>\n" +
+    "      <li ui-sref-active=\"active\" role=\"presentation\"><a ui-sref=\"sim.location\">Location<span ng-show=\"model.location\" class=\"glyphicon glyphicon-ok pull-right\"></span></a></li>\n" +
+    "      <li ui-sref-active=\"active\" role=\"presentation\"><a ui-sref=\"sim.flow\">Flow<span ng-show=\"model.flow\" class=\"glyphicon glyphicon-ok pull-right\"></span></a></li>\n" +
+    "      <li ui-sref-active=\"active\" role=\"presentation\"><a ui-sref=\"sim.system\">System<span ng-show=\"model.system\" class=\"glyphicon glyphicon-ok pull-right\"></span></a></li>\n" +
     "    </ul>\n" +
     "  </div>\n" +
     "  <div class=\"col-sm-10\">\n" +

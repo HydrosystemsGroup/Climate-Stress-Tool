@@ -1,10 +1,10 @@
 <div class="row">
   <div class="col-sm-2">
     <ul class="nav nav-pills nav-stacked" role="tablist">
-      <li ui-sref-active="active"><a ui-sref="sim.home">Home</a></li>
-      <li ui-sref-active="active"><a ui-sref="sim.location">Location<span ng-show="model.location.coordinate.length" class="glyphicon glyphicon-ok pull-right"></span></a></li>
-      <li ui-sref-active="active"><a ui-sref="sim.flow">Flow<span ng-show="model.flow.length" class="glyphicon glyphicon-ok pull-right"></span></a></li>
-      <li ui-sref-active="active"><a ui-sref="sim.system">System</a></li>
+      <li ui-sref-active="active" role="presentation"><a ui-sref="sim.home">Home</a></li>
+      <li ui-sref-active="active" role="presentation"><a ui-sref="sim.location">Location<span ng-show="model.location" class="glyphicon glyphicon-ok pull-right"></span></a></li>
+      <li ui-sref-active="active" role="presentation"><a ui-sref="sim.flow">Flow<span ng-show="model.flow" class="glyphicon glyphicon-ok pull-right"></span></a></li>
+      <li ui-sref-active="active" role="presentation"><a ui-sref="sim.system">System<span ng-show="model.system" class="glyphicon glyphicon-ok pull-right"></span></a></li>
     </ul>
   </div>
   <div class="col-sm-10">

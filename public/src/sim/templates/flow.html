@@ -9,16 +9,22 @@
     </div>
   </div>
   <div class="form-group">
+    <label for="inputDrainage" class="col-sm-2 control-label">Drainage Area</label>
+    <div class="col-sm-4">
+      <input name="drainage_area" type="number" class="form-control" id="inputDrainage" ng-model="flow.drainage_area">
+      <p class="help-block">Enter the drainage area of the flow data in square miles.</p>
+    </div>
+  </div>
+  <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button class="btn btn-primary" type='button' ng-click='uploadFile($files)'>Submit</button>
+      <button class="btn btn-primary" type='button' ng-click='saveFlows()'>Load</button>
+      <button class="btn btn-danger" type='button' ng-click='clearFlows()'>Clear</button>
     </div>
   </div>
 </form>
 
-
-<div class="col-sm-6" ng-show="model.flow.length">
+<div class="col-sm-6" ng-show="model.flow.data.length">
   <div ui-grid="gridOptions"></div>
 </div>
-
 
 <button class="btn btn-success" ui-sref="sim.system">Next: System</button>
