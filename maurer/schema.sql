@@ -1,20 +1,17 @@
-DROP TABLE IF EXISTS maurer_day;
+CREATE TABLE maurer_locations (
+  gid INTEGER PRIMARY KEY,
+  latitude REAL,
+  longitude REAL
+);
 
 CREATE TABLE maurer_day (
-  year REAL,
-  month REAL,
-  day REAL,
+  year INTEGER,
+  month INTEGER,
+  day INTEGER,
   prcp REAL,
   tmax REAL,
   tmin REAL,
   wind REAL,
-  latitude REAL,
-  longitude REAL
+  location_id INTEGER REFERENCES maurer_locations (gid)
 );
-CREATE INDEX idx_maurer_day_latlon ON maurer_day (latitude, longitude);
-
-CREATE TABLE maurer_locations (
-  latitude real,
-  longitude real
-);
-CREATE INDEX idx_maurer_locations_latlon ON maurer_locations (latitude, longitude)
+CREATE INDEX idx_maurer_day_location_id ON maurer_day (location_id);
