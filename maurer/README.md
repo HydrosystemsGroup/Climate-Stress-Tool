@@ -76,3 +76,9 @@ from location_data(42, -72)
 group by monthyear
 order by monthyear;
 ```
+
+## Export Upstream Catchment to GeoJSON
+
+```shell
+ogr2ogr -f "GeoJSON" upstream.geojson -sql "select * from get_upstream(42.392, -71.044) c" PG:"dbname='cst'"
+```
