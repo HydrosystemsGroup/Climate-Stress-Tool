@@ -229,7 +229,7 @@ angular.module('map')
         features: '='
       },
       link: function (scope, element, attr) {
-        console.log('hi', scope.coordinate);
+        // console.log('hi', scope.coordinate);
         var feature = new ol.Feature({
           geometry: null
         });
@@ -372,7 +372,7 @@ angular.module('map')
 
             var pixel = map.getPixelFromCoordinate(coordinate);
             scope.features = getFeaturesFromPixel(pixel);
-            console.log(scope.features);
+            // console.log(scope.features);
           } else {
             feature.setGeometry();
           }
@@ -1061,7 +1061,7 @@ angular.module('sim')
   }]);
 ;
 angular.module('weathergen')
-  .controller('WeatherCtrl', ['$scope', '$filter', 'ocpuService', function($scope, $filter, ocpu) { 
+  .controller('WeatherCtrl', ['$scope', '$filter', '$http', 'ocpuService', function($scope, $filter, $http, ocpu) { 
     $scope.coordinate = [];
     $scope.features = {};
     $scope.loading = false;
@@ -1097,6 +1097,27 @@ angular.module('weathergen')
           }, $scope.data);
         });
       });
+    };
+
+    $scope.getDatasetFromDB = function() {
+      $scope.loading = true;
+      var latitude = +$scope.coordinate[1];
+      var longitude = +$scope.coordinate[0];
+      if (latitude !== null & isFinite(latitude) & longitude !== null & isFinite(longitude)) {
+        $http.post('/api', {latitude: latitude, longitude: longitude})
+          .success(function(data, status, headers, config) {
+            $scope.session = true;
+            angular.forEach(data, function(d) {
+              d.date = new Date(d.date);
+            });
+            $scope.data = data;
+            $scope.loading = false;
+          })
+          .error(function(data, status, headers, config) {
+            console.log('ERROR');
+          });  
+      }
+      
     };
   }]);
 ;angular.module('templates', ['home/templates/home.html', 'map/templates/map.html', 'model/templates/demand_detail.html', 'model/templates/inflow_detail.html', 'model/templates/model.html', 'model/templates/node_list.html', 'model/templates/reservoir_detail.html', 'sim/templates/flow.html', 'sim/templates/home.html', 'sim/templates/location.html', 'sim/templates/sim.html', 'sim/templates/system.html', 'weathergen/templates/weather.html']);
@@ -1417,7 +1438,8 @@ angular.module("weathergen/templates/weather.html", []).run(["$templateCache", f
     "\n" +
     "      <div class=\"form-group\">\n" +
     "        <div class=\"col-sm-8 col-sm-offset-4\">\n" +
-    "          <button type=\"submit\" class=\"btn btn-primary loadinggif\" ng-click=\"getDataset()\">Submit<span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\" ng-show='loading'></span></button>\n" +
+    "          <!-- <button type=\"submit\" class=\"btn btn-primary loadinggif\" ng-click=\"getDataset()\">Submit<span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\" ng-show='loading'></span></button> -->\n" +
+    "          <button type=\"submit\" class=\"btn btn-primary loadinggif\" ng-click=\"getDatasetFromDB()\">Get Data<span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\" ng-show='loading'></span></button>\n" +
     "          <button class=\"btn btn-danger\" ng-click=\"clearCoordinate()\">Clear</button>\n" +
     "        </div>\n" +
     "      </div>\n" +
@@ -1436,13 +1458,13 @@ angular.module("weathergen/templates/weather.html", []).run(["$templateCache", f
     "<div ng-show=\"session\">\n" +
     "  <div class=\"row\">\n" +
     "    <div class=\"col-sm-12\">\n" +
-    "      <timeseries-chart data=\"data\" accessor-x=\"DATE\" accessor-y=\"PRCP\" label-y=\"Precip (mm)\" min-y=\"0\"></timeseries-chart>\n" +
-    "      <timeseries-chart data=\"data\" accessor-x=\"DATE\" accessor-y=\"TMAX\" label-y=\"Max Temp (degC)\"></timeseries-chart>\n" +
-    "      <timeseries-chart data=\"data\" accessor-x=\"DATE\" accessor-y=\"TMIN\" label-y=\"Min Temp (degC)\"></timeseries-chart>\n" +
-    "      <timeseries-chart data=\"data\" accessor-x=\"DATE\" accessor-y=\"WIND\" label-y=\"Wind (m/s)\" min-y=\"0\"></timeseries-chart>\n" +
+    "      <timeseries-chart data=\"data\" accessor-x=\"date\" accessor-y=\"prcp\" label-y=\"Precip (mm)\" min-y=\"0\"></timeseries-chart>\n" +
+    "      <timeseries-chart data=\"data\" accessor-x=\"date\" accessor-y=\"tmax\" label-y=\"Max Temp (degC)\"></timeseries-chart>\n" +
+    "      <timeseries-chart data=\"data\" accessor-x=\"date\" accessor-y=\"tmin\" label-y=\"Min Temp (degC)\"></timeseries-chart>\n" +
+    "      <timeseries-chart data=\"data\" accessor-x=\"date\" accessor-y=\"wind\" label-y=\"Wind (m/s)\" min-y=\"0\"></timeseries-chart>\n" +
     "    </div>\n" +
     "  </div>\n" +
-    "  <div class=\"row\">\n" +
+    "  <!-- <div class=\"row\">\n" +
     "    <div class=\"col-sm-6\">\n" +
     "      <h2>Monthly</h2>\n" +
     "      <p><b>Session Key:</b> {{session}}</p>\n" +
@@ -1493,6 +1515,6 @@ angular.module("weathergen/templates/weather.html", []).run(["$templateCache", f
     "    </div>\n" +
     "\n" +
     "  </div>\n" +
-    "</div>\n" +
+    " --></div>\n" +
     "");
 }]);

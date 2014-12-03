@@ -9,7 +9,7 @@ angular.module('map')
         features: '='
       },
       link: function (scope, element, attr) {
-        console.log('hi', scope.coordinate);
+        // console.log('hi', scope.coordinate);
         var feature = new ol.Feature({
           geometry: null
         });
@@ -152,7 +152,7 @@ angular.module('map')
 
             var pixel = map.getPixelFromCoordinate(coordinate);
             scope.features = getFeaturesFromPixel(pixel);
-            console.log(scope.features);
+            // console.log(scope.features);
           } else {
             feature.setGeometry();
           }

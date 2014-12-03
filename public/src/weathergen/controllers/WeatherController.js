@@ -1,6 +1,6 @@
 
 angular.module('weathergen')
-  .controller('WeatherCtrl', ['$scope', '$filter', 'ocpuService', function($scope, $filter, ocpu) { 
+  .controller('WeatherCtrl', ['$scope', '$filter', '$http', 'ocpuService', function($scope, $filter, $http, ocpu) { 
     $scope.coordinate = [];
     $scope.features = {};
     $scope.loading = false;
@@ -36,5 +36,26 @@ angular.module('weathergen')
           }, $scope.data);
         });
       });
+    };
+
+    $scope.getDatasetFromDB = function() {
+      $scope.loading = true;
+      var latitude = +$scope.coordinate[1];
+      var longitude = +$scope.coordinate[0];
+      if (latitude !== null & isFinite(latitude) & longitude !== null & isFinite(longitude)) {
+        $http.post('/api', {latitude: latitude, longitude: longitude})
+          .success(function(data, status, headers, config) {
+            $scope.session = true;
+            angular.forEach(data, function(d) {
+              d.date = new Date(d.date);
+            });
+            $scope.data = data;
+            $scope.loading = false;
+          })
+          .error(function(data, status, headers, config) {
+            console.log('ERROR');
+          });  
+      }
+      
     };
   }]);
