@@ -1117,7 +1117,18 @@ angular.module('weathergen')
             console.log('ERROR');
           });  
       }
-      
+    };
+
+    $scope.runSimulation = function() {
+      var latitude = +$scope.coordinate[1];
+      var longitude = +$scope.coordinate[0];
+      $http.post('/api/wgen', {latitude: latitude, longitude: longitude})
+        .success(function(data, status, headers, config) {
+          console.log(data);
+        })
+        .error(function(data, status, headers, config) {
+          console.log('ERROR');
+        });  
     };
   }]);
 ;angular.module('templates', ['home/templates/home.html', 'map/templates/map.html', 'model/templates/demand_detail.html', 'model/templates/inflow_detail.html', 'model/templates/model.html', 'model/templates/node_list.html', 'model/templates/reservoir_detail.html', 'sim/templates/flow.html', 'sim/templates/home.html', 'sim/templates/location.html', 'sim/templates/sim.html', 'sim/templates/system.html', 'weathergen/templates/weather.html']);
@@ -1440,6 +1451,7 @@ angular.module("weathergen/templates/weather.html", []).run(["$templateCache", f
     "        <div class=\"col-sm-8 col-sm-offset-4\">\n" +
     "          <!-- <button type=\"submit\" class=\"btn btn-primary loadinggif\" ng-click=\"getDataset()\">Submit<span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\" ng-show='loading'></span></button> -->\n" +
     "          <button type=\"submit\" class=\"btn btn-primary loadinggif\" ng-click=\"getDatasetFromDB()\">Get Data<span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\" ng-show='loading'></span></button>\n" +
+    "          <button class=\"btn btn-primary loadinggif\" ng-click=\"runSimulation()\">Simulate</button>\n" +
     "          <button class=\"btn btn-danger\" ng-click=\"clearCoordinate()\">Clear</button>\n" +
     "        </div>\n" +
     "      </div>\n" +

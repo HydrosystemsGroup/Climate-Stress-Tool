@@ -7,6 +7,20 @@ library(gridExtra)
 library(weathergen)
 library(forecast)
 
+
+# parse command line arguments
+args <- commandArgs(trailingOnly = TRUE)
+
+print("STARTING")
+print(args)
+
+
+uid <- args[1]
+dir.create(uid)
+
+latitude <- args[2]
+longitude <- args[3]
+
 # configuration ----
 
 num_year_sim <- 40
@@ -108,8 +122,6 @@ KNN <- function(cur_sim_PRCP,cur_sim_TEMP,PRCP_TODAY,TEMP_TODAY,PRCP_TOMORROW,TE
 }
 
 # load data ----
-latitude <- 42
-longitude <- -72
 library(RPostgreSQL)
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname = "cst")
@@ -307,4 +319,4 @@ for (i_wyr in seq_along(sim.wyr$WYEAR)) {
 sim.da$DATE_SAMPLED <- as.Date(sim.da$DATE_SAMPLED)
 
 select(sim.da, DATE, WYEAR, WDAY, PRCP, TEMP, TMIN, TMAX) %>%
-  write.csv(file='sim.csv', row.names=FALSE)
+  write.csv(file=file.path(uid, 'sim.csv'), row.names=FALSE)

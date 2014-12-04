@@ -56,6 +56,17 @@ angular.module('weathergen')
             console.log('ERROR');
           });  
       }
-      
+    };
+
+    $scope.runSimulation = function() {
+      var latitude = +$scope.coordinate[1];
+      var longitude = +$scope.coordinate[0];
+      $http.post('/api/wgen', {latitude: latitude, longitude: longitude})
+        .success(function(data, status, headers, config) {
+          console.log(data);
+        })
+        .error(function(data, status, headers, config) {
+          console.log('ERROR');
+        });  
     };
   }]);

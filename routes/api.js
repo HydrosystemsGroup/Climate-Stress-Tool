@@ -1,8 +1,70 @@
 var express = require('express');
 var router = express.Router();
 var pg = require('pg');
+var uuid = require('node-uuid');
+var path = require('path');
+
+var kue = require('kue'),
+    jobs = kue.createQueue();
 
 var conString = "postgres://jeff:jeff@localhost/cst";
+
+router.post('/wgen', function(req, res) {
+  // var data = req.body.data;
+  var uid = uuid.v4();
+  var job = jobs.create('wgen', {
+      title: 'wgen job',
+      uid: uid,
+      latitude: req.body.latitude,
+      longitude: req.body.longitude
+  }).save( function(err){
+    console.log("Job Saved!");
+    console.log(job.data);
+    if( err ) res.send(400, 'Error submitting job');
+    res.send(job);
+  });
+  job.on('failed', function() {
+    console.log("Job Failed!");
+  });
+  job.on('complete', function() {
+    console.log("Job Completed!");
+  });
+});
+
+router.get('/jobs/:id', function(req, res) {
+  // var data = req.body.data;
+  var Job = kue.Job;
+  console.log('Get Job: ' + req.params.id);
+  Job.get(req.params.id, function(err, job) {
+    // console.log(job.toJSON());
+    res.send(job);
+  });
+});
+
+router.get('/jobs/:id/results', function(req, res) {
+  // var data = req.body.data;
+  var Job = kue.Job;
+  console.log('Get Job Results: ' + req.params.id);
+  Job.get(req.params.id, function(err, job) {
+    if (job.toJSON().state === 'complete') {
+      // console.log(job.data);
+      var filepath = path.resolve('worker/'+job.data.uid+'/sim.csv');
+      // console.log(filepath);
+      res.sendfile(filepath, function(err) {
+        if (err) {
+          console.log(err);
+          res.status(err.status).end();
+        }
+        else {
+          console.log('Sent:', filepath);
+        }
+      });  
+    } else {
+      res.send('Job not finished');
+    }
+    
+  });
+});
 
 router.post('/', function(req, res) {
   var latitude = req.body.latitude,
@@ -47,8 +109,6 @@ router.post('/', function(req, res) {
         }
       });
   });
-
-  
 });
 
 module.exports = router;
