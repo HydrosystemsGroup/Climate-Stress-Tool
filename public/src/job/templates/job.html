@@ -1,0 +1,32 @@
+<div ng-hide='has_job'>Loading...</div>
+<div class="row" ng-show='has_job'>
+  <div class="col-sm-4">
+    <h3 ng-switch on="job.state">
+      <span class="label label-info" ng-switch-when="inactive">Queued</span>
+      <span class="label label-success" ng-switch-when="active">Running</span>
+      <span class="label label-danger" ng-switch-when="failed">Failed</span>
+      <span class="label label-primary" ng-switch-when="complete">Completed</span>
+      <span class="label label-default" ng-switch-default>Waiting...</span>
+    </h3>
+    <ul class='list-unstyled'>
+      <li>Count: {{count}}</li>
+      <li>UID: {{job.data.uid}}</li>
+      <li>Started: {{job.created_at | date:"short"}}</li>
+    </ul>
+    <a class="btn btn-primary" ng-disabled="job.state !== 'complete'" ng-href="/api/jobs/{{job.id}}/results" target="_self">Download</a>
+    <a class="btn btn-success" ng-disabled="job.state !== 'complete'" ng-click="plotResults(job.id)">Plot Results</a>
+    <!-- <a class="btn btn-primary" ng-click="downloadResults(job.id)">Download</a> -->
+  </div>
+  <div class="col-sm-8">
+    <pre>{{job | json}}</pre>
+  </div>
+</div>
+
+<div ng-show="show_results">
+  <div class="row">
+    <div class="col-sm-12">
+      <timeseries-chart data="results" accessor-x="DATE" accessor-y="PRCP" label-y="Precip (mm)" min-y="0"></timeseries-chart>
+      <timeseries-chart data="results" accessor-x="DATE" accessor-y="TEMP" label-y="Mean Temp (degC)"></timeseries-chart>
+    </div>
+  </div>
+</div>

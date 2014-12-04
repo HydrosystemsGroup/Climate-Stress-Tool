@@ -9,6 +9,7 @@ var app = angular.module('climate-stress-tool',
    'home',
    'ocpu',
    'weathergen',
+   'job',
    'model',
    'charts',
    'map',
@@ -28,6 +29,11 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
         url: '/weather-generator',
         templateUrl: 'weathergen/templates/weather.html',
         controller: 'WeatherCtrl'
+      })
+      .state('job', {
+        url: '/jobs/:id',
+        templateUrl: 'job/templates/job.html',
+        controller: 'JobCtrl'
       })
       .state('map', {
         url: '/map',

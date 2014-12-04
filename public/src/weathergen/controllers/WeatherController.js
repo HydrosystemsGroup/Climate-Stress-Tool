@@ -1,6 +1,6 @@
 
 angular.module('weathergen')
-  .controller('WeatherCtrl', ['$scope', '$filter', '$http', 'ocpuService', function($scope, $filter, $http, ocpu) { 
+  .controller('WeatherCtrl', ['$scope', '$filter', '$http', 'ocpuService', '$state', function($scope, $filter, $http, ocpu, $state) { 
     $scope.coordinate = [];
     $scope.features = {};
     $scope.loading = false;
@@ -64,6 +64,7 @@ angular.module('weathergen')
       $http.post('/api/wgen', {latitude: latitude, longitude: longitude})
         .success(function(data, status, headers, config) {
           console.log(data);
+          $state.go('job', {id: data.id});
         })
         .error(function(data, status, headers, config) {
           console.log('ERROR');

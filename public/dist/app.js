@@ -3,6 +3,8 @@ angular.module('charts', []);
 ;
 angular.module('home', []);
 ;
+angular.module('job', []);
+;
 angular.module('map', []);
 ;
 var app = angular.module('model', []);
@@ -86,6 +88,7 @@ var app = angular.module('climate-stress-tool',
    'home',
    'ocpu',
    'weathergen',
+   'job',
    'model',
    'charts',
    'map',
@@ -105,6 +108,11 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
         url: '/weather-generator',
         templateUrl: 'weathergen/templates/weather.html',
         controller: 'WeatherCtrl'
+      })
+      .state('job', {
+        url: '/jobs/:id',
+        templateUrl: 'job/templates/job.html',
+        controller: 'JobCtrl'
       })
       .state('map', {
         url: '/map',
@@ -207,6 +215,61 @@ angular.module('charts')
   });
 ;angular.module('home')
   .controller('HomeCtrl', ['$scope', function($scope) { }]);
+;
+angular.module('job')
+  .controller('JobCtrl', ['$scope', '$stateParams', '$http', '$interval', function($scope, $stateParams, $http, $interval) { 
+    $scope.count = 0;
+    $scope.has_job = false;
+    $scope.job = {};
+    $scope.results = [];
+    // (function tick() {
+    //     $scope.job = $http.get('/api/jobs/' + $stateParams.id)
+    //       .success(function() {
+    //         $scope.count += 1;
+    //         $interval(tick, 1000);
+    //     });
+    // })();
+
+    var timer = $interval(function() {
+      $http.get('/api/jobs/' + $stateParams.id)
+        .success(function(data, status, headers, config) {
+          // console.log(data);
+          $scope.has_job = true;
+          $scope.count += 1;
+          $scope.job = data;
+          if (data.state === 'complete' || data.state === 'failed') {
+            $interval.cancel(timer);
+          }
+        });
+    }, 5000);
+    $scope.show_results = false;
+    $scope.plotResults = function(id) {
+      d3.csv('/api/jobs/' + id + '/results', function(d) {
+          return {
+            DATE: new Date(d.DATE),
+            PRCP: +d.PRCP,
+            TMIN: +d.TMIN,
+            TMAX: +d.TMAX,
+            TEMP: +d.TEMP
+          };
+        }, function(error, rows) {
+          $scope.results = rows.slice(0, 365);
+          $scope.show_results = true;
+          console.log($scope.results.length);
+          $scope.$digest();
+        });
+    };
+
+    // $http.get('/api/jobs/' + $stateParams.id)
+    //   .success(function(data, status, headers, config) {
+    //     console.log(data);
+    //     $scope.job = data;
+    //   })
+    //   .error(function(data, status, headers, config) {
+    //     console.log("ERROR");
+    //     console.log(arguments);
+    //   });
+  }]);
 ;
 angular.module('map')
   .controller('MapCtrl', ['$scope', function($scope) {
@@ -1061,7 +1124,7 @@ angular.module('sim')
   }]);
 ;
 angular.module('weathergen')
-  .controller('WeatherCtrl', ['$scope', '$filter', '$http', 'ocpuService', function($scope, $filter, $http, ocpu) { 
+  .controller('WeatherCtrl', ['$scope', '$filter', '$http', 'ocpuService', '$state', function($scope, $filter, $http, ocpu, $state) { 
     $scope.coordinate = [];
     $scope.features = {};
     $scope.loading = false;
@@ -1125,13 +1188,14 @@ angular.module('weathergen')
       $http.post('/api/wgen', {latitude: latitude, longitude: longitude})
         .success(function(data, status, headers, config) {
           console.log(data);
+          $state.go('job', {id: data.id});
         })
         .error(function(data, status, headers, config) {
           console.log('ERROR');
         });  
     };
   }]);
-;angular.module('templates', ['home/templates/home.html', 'map/templates/map.html', 'model/templates/demand_detail.html', 'model/templates/inflow_detail.html', 'model/templates/model.html', 'model/templates/node_list.html', 'model/templates/reservoir_detail.html', 'sim/templates/flow.html', 'sim/templates/home.html', 'sim/templates/location.html', 'sim/templates/sim.html', 'sim/templates/system.html', 'weathergen/templates/weather.html']);
+;angular.module('templates', ['home/templates/home.html', 'job/templates/job.html', 'map/templates/map.html', 'model/templates/demand_detail.html', 'model/templates/inflow_detail.html', 'model/templates/model.html', 'model/templates/node_list.html', 'model/templates/reservoir_detail.html', 'sim/templates/flow.html', 'sim/templates/home.html', 'sim/templates/location.html', 'sim/templates/sim.html', 'sim/templates/system.html', 'weathergen/templates/weather.html']);
 
 angular.module("home/templates/home.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("home/templates/home.html",
@@ -1141,6 +1205,42 @@ angular.module("home/templates/home.html", []).run(["$templateCache", function($
     "  <button class=\"btn btn-primary\">Learn More</button>\n" +
     "</div>\n" +
     "");
+}]);
+
+angular.module("job/templates/job.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("job/templates/job.html",
+    "<div ng-hide='has_job'>Loading...</div>\n" +
+    "<div class=\"row\" ng-show='has_job'>\n" +
+    "  <div class=\"col-sm-4\">\n" +
+    "    <h3 ng-switch on=\"job.state\">\n" +
+    "      <span class=\"label label-info\" ng-switch-when=\"inactive\">Queued</span>\n" +
+    "      <span class=\"label label-success\" ng-switch-when=\"active\">Running</span>\n" +
+    "      <span class=\"label label-danger\" ng-switch-when=\"failed\">Failed</span>\n" +
+    "      <span class=\"label label-primary\" ng-switch-when=\"complete\">Completed</span>\n" +
+    "      <span class=\"label label-default\" ng-switch-default>Waiting...</span>\n" +
+    "    </h3>\n" +
+    "    <ul class='list-unstyled'>\n" +
+    "      <li>Count: {{count}}</li>\n" +
+    "      <li>UID: {{job.data.uid}}</li>\n" +
+    "      <li>Started: {{job.created_at | date:\"short\"}}</li>\n" +
+    "    </ul>\n" +
+    "    <a class=\"btn btn-primary\" ng-disabled=\"job.state !== 'complete'\" ng-href=\"/api/jobs/{{job.id}}/results\" target=\"_self\">Download</a>\n" +
+    "    <a class=\"btn btn-success\" ng-disabled=\"job.state !== 'complete'\" ng-click=\"plotResults(job.id)\">Plot Results</a>\n" +
+    "    <!-- <a class=\"btn btn-primary\" ng-click=\"downloadResults(job.id)\">Download</a> -->\n" +
+    "  </div>\n" +
+    "  <div class=\"col-sm-8\">\n" +
+    "    <pre>{{job | json}}</pre>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "\n" +
+    "<div ng-show=\"show_results\">\n" +
+    "  <div class=\"row\">\n" +
+    "    <div class=\"col-sm-12\">\n" +
+    "      <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"PRCP\" label-y=\"Precip (mm)\" min-y=\"0\"></timeseries-chart>\n" +
+    "      <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"TEMP\" label-y=\"Mean Temp (degC)\"></timeseries-chart>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "</div>");
 }]);
 
 angular.module("map/templates/map.html", []).run(["$templateCache", function($templateCache) {
