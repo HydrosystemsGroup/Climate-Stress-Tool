@@ -5,6 +5,7 @@ suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(gridExtra))
 suppressPackageStartupMessages(library(weathergen))
 suppressPackageStartupMessages(library(forecast))
+suppressPackageStartupMessages(library(RPostgreSQL))
 
 theme_set(theme_bw())
 
@@ -121,7 +122,6 @@ KNN <- function(cur_sim_PRCP,cur_sim_TEMP,PRCP_TODAY,TEMP_TODAY,PRCP_TOMORROW,TE
 }
 
 # load data ----
-library(RPostgreSQL)
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(drv, dbname = "cst")
 clim.da <- dbGetQuery(con, statement = paste(
