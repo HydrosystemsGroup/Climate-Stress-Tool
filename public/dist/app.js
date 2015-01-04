@@ -1228,19 +1228,24 @@ angular.module("job/templates/job.html", []).run(["$templateCache", function($te
     "    <a class=\"btn btn-success\" ng-disabled=\"job.state !== 'complete'\" ng-click=\"plotResults(job.id)\">Plot Results</a>\n" +
     "    <!-- <a class=\"btn btn-primary\" ng-click=\"downloadResults(job.id)\">Download</a> -->\n" +
     "  </div>\n" +
-    "  <div class=\"col-sm-8\">\n" +
-    "    <pre>{{job | json}}</pre>\n" +
+    "  <div class=\"col-sm-8\" ng-show='has_job && job.state===\"failed\"'>\n" +
+    "    <pre>{{job.error}}</pre>\n" +
     "  </div>\n" +
     "</div>\n" +
     "\n" +
-    "<div ng-show=\"show_results\">\n" +
-    "  <div class=\"row\">\n" +
-    "    <div class=\"col-sm-12\">\n" +
-    "      <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"PRCP\" label-y=\"Precip (mm)\" min-y=\"0\"></timeseries-chart>\n" +
-    "      <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"TEMP\" label-y=\"Mean Temp (degC)\"></timeseries-chart>\n" +
-    "    </div>\n" +
+    "<div class=\"row\" ng-show=\"show_results\">\n" +
+    "  <div class=\"col-sm-12\">\n" +
+    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"PRCP\" label-y=\"Precip (mm)\" min-y=\"0\"></timeseries-chart>\n" +
+    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"TEMP\" label-y=\"Mean Temp (degC)\"></timeseries-chart>\n" +
     "  </div>\n" +
-    "</div>");
+    "</div>\n" +
+    "\n" +
+    "<div class=\"row\">\n" +
+    "  <div class=\"col-sm-12\">\n" +
+    "      <pre>{{job | json}}</pre>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "");
 }]);
 
 angular.module("map/templates/map.html", []).run(["$templateCache", function($templateCache) {

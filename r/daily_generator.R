@@ -1,19 +1,18 @@
-library(dplyr)
-library(lubridate)
-library(tidyr)
-library(ggplot2)
-theme_set(theme_bw())
-library(gridExtra)
-library(weathergen)
-library(forecast)
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(tidyr))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(gridExtra))
+suppressPackageStartupMessages(library(weathergen))
+suppressPackageStartupMessages(library(forecast))
 
+theme_set(theme_bw())
 
 # parse command line arguments
 args <- commandArgs(trailingOnly = TRUE)
 
-print("STARTING")
-print(args)
-
+cat("Starting Weather Generator\n")
+cat(paste0("Input Arguments:\n", paste(args, collapse='\n')))
 
 uid <- args[1]
 dir.create(uid)
@@ -320,3 +319,5 @@ sim.da$DATE_SAMPLED <- as.Date(sim.da$DATE_SAMPLED)
 
 select(sim.da, DATE, WYEAR, WDAY, PRCP, TEMP, TMIN, TMAX) %>%
   write.csv(file=file.path(uid, 'sim.csv'), row.names=FALSE)
+
+cat(paste0("Saved output to: ", file.path(uid, 'sim.csv')))
