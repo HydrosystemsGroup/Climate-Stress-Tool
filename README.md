@@ -14,15 +14,32 @@ Jeffrey D. Walker, PhD
 
 ## Components
 
-- OpenCPU for running R scripts
-- Joint.js for model configuration
-- Backbone.js for client-side web application
-- Node.js for server-side web application
-- Database (Mongo or MySQL?)
+- Client-side web application (AngularJS/JointJS/d3)
+- Server-side web application (Node)
+- Database (PostgreSQL)
+- Job Queue (kue/redis)
 
+## Development Server
 
-# Set Up for Heroku
+URL: http://127.0.0.1:3000
+Job Queue: http://127.0.0.1:3001
+
+Start redis server:
 
 ```
-heroku config:set NODE_ENV=production
+redis-server
+```
+
+Start grunt and npm:
+
+```
+grunt dev
+npm run dev
+```
+
+Start worker app:
+
+```
+cd worker
+node app.js
 ```
