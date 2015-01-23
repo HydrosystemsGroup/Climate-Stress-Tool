@@ -87,4 +87,6 @@ sim <- wgen_daily(obs_day = zoo(x = clim.da[, c('PRCP', 'TEMP', 'TMIN', 'TMAX', 
 select(sim$out, DATE, PRCP, TEMP, TMIN, TMAX) %>%
   write.csv(file='sim.csv', row.names=FALSE)
 
+save(sim, file='sim.rda')
+
 cat(paste0("Saved output to: ", file.path(getwd(), 'sim.csv')))
