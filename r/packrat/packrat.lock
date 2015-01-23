@@ -16,11 +16,13 @@ Hash: 3a9e85b26ec3ab570266bccb3f9de055
 Package: Formula
 Source: CRAN
 Version: 1.1-2
+Hash: 588ba867a46d199c04527dc7083a1f0b
 
 Package: Hmisc
 Source: CRAN
 Version: 3.14-6
-Requires: lattice, nnet, Formula, acepack, latticeExtra
+Hash: 2ae3bfdbca26018d63c2832b3cc0d508
+Requires: Formula, acepack, lattice, latticeExtra, nnet
 
 Package: MASS
 Source: CRAN
@@ -63,6 +65,7 @@ Requires: Rcpp
 Package: acepack
 Source: CRAN
 Version: 1.3-3.3
+Hash: e42d3814a877cf587e6a5225486323c3
 
 Package: assertthat
 Source: CRAN
@@ -83,6 +86,7 @@ Requires: fields
 Package: car
 Source: CRAN
 Version: 2.0-22
+Hash: 2fb4da98043926a3745e0c6a2f23fd04
 Requires: MASS, nnet
 
 Package: colorspace
@@ -184,6 +188,7 @@ Hash: 17e9fe582d11197544a5ec817a80b21e
 Package: latticeExtra
 Source: CRAN
 Version: 0.6-26
+Hash: 2c59a30bb9d9d4651b913b828dca2640
 Requires: RColorBrewer, lattice
 
 Package: lazyeval
@@ -247,6 +252,7 @@ Requires: Rcpp
 Package: polynom
 Source: CRAN
 Version: 1.3-8
+Hash: 78e878ed3594f95957b7f94180afe73b
 
 Package: proto
 Source: CRAN
@@ -261,6 +267,7 @@ Hash: c5b36fd14dff166f26d68ccf1515c200
 Package: reshape
 Source: CRAN
 Version: 0.8.5
+Hash: 3a8bcdf002df52627d35dfab189711f4
 Requires: plyr
 
 Package: reshape2
@@ -315,12 +322,12 @@ Requires: quadprog, zoo
 Package: weathergen
 Source: github
 Version: 0.1
-Hash: 82d05bc63d9aacf841c6d359c222664ca3e310f9
-Requires: hydromad, biwavelet, dplyr, forecast, lubridate
+Hash: 23b5e993e6dea74295dcbb5cb6bfad3b33e25419
+Requires: hydromad, biwavelet, dplyr, forecast, lubridate, zoo
 GithubRepo: weathergen
 GithubUsername: walkerjeffd
 GithubRef: master
-GithubSha1: 82d05bc63d9aacf841c6d359c222664ca3e310f9
+GithubSha1: 23b5e993e6dea74295dcbb5cb6bfad3b33e25419
 
 Package: whisker
 Source: CRAN

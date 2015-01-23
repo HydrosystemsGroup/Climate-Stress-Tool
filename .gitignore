@@ -3,3 +3,4 @@ public/libs
 npm-debug.log
 public/gis
 dump.rdb
+.Rproj.user
