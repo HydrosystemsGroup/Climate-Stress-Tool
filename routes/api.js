@@ -3,6 +3,9 @@ var router = express.Router();
 var pg = require('pg');
 var uuid = require('node-uuid');
 var path = require('path');
+var fs = require('fs')
+var env = process.env.NODE_ENV || 'development',
+    config = require('../config/config')[env]
 
 var kue = require('kue'),
     jobs = kue.createQueue();
@@ -12,22 +15,27 @@ var conString = "postgres://jeff:jeff@localhost/cst";
 router.post('/wgen', function(req, res) {
   // var data = req.body.data;
   var uid = uuid.v4();
-  var job = jobs.create('wgen', {
-      title: 'wgen job',
-      uid: uid,
-      latitude: req.body.latitude,
-      longitude: req.body.longitude
-  }).save( function(err){
-    console.log("Job Saved!");
-    console.log(job.data);
-    if( err ) res.send(400, 'Error submitting job');
-    res.send(job);
-  });
-  job.on('failed', function() {
-    console.log("Job Failed!");
-  });
-  job.on('complete', function() {
-    console.log("Job Completed!");
+  var wd = path.join(config.sim_dir, uid);
+  console.log('Creating working directory: ' + wd);
+  fs.mkdir(wd, function() {
+    console.log('Submitting Job');
+    var job = jobs.create('wgen', {
+        title: 'wgen job',
+        wd: wd,
+        latitude: req.body.latitude,
+        longitude: req.body.longitude
+    }).save( function(err){
+      console.log("Job Saved!");
+      console.log(job.data);
+      if( err ) res.send(400, 'Error submitting job');
+      res.send(job);
+    });
+    job.on('failed', function() {
+      console.log("Job Failed!");
+    });
+    job.on('complete', function() {
+      console.log("Job Completed!");
+    });
   });
 });
 
@@ -48,7 +56,7 @@ router.get('/jobs/:id/results', function(req, res) {
   Job.get(req.params.id, function(err, job) {
     if (job.toJSON().state === 'complete') {
       // console.log(job.data);
-      var filepath = path.resolve('worker/'+job.data.uid+'/sim.csv');
+      var filepath = path.resolve(job.data.wd+'/sim.csv');
       // console.log(filepath);
       res.sendfile(filepath, function(err) {
         if (err) {
