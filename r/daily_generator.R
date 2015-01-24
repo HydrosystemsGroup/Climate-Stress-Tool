@@ -27,6 +27,15 @@ inputs <- fromJSON('inputs.json')
 latitude <- inputs[['latitude']]
 longitude <- inputs[['longitude']]
 n_year <- inputs[['n_year']]
+start_month <- inputs[['start_month']]
+start_water_year <- inputs[['start_water_year']]
+dry_spell_changes <- inputs[['dry_spell_changes']]
+wet_spell_changes <- inputs[['wet_spell_changes']]
+prcp_mean_changes <- inputs[['prcp_mean_changes']]
+prcp_cv_changes <- inputs[['prcp_cv_changes']]
+temp_changes <- inputs[['temp_changes']]
+
+
 
 # load data ----
 drv <- dbDriver("PostgreSQL")
@@ -67,21 +76,20 @@ clim.wyr <- filter(clim.wyr, WYEAR %in% complete_years)
 
 # configuration ----
 # n_year <- 10
-water_yr_change <- TRUE
-month_list <- c(10:12, 1:9)
-start_water_year <- 2000
-dry_spell_changes <- 1
-wet_spell_changes <- 1
-prcp_mean_changes <- 1
-prcp_cv_changes <- 1
-temp_changes <- 0
+# start_month <- 10
+# start_water_year <- 2000
+# dry_spell_changes <- 1
+# wet_spell_changes <- 1
+# prcp_mean_changes <- 1
+# prcp_cv_changes <- 1
+# temp_changes <- 0
 
 # annual sim ----
 sim <- wgen_daily(obs_day = zoo(x = clim.da[, c('PRCP', 'TEMP', 'TMIN', 'TMAX', 'WIND')],
                                 order.by = clim.da[['DATE']]),
                   n_year=n_year, n_knn_annual=100,
                   dry_wet_threshold=0.3, wet_extreme_quantile_threshold=0.8,
-                  start_month=10, start_water_year=start_water_year, include_leap_days=FALSE,
+                  start_month=start_month, start_water_year=start_water_year, include_leap_days=FALSE,
                   adjust_annual_precip=TRUE, annual_precip_adjust_limits=c(0.9, 1.1),
                   dry_spell_changes=dry_spell_changes,
                   wet_spell_changes=wet_spell_changes,

@@ -28,7 +28,7 @@ angular.module('weathergen')
     var timer = $interval(refreshStatus, 5000);
 
     $scope.plotResults = function(id) {
-      d3.csv('/api/wgen/' + id + '/results', function(d) {
+      d3.csv('/api/wgen/' + id + '/files/sim.csv', function(d) {
           return {
             DATE: new Date(d.DATE),
             PRCP: +d.PRCP,

@@ -16,11 +16,7 @@ router.post('/wgen', function(req, res) {
   // var data = req.body.data;
   var uid = uuid.v4();
   var wd = path.join(config.sim_dir, uid);
-  var inputs = {
-    latitude: req.body.latitude,
-    longitude: req.body.longitude,
-    n_year: req.body.n_year
-  }
+  var inputs = req.body;
 
   console.log('Creating working directory: ' + wd);
   
@@ -59,14 +55,31 @@ router.get('/wgen/:id', function(req, res) {
   });
 });
 
-router.get('/wgen/:id/results', function(req, res) {
+router.get('/wgen/:id/files', function(req, res) {
+  // var data = req.body.data;
+  var Job = kue.Job;
+  console.log('Get Job Results: ' + req.params.id);
+  Job.get(req.params.id, function(err, job) {
+    fs.readdir(job.data.wd, function(err, files) {
+      if (err) {
+        res.status(400).send('Could not find files');
+      }
+      else {
+        res.send(files);
+      }
+    });
+  });
+});
+
+
+router.get('/wgen/:id/files/:filename', function(req, res) {
   // var data = req.body.data;
   var Job = kue.Job;
   console.log('Get Job Results: ' + req.params.id);
   Job.get(req.params.id, function(err, job) {
     if (job.toJSON().state === 'complete') {
       // console.log(job.data);
-      var filepath = path.resolve(job.data.wd+'/sim.csv');
+      var filepath = path.join(job.data.wd, req.params.filename);
       // console.log(filepath);
       res.sendfile(filepath, function(err) {
         if (err) {
@@ -80,7 +93,6 @@ router.get('/wgen/:id/results', function(req, res) {
     } else {
       res.send('Job not finished');
     }
-    
   });
 });
 

@@ -1129,7 +1129,7 @@ angular.module('weathergen')
     var timer = $interval(refreshStatus, 5000);
 
     $scope.plotResults = function(id) {
-      d3.csv('/api/wgen/' + id + '/results', function(d) {
+      d3.csv('/api/wgen/' + id + '/files/sim.csv', function(d) {
           return {
             DATE: new Date(d.DATE),
             PRCP: +d.PRCP,
@@ -1148,31 +1148,40 @@ angular.module('weathergen')
   .controller('SimulateCtrl', ['$scope', '$http', '$state', function($scope, $http, $state) { 
     console.log('SimulateCtrl');
     $scope.inputs = {
-      n_year: 10
+      n_year: 10,
+      start_month: 10,
+      start_water_year: 2000,
+      dry_spell_changes: 1,
+      wet_spell_changes: 1,
+      prcp_mean_changes: 1,
+      prcp_cv_changes: 1,
+      temp_changes: 0,
     };
 
     if ($scope.coordinate[1] === null | !isFinite($scope.coordinate[1]) | $scope.coordinate[0] === null | !isFinite($scope.coordinate[0])) {
-      console.log('redirect');
+      // missing lat/lon, redirect back to weathgen home
       $state.go('weathergen');
     }
 
     $scope.run = function() {
-      var latitude = +$scope.coordinate[1];
-      var longitude = +$scope.coordinate[0];
-      var n_year = +$scope.inputs.n_year;
-    
       $http.post('/api/wgen', {
-        latitude: latitude,
-        longitude: longitude,
-        n_year: n_year
-      })
-      .success(function(data, status, headers, config) {
-        console.log(data);
-        $state.go('weathergen.result', {id: data.id});
-      })
-      .error(function(data, status, headers, config) {
-        console.log('ERROR');
-      });          
+          latitude: +$scope.coordinate[1],
+          longitude: +$scope.coordinate[0],
+          n_year: +$scope.inputs.n_year,
+          start_month: +$scope.inputs.start_month,
+          start_water_year: +$scope.inputs.start_water_year,
+          dry_spell_changes: +$scope.inputs.dry_spell_changes,
+          wet_spell_changes: +$scope.inputs.wet_spell_changes,
+          prcp_mean_changes: +$scope.inputs.prcp_mean_changes,
+          prcp_cv_changes: +$scope.inputs.prcp_cv_changes,
+          temp_changes: +$scope.inputs.temp_changes
+        })
+        .success(function(data, status, headers, config) {
+          $state.go('weathergen.result', {id: data.id});
+        })
+        .error(function(data, status, headers, config) {
+          console.log('ERROR');
+        });          
     };
 
   }]);
@@ -1516,7 +1525,7 @@ angular.module("weathergen/templates/result.html", []).run(["$templateCache", fu
     "          <li>Started: {{job.created_at | date:\"short\"}}</li>\n" +
     "        </ul>\n" +
     "\n" +
-    "        <a class=\"btn btn-primary\" ng-disabled=\"job.state !== 'complete'\" ng-href=\"/api/jobs/{{job.id}}/results\" target=\"_self\">Download</a>\n" +
+    "        <a class=\"btn btn-primary\" ng-disabled=\"job.state !== 'complete'\" ng-href=\"/api/wgen/{{job.id}}/results\" target=\"_self\">Download</a>\n" +
     "        <!-- <a class=\"btn btn-success\" ng-disabled=\"job.state !== 'complete'\" ng-click=\"plotResults(job.id)\">Plot Results</a> -->\n" +
     "      </div>\n" +
     "    </div>\n" +
@@ -1555,9 +1564,51 @@ angular.module("weathergen/templates/simulate.html", []).run(["$templateCache", 
     "  <div class=\"col-sm-4\">\n" +
     "    <form class=\"form-horizontal\" role=\"form\">\n" +
     "      <div class=\"form-group\">\n" +
-    "        <label for=\"inputNumberYear\" class=\"col-sm-4 control-label\"># Years</label>\n" +
+    "        <label for=\"inputNumberYears\" class=\"col-sm-4 control-label\"># Years</label>\n" +
     "        <div class=\"col-sm-8\">\n" +
-    "          <input type=\"text\" class=\"form-control\" id=\"inputLatitude\" ng-model=\"inputs.n_year\">\n" +
+    "          <input type=\"text\" class=\"form-control\" id=\"inputNumberYears\" ng-model=\"inputs.n_year\">\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "      <div class=\"form-group\">\n" +
+    "        <label for=\"inputStartMonth\" class=\"col-sm-4 control-label\">Start Month</label>\n" +
+    "        <div class=\"col-sm-8\">\n" +
+    "          <input type=\"text\" class=\"form-control\" id=\"inputStartMonth\" ng-model=\"inputs.start_month\">\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "      <div class=\"form-group\">\n" +
+    "        <label for=\"inputStartYear\" class=\"col-sm-4 control-label\">Start Water Year</label>\n" +
+    "        <div class=\"col-sm-8\">\n" +
+    "          <input type=\"text\" class=\"form-control\" id=\"inputStartYear\" ng-model=\"inputs.start_water_year\">\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "      <div class=\"form-group\">\n" +
+    "        <label for=\"inputDrySpell\" class=\"col-sm-4 control-label\">Dry Spell Factor</label>\n" +
+    "        <div class=\"col-sm-8\">\n" +
+    "          <input type=\"text\" class=\"form-control\" id=\"inputDrySpell\" ng-model=\"inputs.dry_spell_changes\">\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "      <div class=\"form-group\">\n" +
+    "        <label for=\"inputWetSpell\" class=\"col-sm-4 control-label\">Wet Spell Factor</label>\n" +
+    "        <div class=\"col-sm-8\">\n" +
+    "          <input type=\"text\" class=\"form-control\" id=\"inputWetSpell\" ng-model=\"inputs.wet_spell_changes\">\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "      <div class=\"form-group\">\n" +
+    "        <label for=\"inputPrecipMean\" class=\"col-sm-4 control-label\">Mean Precip Factor</label>\n" +
+    "        <div class=\"col-sm-8\">\n" +
+    "          <input type=\"text\" class=\"form-control\" id=\"inputPrecipMean\" ng-model=\"inputs.prcp_mean_changes\">\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "      <div class=\"form-group\">\n" +
+    "        <label for=\"inputPrecipCV\" class=\"col-sm-4 control-label\">CV Precip Factor</label>\n" +
+    "        <div class=\"col-sm-8\">\n" +
+    "          <input type=\"text\" class=\"form-control\" id=\"inputPrecipCV\" ng-model=\"inputs.prcp_cv_changes\">\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "      <div class=\"form-group\">\n" +
+    "        <label for=\"inputTemp\" class=\"col-sm-4 control-label\">Temperature Factor</label>\n" +
+    "        <div class=\"col-sm-8\">\n" +
+    "          <input type=\"text\" class=\"form-control\" id=\"inputTemp\" ng-model=\"inputs.temp_changes\">\n" +
     "        </div>\n" +
     "      </div>\n" +
     "      <div class=\"form-group\">\n" +

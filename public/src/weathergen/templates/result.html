@@ -18,7 +18,7 @@
           <li>Started: {{job.created_at | date:"short"}}</li>
         </ul>
 
-        <a class="btn btn-primary" ng-disabled="job.state !== 'complete'" ng-href="/api/jobs/{{job.id}}/results" target="_self">Download</a>
+        <a class="btn btn-primary" ng-disabled="job.state !== 'complete'" ng-href="/api/wgen/{{job.id}}/results" target="_self">Download</a>
         <!-- <a class="btn btn-success" ng-disabled="job.state !== 'complete'" ng-click="plotResults(job.id)">Plot Results</a> -->
       </div>
     </div>
