@@ -16,31 +16,40 @@ router.post('/wgen', function(req, res) {
   // var data = req.body.data;
   var uid = uuid.v4();
   var wd = path.join(config.sim_dir, uid);
+  var inputs = {
+    latitude: req.body.latitude,
+    longitude: req.body.longitude,
+    n_year: req.body.n_year
+  }
+
   console.log('Creating working directory: ' + wd);
+  
   fs.mkdir(wd, function() {
-    console.log('Submitting Job');
-    var job = jobs.create('wgen', {
-        title: 'wgen job',
-        wd: wd,
-        uid: uid,
-        latitude: req.body.latitude,
-        longitude: req.body.longitude
-    }).save( function(err){
-      console.log("Job Saved!");
-      console.log(job.data);
-      if( err ) res.send(400, 'Error submitting job');
-      res.send(job);
-    });
-    job.on('failed', function() {
-      console.log("Job Failed!");
-    });
-    job.on('complete', function() {
-      console.log("Job Completed!");
+    console.log('Saving inputs file: ', path.join(wd, 'inputs.json'));
+    fs.writeFile(path.join(wd, 'inputs.json'), JSON.stringify(inputs), function() {
+      console.log('Submitting Job');
+      var job = jobs.create('wgen', {
+          title: 'wgen job',
+          wd: wd,
+          uid: uid,
+          inputs: inputs
+      }).save( function(err){
+        console.log("Job Saved!");
+        console.log(job.data);
+        if( err ) res.send(400, 'Error submitting job');
+        res.send(job);
+      });
+      job.on('failed', function() {
+        console.log("Job Failed!");
+      });
+      job.on('complete', function() {
+        console.log("Job Completed!");
+      });
     });
   });
 });
 
-router.get('/jobs/:id', function(req, res) {
+router.get('/wgen/:id', function(req, res) {
   // var data = req.body.data;
   var Job = kue.Job;
   console.log('Get Job: ' + req.params.id);
@@ -50,7 +59,7 @@ router.get('/jobs/:id', function(req, res) {
   });
 });
 
-router.get('/jobs/:id/results', function(req, res) {
+router.get('/wgen/:id/results', function(req, res) {
   // var data = req.body.data;
   var Job = kue.Job;
   console.log('Get Job Results: ' + req.params.id);
@@ -75,7 +84,7 @@ router.get('/jobs/:id/results', function(req, res) {
   });
 });
 
-router.post('/', function(req, res) {
+router.post('/maurer', function(req, res) {
   var latitude = req.body.latitude,
       longitude = req.body.longitude;
   pg.connect(conString, function(err, client, done) {
@@ -95,17 +104,6 @@ router.post('/', function(req, res) {
       "WHERE d.location_id=l.gid",
       "GROUP BY d.year",
       "ORDER BY date"].join(' '), 
-      // "SELECT to_date(d.year || '-' || trim(to_char(d.month, '00')) || '-' || trim(to_char(d.day, '00')), 'YYYY-MM-DD') as date,",
-      //      "prcp, tmax, tmin, wind",
-      // "FROM maurer_day d, (",
-      // "SELECT ST_Distance(m.geom, ST_SetSRID(ST_MakePoint($2, $1), 4326)) as distance,",
-      //        "m.gid, m.latitude, m.longitude",
-      //   "FROM maurer_locations m",
-      //   "ORDER BY distance",
-      //   "LIMIT 1",
-      // ") AS l",
-      // "WHERE d.location_id=l.gid",
-      // "ORDER BY date"].join(' '), 
       [latitude, longitude],
       function(err, result) {
         //call `done()` to release the client back to the pool

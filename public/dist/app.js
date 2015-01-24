@@ -3,8 +3,6 @@ angular.module('charts', []);
 ;
 angular.module('home', []);
 ;
-angular.module('job', []);
-;
 angular.module('map', []);
 ;
 var app = angular.module('model', []);
@@ -76,8 +74,32 @@ app.config(['$stateProvider', '$urlRouterProvider',
       });
 }]);
 ;
-angular.module('weathergen', ['ocpu']);
-;
+var weathergen = angular.module('weathergen', ['ocpu']);
+
+weathergen.config(['$stateProvider',
+  function ($stateProvider) {
+    $stateProvider
+      .state('weathergen', {
+        url: '/weathergen',
+        templateUrl: 'weathergen/templates/weather.html',
+        controller: 'WeatherCtrl'
+      })
+      .state('weathergen.result', {
+        url: '/:id',
+        templateUrl: 'weathergen/templates/result.html',
+        controller: 'ResultCtrl'
+      })
+      .state('weathergen.data', {
+        url: '/weathergen/data',
+        templateUrl: 'weathergen/templates/data.html',
+        controller: 'DataCtrl'
+      })
+      .state('weathergen.simulate', {
+        url: '/weathergen/simulate',
+        templateUrl: 'weathergen/templates/simulate.html',
+        controller: 'SimulateCtrl'
+      });
+  }]);;
 var app = angular.module('climate-stress-tool', 
   ['ui.router',
    'ui.grid',
@@ -88,7 +110,6 @@ var app = angular.module('climate-stress-tool',
    'home',
    'ocpu',
    'weathergen',
-   'job',
    'model',
    'charts',
    'map',
@@ -104,16 +125,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
         controller: 'HomeCtrl',
         templateUrl: 'home/templates/home.html'
       })
-      .state('weather', {
-        url: '/weather-generator',
-        templateUrl: 'weathergen/templates/weather.html',
-        controller: 'WeatherCtrl'
-      })
-      .state('job', {
-        url: '/jobs/:id',
-        templateUrl: 'job/templates/job.html',
-        controller: 'JobCtrl'
-      })
       .state('map', {
         url: '/map',
         controller: 'MapCtrl',
@@ -125,15 +136,10 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
     });
 }])
 .run(
-  [          '$rootScope', '$state', '$stateParams',
-    function ($rootScope,   $state,   $stateParams) {
-
-    // It's very handy to add references to $state and $stateParams to the $rootScope
-    // so that you can access them from any scope within your applications.For example,
-    // <li ng-class="{ active: $state.includes('contacts.list') }"> will set the <li>
-    // to active whenever 'contacts.list' or one of its decendents is active.
-    $rootScope.$state = $state;
-    $rootScope.$stateParams = $stateParams;
+  [ '$rootScope', '$state', '$stateParams',
+    function ($rootScope, $state, $stateParams) {
+      $rootScope.$state = $state;
+      $rootScope.$stateParams = $stateParams;
     }
   ]
 );
@@ -221,66 +227,6 @@ angular.module('charts')
   });
 ;angular.module('home')
   .controller('HomeCtrl', ['$scope', function($scope) { }]);
-;
-angular.module('job')
-  .controller('JobCtrl', ['$scope', '$stateParams', '$http', '$interval', function($scope, $stateParams, $http, $interval) { 
-    $scope.count = 0;
-    $scope.has_job = false;
-    $scope.job = {};
-    $scope.results = [];
-    // (function tick() {
-    //     $scope.job = $http.get('/api/jobs/' + $stateParams.id)
-    //       .success(function() {
-    //         $scope.count += 1;
-    //         $interval(tick, 1000);
-    //     });
-    // })();
-
-    var refreshStatus = function() {
-      $http.get('/api/jobs/' + $stateParams.id)
-        .success(function(data, status, headers, config) {
-          // console.log(data);
-          $scope.has_job = true;
-          $scope.count += 1;
-          $scope.job = data;
-          if (data.state === 'complete' || data.state === 'failed') {
-            $interval.cancel(timer);
-          }
-        });
-    };
-    refreshStatus();
-    
-    var timer = $interval(refreshStatus, 5000);
-
-    $scope.show_results = false;
-    $scope.plotResults = function(id) {
-      d3.csv('/api/jobs/' + id + '/results', function(d) {
-          return {
-            DATE: new Date(d.DATE),
-            PRCP: +d.PRCP,
-            TMIN: +d.TMIN,
-            TMAX: +d.TMAX,
-            TEMP: +d.TEMP
-          };
-        }, function(error, rows) {
-          // $scope.results = rows.slice(0, 365);
-          $scope.results = rows;
-          $scope.show_results = true;
-          console.log($scope.results.length);
-          $scope.$digest();
-        });
-    };
-
-    // $http.get('/api/jobs/' + $stateParams.id)
-    //   .success(function(data, status, headers, config) {
-    //     console.log(data);
-    //     $scope.job = data;
-    //   })
-    //   .error(function(data, status, headers, config) {
-    //     console.log("ERROR");
-    //     console.log(arguments);
-    //   });
-  }]);
 ;
 angular.module('map')
   .controller('MapCtrl', ['$scope', function($scope) {
@@ -1133,83 +1079,117 @@ angular.module('sim')
   .controller('SystemCtrl', ['$scope', '$state', function($scope, $state) {
     $scope.message = 'Hello system';    
   }]);
+;angular.module('weathergen')
+  .controller('DataCtrl', ['$scope', '$filter', '$http', 'ocpuService', '$state', function($scope, $filter, $http, ocpu, $state) { 
+    console.log('DataCtrl');
+    $scope.loading = true;
+    var latitude = +$scope.coordinate[1];
+    var longitude = +$scope.coordinate[0];
+    if (latitude !== null & isFinite(latitude) & longitude !== null & isFinite(longitude)) {
+      $http.post('/api/maurer', {latitude: latitude, longitude: longitude})
+        .success(function(data, status, headers, config) {
+          $scope.session = true;
+          angular.forEach(data, function(d) {
+            d.date = new Date(d.date);
+          });
+          $scope.data = data;
+          $scope.loading = false;
+        })
+        .error(function(data, status, headers, config) {
+          console.log('ERROR');
+        });  
+    }
+  }]);;
+angular.module('weathergen')
+  .controller('ResultCtrl', ['$scope', '$stateParams', '$http', '$interval', function($scope, $stateParams, $http, $interval) { 
+    console.log('ResultCtrl');
+    $scope.has_job = false;
+    $scope.job = {};
+    $scope.results = [];
+
+    var refreshStatus = function() {
+      $http.get('/api/wgen/' + $stateParams.id)
+        .success(function(data, status, headers, config) {
+          $scope.has_job = true;
+          $scope.job = data;
+          $scope.coordinate[0] = $scope.job.data.inputs.longitude;
+          $scope.coordinate[1] = $scope.job.data.inputs.latitude;
+
+          if (data.state === 'complete' || data.state === 'failed') {
+            $interval.cancel(timer);
+          }
+
+          if (data.state === 'complete') {
+            $scope.plotResults($scope.job.id);
+          }
+        });
+    };
+
+    refreshStatus();    
+    var timer = $interval(refreshStatus, 5000);
+
+    $scope.plotResults = function(id) {
+      d3.csv('/api/wgen/' + id + '/results', function(d) {
+          return {
+            DATE: new Date(d.DATE),
+            PRCP: +d.PRCP,
+            TMIN: +d.TMIN,
+            TMAX: +d.TMAX,
+            TEMP: +d.TEMP
+          };
+        }, function(error, rows) {
+          $scope.results = rows;
+          $scope.$digest();
+        });
+    };
+  }]);
+;
+angular.module('weathergen')
+  .controller('SimulateCtrl', ['$scope', '$http', '$state', function($scope, $http, $state) { 
+    console.log('SimulateCtrl');
+    $scope.inputs = {
+      n_year: 10
+    };
+
+    if ($scope.coordinate[1] === null | !isFinite($scope.coordinate[1]) | $scope.coordinate[0] === null | !isFinite($scope.coordinate[0])) {
+      console.log('redirect');
+      $state.go('weathergen');
+    }
+
+    $scope.run = function() {
+      var latitude = +$scope.coordinate[1];
+      var longitude = +$scope.coordinate[0];
+      var n_year = +$scope.inputs.n_year;
+    
+      $http.post('/api/wgen', {
+        latitude: latitude,
+        longitude: longitude,
+        n_year: n_year
+      })
+      .success(function(data, status, headers, config) {
+        console.log(data);
+        $state.go('weathergen.result', {id: data.id});
+      })
+      .error(function(data, status, headers, config) {
+        console.log('ERROR');
+      });          
+    };
+
+  }]);
 ;
 angular.module('weathergen')
   .controller('WeatherCtrl', ['$scope', '$filter', '$http', 'ocpuService', '$state', function($scope, $filter, $http, ocpu, $state) { 
+    console.log('WeatherCtrl');
     $scope.coordinate = [];
     $scope.features = {};
-    $scope.loading = false;
 
     $scope.clearCoordinate = function() {
       $scope.coordinate = [];
       $scope.features = {};
     };
 
-    $scope.session = null;
-    
-    $scope.getDataset = function() {
-      console.log('getDataset()');
-      $scope.loading = true;
-      ocpu.getMaurerMon(+$scope.coordinate[1], +$scope.coordinate[0], function(data, headers) {
-        $scope.session = headers['x-ocpu-session'];
-
-        ocpu.aggregateMaurerMon($scope.session, function(data, headers) {
-          var sessionAnnual = headers['x-ocpu-session'];
-          $scope.session_yr = sessionAnnual;
-
-          ocpu.getData(sessionAnnual, 'json', function(data) {
-            $scope.loading = false;
-            $scope.data_yr = data;
-          });
-        });
-
-        ocpu.getData($scope.session, 'json', function(data) {
-          $scope.data = [];
-          angular.forEach(data, function(d, i) {
-            d.DATE = new Date(d.DATE);
-            this.push(d);
-          }, $scope.data);
-        });
-      });
-    };
-
-    $scope.getDatasetFromDB = function() {
-      $scope.loading = true;
-      var latitude = +$scope.coordinate[1];
-      var longitude = +$scope.coordinate[0];
-      if (latitude !== null & isFinite(latitude) & longitude !== null & isFinite(longitude)) {
-        $http.post('/api', {latitude: latitude, longitude: longitude})
-          .success(function(data, status, headers, config) {
-            $scope.session = true;
-            angular.forEach(data, function(d) {
-              d.date = new Date(d.date);
-            });
-            $scope.data = data;
-            $scope.loading = false;
-          })
-          .error(function(data, status, headers, config) {
-            console.log('ERROR');
-          });  
-      }
-    };
-
-    $scope.runSimulation = function() {
-      var latitude = +$scope.coordinate[1];
-      var longitude = +$scope.coordinate[0];
-      $http.post('/api/wgen', {
-        latitude: latitude,
-        longitude: longitude
-      })
-        .success(function(data, status, headers, config) {
-          console.log(data);
-          $state.go('job', {id: data.id});
-        })
-        .error(function(data, status, headers, config) {
-          console.log('ERROR');
-        });  
-    };
   }]);
-;angular.module('templates', ['home/templates/home.html', 'job/templates/job.html', 'map/templates/map.html', 'model/templates/demand_detail.html', 'model/templates/inflow_detail.html', 'model/templates/model.html', 'model/templates/node_list.html', 'model/templates/reservoir_detail.html', 'sim/templates/flow.html', 'sim/templates/home.html', 'sim/templates/location.html', 'sim/templates/sim.html', 'sim/templates/system.html', 'weathergen/templates/weather.html']);
+;angular.module('templates', ['home/templates/home.html', 'map/templates/map.html', 'model/templates/demand_detail.html', 'model/templates/inflow_detail.html', 'model/templates/model.html', 'model/templates/node_list.html', 'model/templates/reservoir_detail.html', 'sim/templates/flow.html', 'sim/templates/home.html', 'sim/templates/location.html', 'sim/templates/sim.html', 'sim/templates/system.html', 'weathergen/templates/data.html', 'weathergen/templates/result.html', 'weathergen/templates/simulate.html', 'weathergen/templates/weather.html']);
 
 angular.module("home/templates/home.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("home/templates/home.html",
@@ -1217,68 +1197,6 @@ angular.module("home/templates/home.html", []).run(["$templateCache", function($
     "  <h1>Climate Stress Tool</h1>\n" +
     "  <p>This application is used to perform a climate stress test for evaluating water resources system vulnerability.</p>\n" +
     "  <button class=\"btn btn-primary\">Learn More</button>\n" +
-    "</div>\n" +
-    "");
-}]);
-
-angular.module("job/templates/job.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("job/templates/job.html",
-    "<div ng-hide='has_job'>Loading...</div>\n" +
-    "\n" +
-    "<div class=\"row\" ng-show='has_job'>\n" +
-    "  <div class=\"col-sm-4\">\n" +
-    "    <div class=\"panel panel-default\">\n" +
-    "      <div class=\"panel-heading\">\n" +
-    "        <h3 class=\"panel-title\">Status</h3>\n" +
-    "      </div>\n" +
-    "      <div class=\"panel-body\">\n" +
-    "        <p ng-switch on=\"job.state\">\n" +
-    "          <span class=\"label label-info\" ng-switch-when=\"inactive\">Queued</span>\n" +
-    "          <span class=\"label label-success\" ng-switch-when=\"active\">Running</span>\n" +
-    "          <span class=\"label label-danger\" ng-switch-when=\"failed\">Failed</span>\n" +
-    "          <span class=\"label label-primary\" ng-switch-when=\"complete\">Completed</span>\n" +
-    "          <span class=\"label label-default\" ng-switch-default>Waiting...</span>\n" +
-    "        </p>\n" +
-    "\n" +
-    "        <ul class='list-unstyled'>\n" +
-    "          <li>UID: {{job.data.uid}}</li>\n" +
-    "          <li>Started: {{job.created_at | date:\"short\"}}</li>\n" +
-    "        </ul>\n" +
-    "        <a class=\"btn btn-primary\" ng-disabled=\"job.state !== 'complete'\" ng-href=\"/api/jobs/{{job.id}}/results\" target=\"_self\">Download</a>\n" +
-    "        <a class=\"btn btn-success\" ng-disabled=\"job.state !== 'complete'\" ng-click=\"plotResults(job.id)\">Plot Results</a>\n" +
-    "      </div>\n" +
-    "    </div>\n" +
-    "\n" +
-    "    <div class=\"panel panel-default\">\n" +
-    "      <div class=\"panel-heading\">\n" +
-    "        <h3 class=\"panel-title\">Inputs</h3>\n" +
-    "      </div>\n" +
-    "      <div class=\"panel-body\">\n" +
-    "        <ul class=\"list-unstyled\">\n" +
-    "          <li>Latitude: {{ job.data.latitude | number:4 }}</li>\n" +
-    "          <li>Longitude: {{ job.data.longitude | number:4 }}</li>\n" +
-    "        </ul>\n" +
-    "      </div>\n" +
-    "    </div>\n" +
-    "  </div>\n" +
-    "  <div class=\"col-sm-8\" ng-show=\"show_results\">\n" +
-    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"PRCP\" label-y=\"Precip (mm)\" min-y=\"0\"></timeseries-chart>\n" +
-    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"TEMP\" label-y=\"Mean Temp (degC)\"></timeseries-chart>\n" +
-    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"TMIN\" label-y=\"Min Temp (degC)\"></timeseries-chart>\n" +
-    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"TMAX\" label-y=\"Max Temp (degC)\"></timeseries-chart>\n" +
-    "  </div>\n" +
-    "</div>\n" +
-    "\n" +
-    "<div class=\"row\">\n" +
-    "  <div class=\"col-sm-12\" ng-show='has_job && job.state===\"failed\"'>\n" +
-    "      <pre>{{job.error}}</pre>\n" +
-    "  </div>\n" +
-    "</div>\n" +
-    "\n" +
-    "<div class=\"row\">\n" +
-    "  <div class=\"col-sm-12\">\n" +
-    "      <pre>{{job | json}}</pre>\n" +
-    "  </div>\n" +
     "</div>\n" +
     "");
 }]);
@@ -1563,6 +1481,96 @@ angular.module("sim/templates/system.html", []).run(["$templateCache", function(
     "");
 }]);
 
+angular.module("weathergen/templates/data.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("weathergen/templates/data.html",
+    "<div class=\"row\">\n" +
+    "  <div class=\"col-sm-12\">\n" +
+    "    <timeseries-chart data=\"data\" accessor-x=\"date\" accessor-y=\"prcp\" label-y=\"Precip (mm)\" min-y=\"0\"></timeseries-chart>\n" +
+    "    <timeseries-chart data=\"data\" accessor-x=\"date\" accessor-y=\"tmax\" label-y=\"Max Temp (degC)\"></timeseries-chart>\n" +
+    "    <timeseries-chart data=\"data\" accessor-x=\"date\" accessor-y=\"tmin\" label-y=\"Min Temp (degC)\"></timeseries-chart>\n" +
+    "    <timeseries-chart data=\"data\" accessor-x=\"date\" accessor-y=\"wind\" label-y=\"Wind (m/s)\" min-y=\"0\"></timeseries-chart>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("weathergen/templates/result.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("weathergen/templates/result.html",
+    "<div class=\"row\" ng-show=\"job\">\n" +
+    "  <div class=\"col-sm-4\">\n" +
+    "    <div class=\"panel panel-default\">\n" +
+    "      <div class=\"panel-heading\">\n" +
+    "        <h3 class=\"panel-title\">Status</h3>\n" +
+    "      </div>\n" +
+    "      <div class=\"panel-body\">\n" +
+    "        <p ng-switch on=\"job.state\">\n" +
+    "          <span class=\"label label-info\" ng-switch-when=\"inactive\">Queued</span>\n" +
+    "          <span class=\"label label-success\" ng-switch-when=\"active\">Running</span>\n" +
+    "          <span class=\"label label-danger\" ng-switch-when=\"failed\">Failed</span>\n" +
+    "          <span class=\"label label-primary\" ng-switch-when=\"complete\">Completed</span>\n" +
+    "          <span class=\"label label-default\" ng-switch-default>Waiting...</span>\n" +
+    "        </p>\n" +
+    "\n" +
+    "        <ul class='list-unstyled'>\n" +
+    "          <li>UID: {{job.data.uid}}</li>\n" +
+    "          <li>Started: {{job.created_at | date:\"short\"}}</li>\n" +
+    "        </ul>\n" +
+    "\n" +
+    "        <a class=\"btn btn-primary\" ng-disabled=\"job.state !== 'complete'\" ng-href=\"/api/jobs/{{job.id}}/results\" target=\"_self\">Download</a>\n" +
+    "        <!-- <a class=\"btn btn-success\" ng-disabled=\"job.state !== 'complete'\" ng-click=\"plotResults(job.id)\">Plot Results</a> -->\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"panel panel-default\">\n" +
+    "      <div class=\"panel-heading\">\n" +
+    "        <h3 class=\"panel-title\">Inputs</h3>\n" +
+    "      </div>\n" +
+    "      <div class=\"panel-body\">\n" +
+    "        <pre>{{job.data.inputs | json}}</pre>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-sm-8\" ng-show=\"job && job.state==='complete' && results.length > 0\">\n" +
+    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"PRCP\" label-y=\"Precip (mm)\" min-y=\"0\"></timeseries-chart>\n" +
+    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"TEMP\" label-y=\"Mean Temp (degC)\"></timeseries-chart>\n" +
+    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"TMIN\" label-y=\"Min Temp (degC)\"></timeseries-chart>\n" +
+    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"TMAX\" label-y=\"Max Temp (degC)\"></timeseries-chart>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-sm-8\" ng-show='job && job.state===\"failed\"'>\n" +
+    "    <pre>{{job.error}}</pre>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "\n" +
+    "<div class=\"row\">\n" +
+    "  <div class=\"col-sm-12\">\n" +
+    "      <pre>{{job | json}}</pre>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("weathergen/templates/simulate.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("weathergen/templates/simulate.html",
+    "<div class=\"row\">\n" +
+    "  <div class=\"col-sm-4\">\n" +
+    "    <form class=\"form-horizontal\" role=\"form\">\n" +
+    "      <div class=\"form-group\">\n" +
+    "        <label for=\"inputNumberYear\" class=\"col-sm-4 control-label\"># Years</label>\n" +
+    "        <div class=\"col-sm-8\">\n" +
+    "          <input type=\"text\" class=\"form-control\" id=\"inputLatitude\" ng-model=\"inputs.n_year\">\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "      <div class=\"form-group\">\n" +
+    "        <div class=\"col-sm-8 col-sm-offset-4\">\n" +
+    "          <button class=\"btn btn-primary loadinggif\" ng-click='run()'>Run</button>\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "    </form>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "");
+}]);
+
 angular.module("weathergen/templates/weather.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("weathergen/templates/weather.html",
     "<div class=\"row\">\n" +
@@ -1589,9 +1597,8 @@ angular.module("weathergen/templates/weather.html", []).run(["$templateCache", f
     "\n" +
     "      <div class=\"form-group\">\n" +
     "        <div class=\"col-sm-8 col-sm-offset-4\">\n" +
-    "          <!-- <button type=\"submit\" class=\"btn btn-primary loadinggif\" ng-click=\"getDataset()\">Submit<span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\" ng-show='loading'></span></button> -->\n" +
-    "          <button type=\"submit\" class=\"btn btn-primary loadinggif\" ng-click=\"getDatasetFromDB()\">Get Data<span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\" ng-show='loading'></span></button>\n" +
-    "          <button class=\"btn btn-primary loadinggif\" ng-click=\"runSimulation()\">Simulate</button>\n" +
+    "          <button type=\"submit\" class=\"btn btn-primary loadinggif\" ui-sref=\"weathergen.data\">Get Data<span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\" ng-show='loading'></span></button>\n" +
+    "          <button class=\"btn btn-primary loadinggif\" ui-sref='weathergen.simulate'>Simulate</button>\n" +
     "          <button class=\"btn btn-danger\" ng-click=\"clearCoordinate()\">Clear</button>\n" +
     "        </div>\n" +
     "      </div>\n" +
@@ -1607,66 +1614,6 @@ angular.module("weathergen/templates/weather.html", []).run(["$templateCache", f
     "  </div>\n" +
     "</div>\n" +
     "<hr>\n" +
-    "<div ng-show=\"session\">\n" +
-    "  <div class=\"row\">\n" +
-    "    <div class=\"col-sm-12\">\n" +
-    "      <timeseries-chart data=\"data\" accessor-x=\"date\" accessor-y=\"prcp\" label-y=\"Precip (mm)\" min-y=\"0\"></timeseries-chart>\n" +
-    "      <timeseries-chart data=\"data\" accessor-x=\"date\" accessor-y=\"tmax\" label-y=\"Max Temp (degC)\"></timeseries-chart>\n" +
-    "      <timeseries-chart data=\"data\" accessor-x=\"date\" accessor-y=\"tmin\" label-y=\"Min Temp (degC)\"></timeseries-chart>\n" +
-    "      <timeseries-chart data=\"data\" accessor-x=\"date\" accessor-y=\"wind\" label-y=\"Wind (m/s)\" min-y=\"0\"></timeseries-chart>\n" +
-    "    </div>\n" +
-    "  </div>\n" +
-    "  <!-- <div class=\"row\">\n" +
-    "    <div class=\"col-sm-6\">\n" +
-    "      <h2>Monthly</h2>\n" +
-    "      <p><b>Session Key:</b> {{session}}</p>\n" +
-    "      <table class=\"table table-striped\">\n" +
-    "        <thead>\n" +
-    "          <tr>\n" +
-    "            <th>Date</th>\n" +
-    "            <th>Precip (mm)</th>\n" +
-    "            <th>Tmax (degC)</th>\n" +
-    "            <th>Tmin (degC)</th>\n" +
-    "            <th>Wind (m/s)</th>\n" +
-    "          </tr>\n" +
-    "        </thead>\n" +
-    "        <tbody>\n" +
-    "          <tr ng-repeat=\"d in data | limitTo: 100\">\n" +
-    "            <td>{{d.DATE | date:'yyyy-MM-dd'}}</td>\n" +
-    "            <td>{{d.PRCP}}</td>\n" +
-    "            <td>{{d.TMAX}}</td>\n" +
-    "            <td>{{d.TMIN}}</td>\n" +
-    "            <td>{{d.WIND}}</td>\n" +
-    "          </tr>\n" +
-    "        </tbody>\n" +
-    "      </table>\n" +
-    "    </div>\n" +
-    "    <div class=\"col-sm-6\">\n" +
-    "      <h2>Annual</h2>\n" +
-    "      <p><b>Session Key:</b> {{session_yr}}</p>\n" +
-    "      <table class=\"table table-striped\">\n" +
-    "        <thead>\n" +
-    "          <tr>\n" +
-    "            <th>Year</th>\n" +
-    "            <th>Precip (mm)</th>\n" +
-    "            <th>Tmax (degC)</th>\n" +
-    "            <th>Tmin (degC)</th>\n" +
-    "            <th>Wind (m/s)</th>\n" +
-    "          </tr>\n" +
-    "        </thead>\n" +
-    "        <tbody>\n" +
-    "          <tr ng-repeat=\"d in data_yr | limitTo: 100\">\n" +
-    "            <td>{{d.YEAR}}</td>\n" +
-    "            <td>{{d.PRCP}}</td>\n" +
-    "            <td>{{d.TMAX}}</td>\n" +
-    "            <td>{{d.TMIN}}</td>\n" +
-    "            <td>{{d.WIND}}</td>\n" +
-    "          </tr>\n" +
-    "        </tbody>\n" +
-    "      </table>\n" +
-    "    </div>\n" +
     "\n" +
-    "  </div>\n" +
-    " --></div>\n" +
-    "");
+    "<div ui-view></div>");
 }]);

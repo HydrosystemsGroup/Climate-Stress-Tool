@@ -6,6 +6,7 @@ suppressPackageStartupMessages(library(gridExtra))
 suppressPackageStartupMessages(library(weathergen))
 suppressPackageStartupMessages(library(forecast))
 suppressPackageStartupMessages(library(RPostgreSQL))
+suppressPackageStartupMessages(library(jsonlite))
 
 theme_set(theme_bw())
 
@@ -18,10 +19,14 @@ cat(paste0("Input Arguments:\n", paste(args, collapse='\n')))
 wd <- args[1]
 stopifnot(file.exists(wd))
 
-latitude <- args[2]
-longitude <- args[3]
+# latitude <- args[2]
+# longitude <- args[3]
 
 setwd(wd)
+inputs <- fromJSON('inputs.json')
+latitude <- inputs[['latitude']]
+longitude <- inputs[['longitude']]
+n_year <- inputs[['n_year']]
 
 # load data ----
 drv <- dbDriver("PostgreSQL")
@@ -61,7 +66,7 @@ clim.mon <- filter(clim.mon, wyear(DATE) %in% complete_years)
 clim.wyr <- filter(clim.wyr, WYEAR %in% complete_years)
 
 # configuration ----
-n_year <- 10
+# n_year <- 10
 water_yr_change <- TRUE
 month_list <- c(10:12, 1:9)
 start_water_year <- 2000

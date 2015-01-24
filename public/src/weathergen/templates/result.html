@@ -1,6 +1,4 @@
-<div ng-hide='has_job'>Loading...</div>
-
-<div class="row" ng-show='has_job'>
+<div class="row" ng-show="job">
   <div class="col-sm-4">
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -19,8 +17,9 @@
           <li>UID: {{job.data.uid}}</li>
           <li>Started: {{job.created_at | date:"short"}}</li>
         </ul>
+
         <a class="btn btn-primary" ng-disabled="job.state !== 'complete'" ng-href="/api/jobs/{{job.id}}/results" target="_self">Download</a>
-        <a class="btn btn-success" ng-disabled="job.state !== 'complete'" ng-click="plotResults(job.id)">Plot Results</a>
+        <!-- <a class="btn btn-success" ng-disabled="job.state !== 'complete'" ng-click="plotResults(job.id)">Plot Results</a> -->
       </div>
     </div>
 
@@ -29,24 +28,18 @@
         <h3 class="panel-title">Inputs</h3>
       </div>
       <div class="panel-body">
-        <ul class="list-unstyled">
-          <li>Latitude: {{ job.data.latitude | number:4 }}</li>
-          <li>Longitude: {{ job.data.longitude | number:4 }}</li>
-        </ul>
+        <pre>{{job.data.inputs | json}}</pre>
       </div>
     </div>
   </div>
-  <div class="col-sm-8" ng-show="show_results">
+  <div class="col-sm-8" ng-show="job && job.state==='complete' && results.length > 0">
     <timeseries-chart data="results" accessor-x="DATE" accessor-y="PRCP" label-y="Precip (mm)" min-y="0"></timeseries-chart>
     <timeseries-chart data="results" accessor-x="DATE" accessor-y="TEMP" label-y="Mean Temp (degC)"></timeseries-chart>
     <timeseries-chart data="results" accessor-x="DATE" accessor-y="TMIN" label-y="Min Temp (degC)"></timeseries-chart>
     <timeseries-chart data="results" accessor-x="DATE" accessor-y="TMAX" label-y="Max Temp (degC)"></timeseries-chart>
   </div>
-</div>
-
-<div class="row">
-  <div class="col-sm-12" ng-show='has_job && job.state==="failed"'>
-      <pre>{{job.error}}</pre>
+  <div class="col-sm-8" ng-show='job && job.state==="failed"'>
+    <pre>{{job.error}}</pre>
   </div>
 </div>
 
