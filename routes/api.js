@@ -22,6 +22,7 @@ router.post('/wgen', function(req, res) {
     var job = jobs.create('wgen', {
         title: 'wgen job',
         wd: wd,
+        uid: uid,
         latitude: req.body.latitude,
         longitude: req.body.longitude
     }).save( function(err){

@@ -61,7 +61,10 @@ angular.module('weathergen')
     $scope.runSimulation = function() {
       var latitude = +$scope.coordinate[1];
       var longitude = +$scope.coordinate[0];
-      $http.post('/api/wgen', {latitude: latitude, longitude: longitude})
+      $http.post('/api/wgen', {
+        latitude: latitude,
+        longitude: longitude
+      })
         .success(function(data, status, headers, config) {
           console.log(data);
           $state.go('job', {id: data.id});

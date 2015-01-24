@@ -13,7 +13,7 @@ angular.module('job')
     //     });
     // })();
 
-    var timer = $interval(function() {
+    var refreshStatus = function() {
       $http.get('/api/jobs/' + $stateParams.id)
         .success(function(data, status, headers, config) {
           // console.log(data);
@@ -24,7 +24,11 @@ angular.module('job')
             $interval.cancel(timer);
           }
         });
-    }, 5000);
+    };
+    refreshStatus();
+    
+    var timer = $interval(refreshStatus, 5000);
+
     $scope.show_results = false;
     $scope.plotResults = function(id) {
       d3.csv('/api/jobs/' + id + '/results', function(d) {
@@ -36,7 +40,8 @@ angular.module('job')
             TEMP: +d.TEMP
           };
         }, function(error, rows) {
-          $scope.results = rows.slice(0, 365);
+          // $scope.results = rows.slice(0, 365);
+          $scope.results = rows;
           $scope.show_results = true;
           console.log($scope.results.length);
           $scope.$digest();

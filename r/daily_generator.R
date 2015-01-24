@@ -87,6 +87,43 @@ sim <- wgen_daily(obs_day = zoo(x = clim.da[, c('PRCP', 'TEMP', 'TMIN', 'TMAX', 
 select(sim$out, DATE, PRCP, TEMP, TMIN, TMAX) %>%
   write.csv(file='sim.csv', row.names=FALSE)
 
+# out.day <- select(sim[['out']], DATE, PRCP, TEMP, TMIN, TMAX)
+# out.mon <- mutate(out.day, DATE=floor_date(DATE, unit='month')) %>%
+#   group_by(DATE) %>%
+#   summarize(PRCP=sum(PRCP),
+#             TEMP=mean(TEMP),
+#             TMIN=mean(TMIN),
+#             TMAX=mean(TMAX))
+# out.wyr <- mutate(out.day, WYEAR=wyear(DATE)) %>%
+#   group_by(WYEAR) %>%
+#   summarize(PRCP=sum(PRCP),
+#             TEMP=mean(TEMP),
+#             TMIN=mean(TMIN),
+#             TMAX=mean(TMAX))
+
+# p.day.prcp <- out.day %>%
+#   ggplot(aes(DATE, PRCP)) +
+#   geom_line() +
+#   labs(x='Date', y='Precipitation (mm/day)') +
+#   theme_bw()
+# p.day.temp <- out.day %>%
+#   ggplot(aes(DATE, TEMP)) +
+#   geom_ribbon(aes(ymin=TMIN, ymax=TMAX)) +
+#   geom_line() +
+#   labs(x='Date', y='Temperature (deg C)') +
+#   theme_bw()
+#
+# png(filename='daily.png', width=600, height=400)
+# grid.arrange(p.day.prcp, p.day.temp, ncol=1)
+# dev.off()
+
+# box.wyr <- rbind(select(clim.wyr, WYEAR, PRCP, TMAX, TMIN, TEMP) %>% mutate(SOURCE='Historical'),
+#                  mutate(out.wyr, SOURCE='Simulated'))
+# p.wyr.prcp.box <- box.wyr %>%
+#   ggplot(aes(SOURCE, PRCP)) +
+#   geom_boxplot() +
+#   theme_bw()
+
 save(sim, file='sim.rda')
 
 cat(paste0("Saved output to: ", file.path(getwd(), 'sim.csv')))

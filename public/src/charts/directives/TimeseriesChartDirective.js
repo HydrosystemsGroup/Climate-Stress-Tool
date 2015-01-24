@@ -2,9 +2,13 @@
 angular.module('charts')
   .directive('timeseriesChart', function() {
     function link(scope, element, attr) {
+      var div = d3.select(element[0]);
+
+      var bbox = div.node().getBoundingClientRect();
+
       var margin = {top: 20, right: 80, bottom: 30, left: 50},
-          width = 1170 - margin.left - margin.right,
-          height = 300 - margin.top - margin.bottom;
+          width = (bbox.width || 800) - margin.left - margin.right,
+          height = (bbox.height || 300) - margin.top - margin.bottom;
 
       var x = d3.time.scale()
           .range([0, width]);
@@ -26,22 +30,24 @@ angular.module('charts')
 
       var svg = d3.select(element[0]).append('svg')
           .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-        .append("g")
+          .attr("height", height + margin.top + margin.bottom);
+
+      var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")");
+      g.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")");
 
-        svg.append("g")
-            .attr("class", "y axis")
-          .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(attr.labelY);
+      g.append("g")
+          .attr("class", "y axis")
+        .append("text")
+          // .attr("transform", "rotate(-90)")
+          // .attr("y", 6)
+          .attr("dy", "-0.6em")
+          .attr("dx", -margin.left)
+          .style("text-anchor", "start")
+          .text(attr.labelY);
       
       scope.$watch('data', function(data) {
         if (data) {
@@ -49,16 +55,16 @@ angular.module('charts')
           y.domain([ attr.minY || d3.min(data, scope.accessorY), 
                      d3.max(data, scope.accessorY) ]);
 
-          svg.select('.x.axis').call(xAxis);
-          svg.select('.y.axis').call(yAxis);
+          g.select('.x.axis').call(xAxis);
+          g.select('.y.axis').call(yAxis);
 
-          svg.selectAll(".line")
+          g.selectAll(".line")
               .data([data])
             .enter()
               .append("path")
               .attr("class", "line");
 
-          svg.selectAll(".line")
+          g.selectAll(".line")
               .attr("d", line);  
         }
       }, true);

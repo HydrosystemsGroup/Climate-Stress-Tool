@@ -141,9 +141,13 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
 angular.module('charts')
   .directive('timeseriesChart', function() {
     function link(scope, element, attr) {
+      var div = d3.select(element[0]);
+
+      var bbox = div.node().getBoundingClientRect();
+
       var margin = {top: 20, right: 80, bottom: 30, left: 50},
-          width = 1170 - margin.left - margin.right,
-          height = 300 - margin.top - margin.bottom;
+          width = (bbox.width || 800) - margin.left - margin.right,
+          height = (bbox.height || 300) - margin.top - margin.bottom;
 
       var x = d3.time.scale()
           .range([0, width]);
@@ -165,22 +169,24 @@ angular.module('charts')
 
       var svg = d3.select(element[0]).append('svg')
           .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-        .append("g")
+          .attr("height", height + margin.top + margin.bottom);
+
+      var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")");
+      g.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")");
 
-        svg.append("g")
-            .attr("class", "y axis")
-          .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text(attr.labelY);
+      g.append("g")
+          .attr("class", "y axis")
+        .append("text")
+          // .attr("transform", "rotate(-90)")
+          // .attr("y", 6)
+          .attr("dy", "-0.6em")
+          .attr("dx", -margin.left)
+          .style("text-anchor", "start")
+          .text(attr.labelY);
       
       scope.$watch('data', function(data) {
         if (data) {
@@ -188,16 +194,16 @@ angular.module('charts')
           y.domain([ attr.minY || d3.min(data, scope.accessorY), 
                      d3.max(data, scope.accessorY) ]);
 
-          svg.select('.x.axis').call(xAxis);
-          svg.select('.y.axis').call(yAxis);
+          g.select('.x.axis').call(xAxis);
+          g.select('.y.axis').call(yAxis);
 
-          svg.selectAll(".line")
+          g.selectAll(".line")
               .data([data])
             .enter()
               .append("path")
               .attr("class", "line");
 
-          svg.selectAll(".line")
+          g.selectAll(".line")
               .attr("d", line);  
         }
       }, true);
@@ -230,7 +236,7 @@ angular.module('job')
     //     });
     // })();
 
-    var timer = $interval(function() {
+    var refreshStatus = function() {
       $http.get('/api/jobs/' + $stateParams.id)
         .success(function(data, status, headers, config) {
           // console.log(data);
@@ -241,7 +247,11 @@ angular.module('job')
             $interval.cancel(timer);
           }
         });
-    }, 5000);
+    };
+    refreshStatus();
+    
+    var timer = $interval(refreshStatus, 5000);
+
     $scope.show_results = false;
     $scope.plotResults = function(id) {
       d3.csv('/api/jobs/' + id + '/results', function(d) {
@@ -253,7 +263,8 @@ angular.module('job')
             TEMP: +d.TEMP
           };
         }, function(error, rows) {
-          $scope.results = rows.slice(0, 365);
+          // $scope.results = rows.slice(0, 365);
+          $scope.results = rows;
           $scope.show_results = true;
           console.log($scope.results.length);
           $scope.$digest();
@@ -1185,7 +1196,10 @@ angular.module('weathergen')
     $scope.runSimulation = function() {
       var latitude = +$scope.coordinate[1];
       var longitude = +$scope.coordinate[0];
-      $http.post('/api/wgen', {latitude: latitude, longitude: longitude})
+      $http.post('/api/wgen', {
+        latitude: latitude,
+        longitude: longitude
+      })
         .success(function(data, status, headers, config) {
           console.log(data);
           $state.go('job', {id: data.id});
@@ -1210,33 +1224,54 @@ angular.module("home/templates/home.html", []).run(["$templateCache", function($
 angular.module("job/templates/job.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("job/templates/job.html",
     "<div ng-hide='has_job'>Loading...</div>\n" +
+    "\n" +
     "<div class=\"row\" ng-show='has_job'>\n" +
     "  <div class=\"col-sm-4\">\n" +
-    "    <h3 ng-switch on=\"job.state\">\n" +
-    "      <span class=\"label label-info\" ng-switch-when=\"inactive\">Queued</span>\n" +
-    "      <span class=\"label label-success\" ng-switch-when=\"active\">Running</span>\n" +
-    "      <span class=\"label label-danger\" ng-switch-when=\"failed\">Failed</span>\n" +
-    "      <span class=\"label label-primary\" ng-switch-when=\"complete\">Completed</span>\n" +
-    "      <span class=\"label label-default\" ng-switch-default>Waiting...</span>\n" +
-    "    </h3>\n" +
-    "    <ul class='list-unstyled'>\n" +
-    "      <li>Count: {{count}}</li>\n" +
-    "      <li>UID: {{job.data.uid}}</li>\n" +
-    "      <li>Started: {{job.created_at | date:\"short\"}}</li>\n" +
-    "    </ul>\n" +
-    "    <a class=\"btn btn-primary\" ng-disabled=\"job.state !== 'complete'\" ng-href=\"/api/jobs/{{job.id}}/results\" target=\"_self\">Download</a>\n" +
-    "    <a class=\"btn btn-success\" ng-disabled=\"job.state !== 'complete'\" ng-click=\"plotResults(job.id)\">Plot Results</a>\n" +
-    "    <!-- <a class=\"btn btn-primary\" ng-click=\"downloadResults(job.id)\">Download</a> -->\n" +
+    "    <div class=\"panel panel-default\">\n" +
+    "      <div class=\"panel-heading\">\n" +
+    "        <h3 class=\"panel-title\">Status</h3>\n" +
+    "      </div>\n" +
+    "      <div class=\"panel-body\">\n" +
+    "        <p ng-switch on=\"job.state\">\n" +
+    "          <span class=\"label label-info\" ng-switch-when=\"inactive\">Queued</span>\n" +
+    "          <span class=\"label label-success\" ng-switch-when=\"active\">Running</span>\n" +
+    "          <span class=\"label label-danger\" ng-switch-when=\"failed\">Failed</span>\n" +
+    "          <span class=\"label label-primary\" ng-switch-when=\"complete\">Completed</span>\n" +
+    "          <span class=\"label label-default\" ng-switch-default>Waiting...</span>\n" +
+    "        </p>\n" +
+    "\n" +
+    "        <ul class='list-unstyled'>\n" +
+    "          <li>UID: {{job.data.uid}}</li>\n" +
+    "          <li>Started: {{job.created_at | date:\"short\"}}</li>\n" +
+    "        </ul>\n" +
+    "        <a class=\"btn btn-primary\" ng-disabled=\"job.state !== 'complete'\" ng-href=\"/api/jobs/{{job.id}}/results\" target=\"_self\">Download</a>\n" +
+    "        <a class=\"btn btn-success\" ng-disabled=\"job.state !== 'complete'\" ng-click=\"plotResults(job.id)\">Plot Results</a>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"panel panel-default\">\n" +
+    "      <div class=\"panel-heading\">\n" +
+    "        <h3 class=\"panel-title\">Inputs</h3>\n" +
+    "      </div>\n" +
+    "      <div class=\"panel-body\">\n" +
+    "        <ul class=\"list-unstyled\">\n" +
+    "          <li>Latitude: {{ job.data.latitude | number:4 }}</li>\n" +
+    "          <li>Longitude: {{ job.data.longitude | number:4 }}</li>\n" +
+    "        </ul>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
     "  </div>\n" +
-    "  <div class=\"col-sm-8\" ng-show='has_job && job.state===\"failed\"'>\n" +
-    "    <pre>{{job.error}}</pre>\n" +
+    "  <div class=\"col-sm-8\" ng-show=\"show_results\">\n" +
+    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"PRCP\" label-y=\"Precip (mm)\" min-y=\"0\"></timeseries-chart>\n" +
+    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"TEMP\" label-y=\"Mean Temp (degC)\"></timeseries-chart>\n" +
+    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"TMIN\" label-y=\"Min Temp (degC)\"></timeseries-chart>\n" +
+    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"TMAX\" label-y=\"Max Temp (degC)\"></timeseries-chart>\n" +
     "  </div>\n" +
     "</div>\n" +
     "\n" +
-    "<div class=\"row\" ng-show=\"show_results\">\n" +
-    "  <div class=\"col-sm-12\">\n" +
-    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"PRCP\" label-y=\"Precip (mm)\" min-y=\"0\"></timeseries-chart>\n" +
-    "    <timeseries-chart data=\"results\" accessor-x=\"DATE\" accessor-y=\"TEMP\" label-y=\"Mean Temp (degC)\"></timeseries-chart>\n" +
+    "<div class=\"row\">\n" +
+    "  <div class=\"col-sm-12\" ng-show='has_job && job.state===\"failed\"'>\n" +
+    "      <pre>{{job.error}}</pre>\n" +
     "  </div>\n" +
     "</div>\n" +
     "\n" +
