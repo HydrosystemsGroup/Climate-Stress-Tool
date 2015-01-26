@@ -42,3 +42,6 @@ svg .line {
     font-weight: bold;
     text-transform: uppercase;
 }
+
+/*angular-ui bootstrap fix: http://angular-ui.github.io/bootstrap/*/
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
