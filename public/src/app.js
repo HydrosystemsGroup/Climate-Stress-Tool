@@ -1,5 +1,5 @@
 
-var app = angular.module('climate-stress-tool', 
+var app = angular.module('cst', 
   ['ui.router',
    'ui.grid',
    'ui.grid.edit',
@@ -29,16 +29,18 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
         controller: 'MapCtrl',
         templateUrl: 'map/templates/map.html'
       });
+
     $locationProvider.html5Mode({
       enabled: true,
       requireBase: false
     });
-}])
-.run(
-  [ '$rootScope', '$state', '$stateParams',
-    function ($rootScope, $state, $stateParams) {
-      $rootScope.$state = $state;
-      $rootScope.$stateParams = $stateParams;
-    }
-  ]
-);
+  }])
+  .run(
+    [ '$rootScope', '$state', '$stateParams',
+      function ($rootScope, $state, $stateParams) {
+        // for debugging
+        $rootScope.$state = $state;
+        $rootScope.$stateParams = $stateParams;
+      }
+    ]
+  );
