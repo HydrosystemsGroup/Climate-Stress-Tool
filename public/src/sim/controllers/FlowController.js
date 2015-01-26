@@ -1,5 +1,5 @@
 
-angular.module('sim')
+angular.module('cst.sim')
   .controller('FlowCtrl', ['$scope', '$state', function($scope, $state) {
     $scope.flow = {
       data: [],

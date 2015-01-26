@@ -1,5 +1,5 @@
 
-angular.module('model')
+angular.module('cst.model')
   .factory('Reservoir', [function () {
     var reservoirNode = joint.shapes.basic.Generic.extend(_.extend({}, 
       joint.shapes.basic.PortsModelInterface, {

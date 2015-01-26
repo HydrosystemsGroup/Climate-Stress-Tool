@@ -27,7 +27,7 @@ module.exports = function(grunt) {
     html2js: {
       options: {
         base: 'public/src',
-        module: 'templates'
+        module: 'cst.templates'
       },
       dist: {
         src: [ 'public/src/**/*.html' ],

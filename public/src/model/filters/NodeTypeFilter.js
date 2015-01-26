@@ -1,4 +1,4 @@
-angular.module('model')
+angular.module('cst.model')
   .filter('NodeType', function() {
     return function(input, nodeType) {
       var filtered = [];

@@ -1,7 +1,7 @@
 
-var weathergen = angular.module('weathergen', ['ocpu']);
+var app = angular.module('cst.weathergen', ['cst.ocpu']);
 
-weathergen.config(['$stateProvider',
+app.config(['$stateProvider',
   function ($stateProvider) {
     $stateProvider
       .state('weathergen', {

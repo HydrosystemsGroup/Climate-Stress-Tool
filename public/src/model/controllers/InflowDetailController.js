@@ -1,4 +1,5 @@
-angular.module('model')
+
+angular.module('cst.model')
   .controller('InflowDetailCtrl', ['$scope', '$stateParams', '$state', '$window', 'ModelService', 'Graph', 
               function($scope, $stateParams, $state, $window, model, graph) {
     $scope.nodeId = $stateParams.nodeId;

@@ -1,5 +1,5 @@
 
-angular.module('map')
+angular.module('cst.map')
   .directive('map', function() {
     return {
       restrict: 'E',

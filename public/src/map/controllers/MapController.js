@@ -1,5 +1,5 @@
 
-angular.module('map')
+angular.module('cst.map')
   .controller('MapCtrl', ['$scope', function($scope) {
     $scope.coordinate = [];
     $scope.features = {};

@@ -1,4 +1,5 @@
-angular.module('model')
+
+angular.module('cst.model')
   .controller('DemandDetailCtrl', ['$scope', '$stateParams', '$state', '$window', 'ModelService', 'Graph', 
               function($scope, $stateParams, $state, $window, model, graph) {
     $scope.nodeId = $stateParams.nodeId;
@@ -43,5 +44,4 @@ angular.module('model')
       $scope.graphCell.remove();
       $state.go('model');
     };
-
   }]);

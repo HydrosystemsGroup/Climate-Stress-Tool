@@ -1,5 +1,5 @@
 
-angular.module('charts')
+angular.module('cst.charts')
   .directive('timeseriesChart', function() {
     function link(scope, element, attr) {
       var div = d3.select(element[0]);

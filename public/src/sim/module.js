@@ -1,5 +1,5 @@
 
-var app = angular.module('sim', []);
+var app = angular.module('cst.sim', []);
 
 app.config(['$stateProvider', '$urlRouterProvider', 
   function($stateProvider, $urlRouterProvider) {

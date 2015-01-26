@@ -1,5 +1,5 @@
 
-angular.module('weathergen')
+angular.module('cst.weathergen')
   .controller('SimulateCtrl', ['$scope', '$http', '$state', function($scope, $http, $state) { 
     console.log('SimulateCtrl');
     $scope.inputs = {

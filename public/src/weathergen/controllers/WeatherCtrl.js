@@ -1,5 +1,5 @@
 
-angular.module('weathergen')
+angular.module('cst.weathergen')
   .controller('WeatherCtrl', ['$scope', '$filter', '$http', 'ocpuService', '$state', function($scope, $filter, $http, ocpu, $state) { 
     console.log('WeatherCtrl');
     $scope.coordinate = [];

@@ -1,4 +1,5 @@
-angular.module('weathergen')
+
+angular.module('cst.weathergen')
   .controller('DataCtrl', ['$scope', '$filter', '$http', 'ocpuService', '$state', function($scope, $filter, $http, ocpu, $state) { 
     console.log('DataCtrl');
     $scope.loading = true;

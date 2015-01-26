@@ -5,14 +5,14 @@ var app = angular.module('cst',
    'ui.grid.edit',
    'ui.grid.cellNav',
    'angularFileUpload',
-   'templates',
-   'home',
-   'ocpu',
-   'weathergen',
-   'model',
-   'charts',
-   'map',
-   'sim']);
+   'cst.templates',
+   'cst.home',
+   'cst.ocpu',
+   'cst.weathergen',
+   'cst.model',
+   'cst.charts',
+   'cst.map',
+   'cst.sim']);
 
 app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
   function($stateProvider, $urlRouterProvider, $locationProvider) {

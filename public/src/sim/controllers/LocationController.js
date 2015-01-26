@@ -1,5 +1,5 @@
 
-angular.module('sim')
+angular.module('cst.sim')
   .controller('LocationCtrl', ['$scope', '$state', function($scope, $state) {
     $scope.features = {};
     if ($scope.model.location && $scope.model.location.coordinates) {

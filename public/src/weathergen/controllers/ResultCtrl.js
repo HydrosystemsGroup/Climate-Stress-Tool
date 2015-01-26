@@ -1,5 +1,5 @@
 
-angular.module('weathergen')
+angular.module('cst.weathergen')
   .controller('ResultCtrl', ['$scope', '$stateParams', '$http', '$interval', function($scope, $stateParams, $http, $interval) { 
     console.log('ResultCtrl');
     $scope.has_job = false;

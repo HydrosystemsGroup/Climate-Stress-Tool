@@ -1,2 +1,2 @@
 
-angular.module('home', []);
+angular.module('cst.home', []);

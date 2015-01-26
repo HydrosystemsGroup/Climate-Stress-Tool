@@ -1,5 +1,5 @@
 
-angular.module('model')
+angular.module('cst.model')
   .controller('ModelCtrl', ['$scope', '$state', 'ModelService', 'Graph', function($scope, $state, model, graph) {
     // console.log('ModelCtrl');
 

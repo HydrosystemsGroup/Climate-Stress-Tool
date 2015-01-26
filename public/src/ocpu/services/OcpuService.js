@@ -1,5 +1,5 @@
 
-angular.module('ocpu')
+angular.module('cst.ocpu')
   .value('ocpuUrl', '//xps420.local/ocpu')
   .service('ocpuService', ['$http', 'ocpuUrl', function($http, url) {
     this.getData = function(sessionKey, format, cb) {

@@ -1,5 +1,5 @@
 
-var app = angular.module('model', []);
+var app = angular.module('cst.model', []);
 
 app.config(['$stateProvider', '$urlRouterProvider', 
   function($stateProvider, $urlRouterProvider) {
@@ -31,4 +31,4 @@ app.config(['$stateProvider', '$urlRouterProvider',
         templateUrl: 'model/templates/inflow_detail.html',
         controller: 'InflowDetailCtrl'
       });
-}]);
+  }]);

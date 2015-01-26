@@ -1,2 +1,2 @@
 
-angular.module('ocpu', []);
+angular.module('cst.ocpu', []);

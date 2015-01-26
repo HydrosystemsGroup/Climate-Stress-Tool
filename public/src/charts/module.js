@@ -1,2 +1,2 @@
 
-angular.module('charts', []);
+angular.module('cst.charts', []);
