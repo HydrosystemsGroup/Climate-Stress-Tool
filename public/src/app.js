@@ -21,7 +21,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
     $stateProvider
       .state('home', {
         url: '/home',
-        controller: 'HomeCtrl',
         templateUrl: 'home/templates/home.html'
       })
       .state('map', {
