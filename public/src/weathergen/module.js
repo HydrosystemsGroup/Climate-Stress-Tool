@@ -1,5 +1,5 @@
 
-var app = angular.module('cst.weathergen', ['cst.ocpu']);
+var app = angular.module('cst.weathergen', ['MessageCenterModule']);
 
 app.config(['$stateProvider',
   function ($stateProvider) {

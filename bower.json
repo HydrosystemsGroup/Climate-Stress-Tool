@@ -25,6 +25,7 @@
     "ol3": "https://github.com/openlayers/ol3/releases/download/v3.0.0/v3.0.0.zip",
     "papaparse": "~3.1.3",
     "ng-file-upload": "~1.6.12",
-    "angular-bootstrap": "~0.12.0"
+    "angular-bootstrap": "~0.12.0",
+    "message-center": "~1.0.3"
   }
 }
