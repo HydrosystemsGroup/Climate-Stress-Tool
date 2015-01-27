@@ -42,10 +42,10 @@ angular.module('cst.weathergen')
       };
       
       var fetchData = function(latitude, longitude, cb) {
-        console.log('fetchData');
+        console.log('fetchData', latitude, longitude);
         if (validateCoordinates(latitude, longitude)) {
           console.log('Fetching data');
-          $http.get('/api/maurer', {latitude: latitude, longitude: longitude})
+          $http.get('/api/maurer', { params: {latitude: latitude, longitude: longitude}})
             .success(function(data, status, headers, config) {
               angular.forEach(data, function(d) {
                 d.date = new Date(d.date);

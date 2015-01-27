@@ -1,15 +1,13 @@
-<h1>View Historical Data</h1>
+<timeseries-chart data="data.values" accessor-x="date" accessor-y="{{chart.variable}}" label-y="{{variableLabels[chart.variable]}}" min-y="0"></timeseries-chart>
 
-<p>[Data Plots]</p>
-
-<a class="btn btn-primary" ui-sref="weathergen.simulate.setup">Setup Simulation</a>
-
-<!-- <div class="row">
-  <div class="col-sm-12">
-    <timeseries-chart data="data" accessor-x="date" accessor-y="prcp" label-y="Precip (mm)" min-y="0"></timeseries-chart>
-    <timeseries-chart data="data" accessor-x="date" accessor-y="tmax" label-y="Max Temp (degC)"></timeseries-chart>
-    <timeseries-chart data="data" accessor-x="date" accessor-y="tmin" label-y="Min Temp (degC)"></timeseries-chart>
-    <timeseries-chart data="data" accessor-x="date" accessor-y="wind" label-y="Wind (m/s)" min-y="0"></timeseries-chart>
+<div>
+  <div class="btn-group">
+    <label class="btn btn-success" ng-model="chart.variable" btn-radio="'prcp'" uncheckable>Precip</label>
+    <label class="btn btn-success" ng-model="chart.variable" btn-radio="'tmin'" uncheckable>Tmin</label>
+    <label class="btn btn-success" ng-model="chart.variable" btn-radio="'tmax'" uncheckable>TMax</label>
+    <label class="btn btn-success" ng-model="chart.variable" btn-radio="'wind'" uncheckable>Wind</label>
   </div>
+  <a class="btn btn-primary" ui-sref="weathergen.simulate.setup">Setup Simulation</a>  
 </div>
- -->
+
+

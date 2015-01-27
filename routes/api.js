@@ -97,14 +97,15 @@ router.get('/wgen/:id/files/:filename', function(req, res) {
 });
 
 router.get('/maurer', function(req, res) {
-  var latitude = req.body.latitude,
-      longitude = req.body.longitude;
+  var latitude = req.query.latitude,
+      longitude = req.query.longitude;
+
   pg.connect(conString, function(err, client, done) {
     if(err) {
       res.send('Error fetching client from pool');
     }
     client.query([
-      "SELECT (d.year || '-' || d.month || '-' || d.day) as date, d.prcp, d.tmax, d.tmin, d.wind",
+      "SELECT (d.year || '-' || d.month || '-' || d.day)::date as date, d.prcp, d.tmax, d.tmin, d.wind, l.latitude, l.longitude",
       "FROM maurer_day d, (",
       "SELECT ST_Distance(m.geom, ST_SetSRID(ST_MakePoint($2, $1), 4326)) as distance,",
              "m.gid, m.latitude, m.longitude",

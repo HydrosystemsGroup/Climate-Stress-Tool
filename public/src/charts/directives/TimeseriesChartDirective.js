@@ -2,6 +2,8 @@
 angular.module('cst.charts')
   .directive('timeseriesChart', function() {
     function link(scope, element, attr) {
+      console.log('timeseriesChart');
+      console.log(scope);
       var div = d3.select(element[0]);
 
       var bbox = div.node().getBoundingClientRect();
@@ -24,9 +26,8 @@ angular.module('cst.charts')
           .scale(y)
           .orient("left");
 
-      var line = d3.svg.line()
-          .x(function(d) { return x(scope.accessorX(d)); })
-          .y(function(d) { return y(scope.accessorY(d)); });
+      var line = d3.svg.line();
+          
 
       var svg = d3.select(element[0]).append('svg')
           .attr("width", width + margin.left + margin.right)
@@ -40,26 +41,39 @@ angular.module('cst.charts')
           .attr("transform", "translate(0," + height + ")");
 
       g.append("g")
-          .attr("class", "y axis")
-        .append("text")
-          // .attr("transform", "rotate(-90)")
-          // .attr("y", 6)
+          .attr("class", "y axis");
+
+      var yLabel = g.select('.y.axis').append("text")
           .attr("dy", "-0.6em")
           .attr("dx", -margin.left)
-          .style("text-anchor", "start")
-          .text(attr.labelY);
+          .style("text-anchor", "start");
       
       scope.$watch('data', function(data) {
-        if (data) {
-          x.domain(d3.extent(data, scope.accessorX));
-          y.domain([ attr.minY || d3.min(data, scope.accessorY), 
-                     d3.max(data, scope.accessorY) ]);
+        console.log('watch: data');
+        render();
+      }, true);
+
+      scope.$watch('accessorY', function() {
+        render();
+      });
+
+      var render = function() {
+        line.x(function(d) { return x(d[scope.accessorX]); })
+            .y(function(d) { return y(d[scope.accessorY]); });
+        
+        yLabel
+          .text(scope.labelY);
+        
+        if (scope.data) {
+          x.domain(d3.extent(scope.data, function(d) { return d[scope.accessorX]; }));
+          var y_extent = d3.extent(scope.data, function(d) { return d[scope.accessorY]; });
+          y.domain([ scope.minY || y_extent[0], y_extent[1]]);
 
           g.select('.x.axis').call(xAxis);
           g.select('.y.axis').call(yAxis);
 
           g.selectAll(".line")
-              .data([data])
+              .data([scope.data])
             .enter()
               .append("path")
               .attr("class", "line");
@@ -67,7 +81,7 @@ angular.module('cst.charts')
           g.selectAll(".line")
               .attr("d", line);  
         }
-      }, true);
+      };
     }
 
     return {
@@ -75,8 +89,10 @@ angular.module('cst.charts')
       restrict: 'E',
       scope: {
         data: '=',
-        accessorY: '&',
-        accessorX: '&'
+        accessorY: '@',
+        accessorX: '@',
+        labelY: '@',
+        minY: '='
       }
     };
   });
