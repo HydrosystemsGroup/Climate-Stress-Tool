@@ -7,6 +7,7 @@ jobs.process('wgen', function(job, done){
   console.log('Processing job: ' + job.id);
   var cmd = 'Rscript ../r/daily_generator.R ' + job.data.wd;
   console.log('> ' + cmd);
+
   var child = exec(cmd, function (error, stdout, stderr) {
     if (error !== null) {
       done(stderr);

@@ -55,16 +55,13 @@ router.get('/wgen', function(req, res) {
 });
 
 router.get('/wgen/:id', function(req, res) {
-  // var data = req.body.data;
   var Job = kue.Job;
-  console.log('Get Job: ' + req.params.id);
   Job.get(req.params.id, function(err, job) {
-    if (job.error) {
-      console.log('JOB ERROR');
-      console.log(job.error());
+    if (err) {
+      res.send(500, err);
+    } else {
+      res.send(job);  
     }
-    // console.log(job.toJSON());
-    res.send(job);
   });
 });
 

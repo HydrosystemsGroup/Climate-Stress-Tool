@@ -3,7 +3,7 @@ angular.module('cst.charts')
   .directive('timeseriesChart', function() {
     function link(scope, element, attr) {
       console.log('timeseriesChart');
-      console.log(scope);
+
       var div = d3.select(element[0]);
 
       var bbox = div.node().getBoundingClientRect();
@@ -49,12 +49,7 @@ angular.module('cst.charts')
           .attr("dx", -margin.left)
           .style("text-anchor", "start");
       
-      scope.$watch('data', function(data) {
-        console.log('watch: data');
-        render();
-      });
-
-      scope.$watch('accessorY', function() {
+      scope.$watchCollection('[data, accessorY]', function(data) {
         render();
       });
         
