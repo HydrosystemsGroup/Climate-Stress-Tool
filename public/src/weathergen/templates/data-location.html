@@ -1,4 +1,12 @@
-<div class="row">
+<h2>Get Data by Location</h2>
+
+<p>[Map]</p>
+<p>[Form with Lat/Lon]</p>
+<p>[HUC Info]</p>
+
+<a class="btn btn-primary" ui-sref='weathergen.historical'>View Data</a>
+
+<!-- <div class="row">
   <div class="col-sm-4">
     <form class="form-horizontal" role="form">
       <div class="form-group">
@@ -22,22 +30,15 @@
 
       <div class="form-group">
         <div class="col-sm-8 col-sm-offset-4">
-          <button type="submit" class="btn btn-primary loadinggif" ui-sref="weathergen.data">Get Data<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate" ng-show='loading'></span></button>
+          <button type="submit" class="btn btn-primary loadinggif" ui-sref="weathergen.historical">View Data<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate" ng-show='loading'></span></button>
           <button class="btn btn-primary loadinggif" ui-sref='weathergen.simulate'>Simulate</button>
           <button class="btn btn-danger" ng-click="clearCoordinate()">Clear</button>
         </div>
       </div>
     </form>
   </div>
-  <div class="col-sm-6" height="200px">
+  <div class="col-sm-8" height="200px">
     <map coordinate="coordinate" features="features"></map>
   </div>
-  <div class="col-sm-2">
-    <ul>
-      <li ng-repeat='feature in features'>{{feature.layer}}: {{feature.id}} - {{feature.name}}</li>
-    </ul>
-  </div>
 </div>
-<hr>
-
-<div ui-view></div>
+ -->

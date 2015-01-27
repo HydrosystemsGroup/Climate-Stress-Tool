@@ -1,0 +1,36 @@
+<div class="row">
+  <div class="col-sm-4">
+    <ul>
+      <li>
+        Data
+        <ul>
+          <li><a ui-sref="weathergen.data.location">Fetch by Location</a></li>
+          <li><a ui-sref="weathergen.data.upload">Upload File</a></li>
+        </ul>
+      </li>
+      <li>
+        <a ui-sref="weathergen.historical">View Historical Data</a>
+      </li>
+      <li>
+        Simulation
+        <ul>
+          <li>
+            <a ui-sref="weathergen.simulate.setup">Setup</a>
+          </li>
+          <li>
+            <a ui-sref="weathergen.simulate.results">Results</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <div class="col-sm-8">
+    <div ui-view>
+      <ul>
+        <li><a ui-sref="weathergen.data.location">Fetch by Location</a></li>
+        <li><a ui-sref="weathergen.data.upload">Upload File</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
