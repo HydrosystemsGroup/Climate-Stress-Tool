@@ -24,6 +24,7 @@ angular.module('cst.weathergen')
 
       $scope.submitDataLocation = function() {
         console.log('submitDataLocation');
+
         var attrs = {
           coordinates: $scope.map.coordinates,
           features: $scope.map.features
@@ -35,6 +36,7 @@ angular.module('cst.weathergen')
             messageCenterService.add('danger', err.message);
           } else {
             console.log(data);
+
             $scope.submitData('location', attrs, data);
           }
         });

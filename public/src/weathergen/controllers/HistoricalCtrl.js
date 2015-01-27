@@ -20,6 +20,5 @@ angular.module('cst.weathergen')
       $scope.chart = {
         variable: 'prcp'
       };
-
     }
   ]);
