@@ -26,8 +26,9 @@ angular.module('cst.charts')
           .scale(y)
           .orient("left");
 
-      var line = d3.svg.line();
-          
+      var line = d3.svg.line()
+          .x(function(d) { return x(d[scope.accessorX]); })
+          .y(function(d) { return y(d[scope.accessorY]); });
 
       var svg = d3.select(element[0]).append('svg')
           .attr("width", width + margin.left + margin.right)
@@ -51,16 +52,13 @@ angular.module('cst.charts')
       scope.$watch('data', function(data) {
         console.log('watch: data');
         render();
-      }, true);
+      });
 
       scope.$watch('accessorY', function() {
         render();
       });
-
-      var render = function() {
-        line.x(function(d) { return x(d[scope.accessorX]); })
-            .y(function(d) { return y(d[scope.accessorY]); });
         
+      var render = function() {
         yLabel
           .text(scope.labelY);
         

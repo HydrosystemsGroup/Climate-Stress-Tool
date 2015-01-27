@@ -3,6 +3,8 @@ angular.module('cst.weathergen')
   .controller('DataLocationCtrl', ['$scope', '$state', '$http', 'messageCenterService',
     function($scope, $state, $http, messageCenterService) { 
       console.log('DataLocationCtrl');
+
+      $scope.fetching = false;
       
       $scope.map = {
         coordinates: [],
@@ -28,6 +30,7 @@ angular.module('cst.weathergen')
         };
 
         fetchData(+$scope.map.coordinates[1], +$scope.map.coordinates[0], function(err, data) {
+          $scope.fetching = false;
           if (err) {
             messageCenterService.add('danger', err.message);
           } else {
@@ -45,6 +48,7 @@ angular.module('cst.weathergen')
         console.log('fetchData', latitude, longitude);
         if (validateCoordinates(latitude, longitude)) {
           console.log('Fetching data');
+          $scope.fetching = true;
           $http.get('/api/maurer', { params: {latitude: latitude, longitude: longitude}})
             .success(function(data, status, headers, config) {
               angular.forEach(data, function(d) {
