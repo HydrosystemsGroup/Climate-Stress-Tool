@@ -43,7 +43,7 @@ module.exports = function (app, config) {
   app.use(cookieParser());
 
   // bodyParser
-  app.use(bodyParser.json());
+  app.use(bodyParser.json({limit: '50mb'}));
   app.use(bodyParser.urlencoded());
 
   // expresssession storage

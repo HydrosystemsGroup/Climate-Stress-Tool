@@ -39,8 +39,13 @@ app.config(['$stateProvider',
         templateUrl: 'weathergen/templates/simulate-setup.html',
         controller: 'SimulateSetupCtrl'
       })
-      .state('weathergen.simulate.results', {
+      .state('weathergen.simulate.resultslist', {
         url: '/results',
+        templateUrl: 'weathergen/templates/simulate-results-list.html',
+        controller: 'SimulateResultsListCtrl'
+      })
+      .state('weathergen.simulate.results', {
+        url: '/results/:id',
         templateUrl: 'weathergen/templates/simulate-results.html',
         controller: 'SimulateResultsCtrl'
       });

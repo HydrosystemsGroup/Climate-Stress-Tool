@@ -53,6 +53,7 @@ angular.module('cst.weathergen')
           $scope.fetching = true;
           $http.get('/api/maurer', { params: {latitude: latitude, longitude: longitude}})
             .success(function(data, status, headers, config) {
+              console.log(data[0].date);
               angular.forEach(data, function(d) {
                 d.date = new Date(d.date);
               });

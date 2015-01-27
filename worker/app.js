@@ -1,17 +1,17 @@
 var kue = require('kue'),
     jobs = kue.createQueue();
 
-var shell = require('shelljs');
+var exec = require('child_process').exec;
 
 jobs.process('wgen', function(job, done){
-  console.log('Processing wgen job ' + job.id);
+  console.log('Processing job: ' + job.id);
   var cmd = 'Rscript ../r/daily_generator.R ' + job.data.wd;
-  console.log('Running: ' + cmd);
-  shell.exec(cmd, {async: true, silent: true}, function(code, output) {
-    if (code===0) {
-      done();
+  console.log('> ' + cmd);
+  var child = exec(cmd, function (error, stdout, stderr) {
+    if (error !== null) {
+      done(stderr);
     } else {
-      done('Rscript failed\n'+output);
+      done();  
     }
   });
 });

@@ -13,36 +13,45 @@ var kue = require('kue'),
 var conString = "postgres://jeff:jeff@localhost/cst";
 
 router.post('/wgen', function(req, res) {
+  console.log(req.body);
   // var data = req.body.data;
   var uid = uuid.v4();
   var wd = path.join(config.sim_dir, uid);
-  var inputs = req.body;
+  var data = req.body.data;
+  var inputs = req.body.inputs;
 
   console.log('Creating working directory: ' + wd);
   
   fs.mkdir(wd, function() {
     console.log('Saving inputs file: ', path.join(wd, 'inputs.json'));
     fs.writeFile(path.join(wd, 'inputs.json'), JSON.stringify(inputs), function() {
-      console.log('Submitting Job');
-      var job = jobs.create('wgen', {
-          title: 'wgen job',
-          wd: wd,
-          uid: uid,
-          inputs: inputs
-      }).save( function(err){
-        console.log("Job Saved!");
-        console.log(job.data);
-        if( err ) res.send(400, 'Error submitting job');
-        res.send(job);
-      });
-      job.on('failed', function() {
-        console.log("Job Failed!");
-      });
-      job.on('complete', function() {
-        console.log("Job Completed!");
+      fs.writeFile(path.join(wd, 'data.json'), JSON.stringify(data), function() {
+        console.log('Submitting Job');
+        var job = jobs.create('wgen', {
+            title: 'wgen job',
+            wd: wd,
+            uid: uid,
+            inputs: inputs
+        }).save( function(err){
+          console.log("Job Saved!");
+          console.log(job.data);
+          if( err ) res.send(400, 'Error submitting job');
+          res.send(job);
+        });
+        job.on('failed', function() {
+          console.log("Job Failed!");
+        });
+        job.on('complete', function() {
+          console.log("Job Completed!");
+        });
       });
     });
   });
+});
+
+
+router.get('/wgen', function(req, res) {
+  
 });
 
 router.get('/wgen/:id', function(req, res) {
@@ -50,6 +59,10 @@ router.get('/wgen/:id', function(req, res) {
   var Job = kue.Job;
   console.log('Get Job: ' + req.params.id);
   Job.get(req.params.id, function(err, job) {
+    if (job.error) {
+      console.log('JOB ERROR');
+      console.log(job.error());
+    }
     // console.log(job.toJSON());
     res.send(job);
   });
@@ -105,7 +118,7 @@ router.get('/maurer', function(req, res) {
       res.send('Error fetching client from pool');
     }
     client.query([
-      "SELECT (d.year || '-' || d.month || '-' || d.day)::date as date, d.prcp, d.tmax, d.tmin, d.wind, l.latitude, l.longitude",
+      "SELECT (d.year || '-' || lpad(d.month::text, 2, '0') || '-' || lpad(d.day::text, 2, '0')) as date, d.prcp, d.tmax, d.tmin, d.wind",
       "FROM maurer_day d, (",
       "SELECT ST_Distance(m.geom, ST_SetSRID(ST_MakePoint($2, $1), 4326)) as distance,",
              "m.gid, m.latitude, m.longitude",

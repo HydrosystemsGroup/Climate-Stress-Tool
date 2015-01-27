@@ -13,7 +13,6 @@ angular.module('cst.weathergen')
         attrs.start = dateFormat(dateRange[0]);
         attrs.end = dateFormat(dateRange[1]);
 
-
         $scope.data.source = source;
         $scope.data.attrs = attrs;
         $scope.data.values = values;

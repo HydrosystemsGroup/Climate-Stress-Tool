@@ -62,7 +62,7 @@ angular.module('cst.charts')
         yLabel
           .text(scope.labelY);
         
-        if (scope.data) {
+        if (scope.data && scope.accessorY) {
           x.domain(d3.extent(scope.data, function(d) { return d[scope.accessorX]; }));
           var y_extent = d3.extent(scope.data, function(d) { return d[scope.accessorY]; });
           y.domain([ scope.minY || y_extent[0], y_extent[1]]);
@@ -78,6 +78,12 @@ angular.module('cst.charts')
 
           g.selectAll(".line")
               .attr("d", line);  
+        } else {
+          x.domain([null, null]);
+          y.domain([null, null]);
+          g.select('.x.axis').call(xAxis);
+          g.select('.y.axis').call(yAxis);
+          g.selectAll(".line").remove();
         }
       };
     }
