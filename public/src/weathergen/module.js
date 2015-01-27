@@ -11,8 +11,8 @@ app.config(['$stateProvider',
       })
       .state('weathergen.data', {
         url: '/data',
-        abstract: true,
-        template: '<div ui-view></div>'
+        templateUrl: 'weathergen/templates/data.html',
+        controller: 'DataCtrl'
       })
       .state('weathergen.data.location', {
         url: '/location',
@@ -33,7 +33,6 @@ app.config(['$stateProvider',
         url: '/simulate',
         templateUrl: 'weathergen/templates/simulate.html',
         controller: 'SimulateCtrl',
-        abstract: true
       })
       .state('weathergen.simulate.setup', {
         url: '/setup',
@@ -45,9 +44,4 @@ app.config(['$stateProvider',
         templateUrl: 'weathergen/templates/simulate-results.html',
         controller: 'SimulateResultsCtrl'
       });
-      // .state('weathergen.result', {
-      //   url: '/:id',
-      //   templateUrl: 'weathergen/templates/result.html',
-      //   controller: 'ResultCtrl'
-      // });
   }]);

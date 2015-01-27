@@ -96,7 +96,40 @@ router.get('/wgen/:id/files/:filename', function(req, res) {
   });
 });
 
-router.post('/maurer', function(req, res) {
+router.get('/maurer', function(req, res) {
+  var latitude = req.body.latitude,
+      longitude = req.body.longitude;
+  pg.connect(conString, function(err, client, done) {
+    if(err) {
+      res.send('Error fetching client from pool');
+    }
+    client.query([
+      "SELECT (d.year || '-' || d.month || '-' || d.day) as date, d.prcp, d.tmax, d.tmin, d.wind",
+      "FROM maurer_day d, (",
+      "SELECT ST_Distance(m.geom, ST_SetSRID(ST_MakePoint($2, $1), 4326)) as distance,",
+             "m.gid, m.latitude, m.longitude",
+        "FROM maurer_locations m",
+        "ORDER BY distance",
+        "LIMIT 1",
+      ") AS l",
+      "WHERE d.location_id=l.gid",
+      "ORDER BY date"].join(' '), 
+      [latitude, longitude],
+      function(err, result) {
+        //call `done()` to release the client back to the pool
+        done();
+
+        if(err) {
+          console.log(err.message);
+          res.send(400, 'error running query');
+        } else {
+          res.send(result.rows);
+        }
+      });
+  });
+});
+
+router.post('/maurer/annual', function(req, res) {
   var latitude = req.body.latitude,
       longitude = req.body.longitude;
   pg.connect(conString, function(err, client, done) {

@@ -13,8 +13,6 @@ angular.module('cst.map')
         var feature = new ol.Feature({
           geometry: null
         });
-        window.feature = feature;
-
 
         var vectorSource = new ol.source.Vector({
           features: [feature]

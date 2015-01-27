@@ -45,3 +45,6 @@ svg .line {
 
 /*angular-ui bootstrap fix: http://angular-ui.github.io/bootstrap/*/
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+/*add margin space above a row: http://stackoverflow.com/questions/10085723/twitter-bootstrap-add-top-space-between-rows*/
+.top-buffer { margin-top:20px; }

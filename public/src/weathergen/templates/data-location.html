@@ -1,44 +1,37 @@
-<h2>Get Data by Location</h2>
+<div class="row">
+  <div class="col-sm-12">
+    <map coordinate="map.coordinates" features="map.features"></map>
+  </div>
+</div>
 
-<p>[Map]</p>
-<p>[Form with Lat/Lon]</p>
-<p>[HUC Info]</p>
-
-<a class="btn btn-primary" ui-sref='weathergen.historical'>View Data</a>
-
-<!-- <div class="row">
-  <div class="col-sm-4">
+<div class="row top-buffer">
+  <div class="col-sm-6">
     <form class="form-horizontal" role="form">
-      <div class="form-group">
-        <legend>Weather Generator</legend>
-      </div>
-      
       <div class="form-group">
         <label for="inputLatitude" class="col-sm-4 control-label">Latitude</label>
         <div class="col-sm-8">
-          <input type="text" class="form-control" id="inputLatitude" ng-model="coordinate[1]">
-          <p class="help-block">Enter latitude in decimal degrees North.</p>
+          <input type="text" class="form-control" id="inputLatitude" ng-model="map.coordinates[1]">
+          <!-- <p class="help-block">Enter latitude in decimal degrees North.</p> -->
         </div>
       </div>
       <div class="form-group">
         <label for="inputLongitude" class="col-sm-4 control-label">Longitude</label>
         <div class="col-sm-8">
-          <input type="text" class="form-control" id="inputLongitude" ng-model="coordinate[0]">
-          <p class="help-block">Enter longitude in decimal degrees East (negative values for West).</p>
+          <input type="text" class="form-control" id="inputLongitude" ng-model="map.coordinates[0]">
+          <!-- <p class="help-block">Enter longitude in decimal degrees East (negative values for West).</p> -->
         </div>
       </div>
-
       <div class="form-group">
         <div class="col-sm-8 col-sm-offset-4">
-          <button type="submit" class="btn btn-primary loadinggif" ui-sref="weathergen.historical">View Data<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate" ng-show='loading'></span></button>
-          <button class="btn btn-primary loadinggif" ui-sref='weathergen.simulate'>Simulate</button>
+          <button type="submit" class="btn btn-primary loadinggif" ng-click="submitDataLocation()">View Data<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate" ng-show='loading'></span></button>
           <button class="btn btn-danger" ng-click="clearCoordinate()">Clear</button>
         </div>
       </div>
     </form>
   </div>
-  <div class="col-sm-8" height="200px">
-    <map coordinate="coordinate" features="features"></map>
-  </div>
 </div>
- -->
+
+<hr>
+<pre>map: {{ map | json }}</pre>
+
+
