@@ -17,8 +17,6 @@ angular.module('cst.weathergen')
         $scope.data.attrs = attrs;
         $scope.data.values = values;
 
-        console.log($scope.data);
-
         $state.go('weathergen.historical');
       };
     }

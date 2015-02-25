@@ -35,8 +35,6 @@ angular.module('cst.weathergen')
           if (err) {
             messageCenterService.add('danger', err.message);
           } else {
-            console.log(data);
-
             $scope.submitData('location', attrs, data);
           }
         });
@@ -49,11 +47,9 @@ angular.module('cst.weathergen')
       var fetchData = function(latitude, longitude, cb) {
         console.log('fetchData', latitude, longitude);
         if (validateCoordinates(latitude, longitude)) {
-          console.log('Fetching data');
           $scope.fetching = true;
           $http.get('/api/maurer', { params: {latitude: latitude, longitude: longitude}})
             .success(function(data, status, headers, config) {
-              console.log(data[0].date);
               angular.forEach(data, function(d) {
                 d.date = new Date(d.date);
               });

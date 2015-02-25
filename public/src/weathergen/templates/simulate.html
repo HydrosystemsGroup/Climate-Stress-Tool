@@ -5,7 +5,7 @@
         <a ui-sref="weathergen.simulate.setup">Set up</a>
       </li>
       <li role="presentation" ui-sref-active="active">
-        <a ui-sref="weathergen.simulate.resultslist">View Results</a>
+        <a ui-sref="weathergen.simulate.jobs">Job List</a>
       </li>
     </ul>
   </div>
@@ -13,3 +13,5 @@
     <div ui-view></div>
   </div>
 </div>
+<hr>
+<pre>{{ jobs | json }}</pre>

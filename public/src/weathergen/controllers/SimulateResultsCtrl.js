@@ -5,7 +5,7 @@ angular.module('cst.weathergen')
       console.log('SimulateResultsCtrl');
 
       if ($stateParams.id === '') {
-        $state.go('weathergen.simulate.resultslist');
+        $state.go('weathergen.simulate.jobs');
       }
 
       $scope.has_job = false;
