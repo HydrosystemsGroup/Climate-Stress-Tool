@@ -21,7 +21,7 @@ router.post('/wgen', function(req, res) {
   var inputs = req.body.inputs;
 
   console.log('Creating working directory: ' + wd);
-  
+
   fs.mkdir(wd, function() {
     console.log('Saving inputs file: ', path.join(wd, 'inputs.json'));
     fs.writeFile(path.join(wd, 'inputs.json'), JSON.stringify(inputs), function() {
@@ -49,18 +49,13 @@ router.post('/wgen', function(req, res) {
   });
 });
 
-
-router.get('/wgen', function(req, res) {
-  
-});
-
 router.get('/wgen/:id', function(req, res) {
   var Job = kue.Job;
   Job.get(req.params.id, function(err, job) {
     if (err) {
       res.send(500, err);
     } else {
-      res.send(job);  
+      res.send(job);
     }
   });
 });
@@ -99,7 +94,7 @@ router.get('/wgen/:id/files/:filename', function(req, res) {
         else {
           console.log('Sent:', filepath);
         }
-      });  
+      });
     } else {
       res.send('Job not finished');
     }
@@ -124,7 +119,7 @@ router.get('/maurer', function(req, res) {
         "LIMIT 1",
       ") AS l",
       "WHERE d.location_id=l.gid",
-      "ORDER BY date"].join(' '), 
+      "ORDER BY date"].join(' '),
       [latitude, longitude],
       function(err, result) {
         //call `done()` to release the client back to the pool
@@ -159,7 +154,7 @@ router.post('/maurer/annual', function(req, res) {
       ") AS l",
       "WHERE d.location_id=l.gid",
       "GROUP BY d.year",
-      "ORDER BY date"].join(' '), 
+      "ORDER BY date"].join(' '),
       [latitude, longitude],
       function(err, result) {
         //call `done()` to release the client back to the pool
@@ -171,6 +166,54 @@ router.post('/maurer/annual', function(req, res) {
           res.send(result.rows);
         }
       });
+  });
+});
+
+router.post('/batch', function(req, res) {
+  console.log(req.body);
+  // var data = req.body.data;
+  var uid = uuid.v4();
+  var wd = path.join(config.sim_dir, uid);
+  var data = req.body.data;
+  var inputs = req.body.inputs;
+
+  console.log('Creating working directory: ' + wd);
+
+  fs.mkdir(wd, function() {
+    console.log('Saving inputs file: ', path.join(wd, 'inputs.json'));
+    fs.writeFile(path.join(wd, 'inputs.json'), JSON.stringify(inputs), function() {
+      fs.writeFile(path.join(wd, 'data.json'), JSON.stringify(data), function() {
+        console.log('Submitting Job');
+        var job = jobs.create('batch', {
+            title: 'batch job',
+            wd: wd,
+            uid: uid,
+            inputs: inputs
+        }).save( function(err){
+          console.log("Job Saved!");
+          console.log(job.data);
+          if( err ) res.send(400, 'Error submitting job');
+          res.send(job);
+        });
+        job.on('failed', function() {
+          console.log("Job Failed!");
+        });
+        job.on('complete', function() {
+          console.log("Job Completed!");
+        });
+      });
+    });
+  });
+});
+
+router.get('/batch/:id', function(req, res) {
+  var Job = kue.Job;
+  Job.get(req.params.id, function(err, job) {
+    if (err) {
+      res.send(500, err);
+    } else {
+      res.send(job);
+    }
   });
 });
 
