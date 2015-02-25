@@ -50,7 +50,9 @@ temp_changes <- inputs[['temp_changes']]
 
 cat('Input Parameters:\n')
 for (nm in inputs_names) {
-  cat(paste(nm, inputs[[nm]], sep=': '), '\n')
+  cat(paste0('  ', nm, ': '))
+  cat(paste(inputs[[nm]], collapse=', '))
+  cat('\n')
 }
 
 clim.da <- fromJSON('data.json')
@@ -78,7 +80,7 @@ clim.da <- filter(clim.da, wyear(DATE, start_month=start_month) %in% complete_ye
 clim.mon <- filter(clim.mon, wyear(DATE, start_month=start_month) %in% complete_years)
 clim.wyr <- filter(clim.wyr, WYEAR %in% complete_years)
 
-# run sim ----
+# create params ----
 params <- expand.grid(trial     = seq(1, n_trial),
                       temp_mean = temp_changes,
                       prcp_mean = prcp_mean_changes,
@@ -87,6 +89,13 @@ params <- expand.grid(trial     = seq(1, n_trial),
                       wet_spell = wet_spell_changes)
 params$folder <- paste('RUN', sprintf('%03d', seq(1, nrow(params))), sep='_')
 
+# save params ----
+write.csv(params, file = 'runs.csv', row.names = FALSE)
+
+toJSON(params) %>%
+  write(file = 'runs.json')
+
+# run sim ----
 for (i in seq(1, nrow(params))) {
   i_params <- as.list(params[i, ])
 
@@ -121,8 +130,18 @@ for (i in seq(1, nrow(params))) {
   cat(paste0("Saved run to: ", file.path(getwd(), i_params[['folder']])))
 }
 
-write.csv(params, file = 'runs.csv', row.names = FALSE)
+# save to zip ----
+tstamp <- format(Sys.time(), '%Y%m%d_%H%M')
+temp_base <- tempdir()
+temp_path <- file.path(temp_base, tstamp)
+dir.create(temp_path)
 
-toJSON(params) %>%
-  write(file = 'runs.json')
+files <- list.files(path = getwd(), all.files = TRUE, recursive = TRUE, include.dirs = TRUE)
 
+zip_name <- paste0('weathergen', '.zip')
+zip_path <- file.path(temp_base, zip_name)
+zip(zip_path, files, flags = "-r9X")
+file.copy(zip_path, getwd())
+
+cat('\n\n')
+cat(paste0("Saved zip file: ", file.path(getwd(), zip_name)))

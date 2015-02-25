@@ -30,6 +30,3 @@ jobs.process('batch', function(job, done){
     }
   });
 });
-
-
-kue.app.listen(3001);

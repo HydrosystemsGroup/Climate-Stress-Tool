@@ -8,6 +8,8 @@ var express = require('express'),
     pkg = require('../package.json'),
     compression = require('compression');
 
+var kue = require('kue');
+
 var env = process.env.NODE_ENV || 'development';
 
 module.exports = function (app, config) {
@@ -91,6 +93,7 @@ module.exports = function (app, config) {
 
   // Bootstrap routes
   // require('./routes')(app, passport);
+  app.use('/jobs', kue.app);
   require('./routes')(app);
 
   /// error handlers
