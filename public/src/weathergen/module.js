@@ -48,5 +48,10 @@ app.config(['$stateProvider',
         url: '/results/:id',
         templateUrl: 'weathergen/templates/simulate-results.html',
         controller: 'SimulateResultsCtrl'
+      })
+      .state('weathergen.batch', {
+        url: '/batch',
+        templateUrl: 'weathergen/templates/batch.html',
+        controller: 'BatchCtrl'
       });
   }]);
