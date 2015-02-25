@@ -20,5 +20,12 @@ angular.module('cst.weathergen')
       $scope.chart = {
         variable: 'prcp'
       };
+
+      $scope.$watch('chart.variable', function(newVal, oldVal) {
+        // disallow user to unselect all variables
+        if (!newVal) {
+          $scope.chart.variable = oldVal;
+        }
+      });
     }
   ]);

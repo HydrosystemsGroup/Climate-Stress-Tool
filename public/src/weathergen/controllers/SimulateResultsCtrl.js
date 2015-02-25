@@ -31,7 +31,7 @@ angular.module('cst.weathergen')
       };
 
       refreshStatus();    
-      var timer = $interval(refreshStatus, 1000);
+      var timer = $interval(refreshStatus, 3000);
 
       $scope.variableLabels = {
         prcp: 'Precip (mm/day)',

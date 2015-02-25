@@ -72,8 +72,9 @@ angular.module('cst.charts')
               .attr("class", "line");
 
           g.selectAll(".line")
-              .attr("d", line);  
+              .attr("d", line);
         } else {
+          console.log('remove line');
           x.domain([null, null]);
           y.domain([null, null]);
           g.select('.x.axis').call(xAxis);
