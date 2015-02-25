@@ -2,7 +2,8 @@
 angular.module('cst.weathergen')
   .controller('SimulateBatchCtrl', ['$scope', '$state', '$http', 'messageCenterService',
     function($scope, $state, $http, messageCenterService) {
-      console.log('BatchCtrl');
+      console.log('SimulateBatchCtrl');
+
       $scope.inputs = {
         n_trial: 1,
         n_year: 10,

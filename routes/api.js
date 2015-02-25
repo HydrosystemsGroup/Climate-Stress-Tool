@@ -82,7 +82,9 @@ router.get('/wgen/:id/files/:filename', function(req, res) {
   var Job = kue.Job;
   console.log('Get Job Results: ' + req.params.id);
   Job.get(req.params.id, function(err, job) {
-    if (job.toJSON().state === 'complete') {
+    if (err) {
+      console.log(err)
+    } else if (job.toJSON().state === 'complete') {
       // console.log(job.data);
       var filepath = path.join(job.data.wd, req.params.filename);
       // console.log(filepath);
