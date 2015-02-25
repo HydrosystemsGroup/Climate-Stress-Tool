@@ -61,9 +61,9 @@ angular.module('cst.weathergen')
               temp: +d.TEMP
             };
           }, function(error, rows) {
-            console.log(rows[1]);
-            $scope.results = rows;
-            $scope.$digest();
+            $scope.$apply(function() {
+              $scope.results = rows;
+            });
           });
       };
     }
