@@ -129,7 +129,7 @@ router.get('/maurer', function(req, res) {
 
         if(err) {
           console.log(err.message);
-          res.send(400, 'error running query');
+          res.send(400, err.message);
         } else {
           res.send(result.rows);
         }

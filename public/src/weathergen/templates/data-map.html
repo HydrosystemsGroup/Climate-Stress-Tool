@@ -21,7 +21,7 @@
       </div>
       <div class="form-group">
         <div class="col-sm-8 col-sm-offset-4">
-          <button type="submit" class="btn btn-primary loadinggif" ng-click="map.fetchData()">Fetch Data<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate" ng-show='fetching'></span></button>
+          <button type="submit" class="btn btn-primary loadinggif" ng-click="map.fetchData()">Fetch Data<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate" ng-show='map.fetching'></span></button>
           <button class="btn btn-danger" ng-click="map.clearCoordinate()">Clear</button>
         </div>
       </div>
@@ -30,6 +30,8 @@
 </div>
 
 <hr>
-<pre>{{ map | json }}</pre>
-
-
+<pre>coordinate: {{ map.coordinate | json }}
+features: {{ map.features | json }}</pre>
+<pre>source: {{ map.data.source | json }}
+attrs: {{ map.data.attrs | json }}
+values.length: {{ map.data.values.length | json }}</pre>
