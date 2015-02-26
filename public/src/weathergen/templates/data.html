@@ -2,10 +2,10 @@
   <div class="col-sm-2">
     <ul class="nav nav-pills nav-stacked">
       <li role="presentation" ui-sref-active="active">
-        <a ui-sref="weathergen.data.location">By Location</a>
+        <a ui-sref="weathergen.data.map">By Location</a>
       </li>
       <li role="presentation" ui-sref-active="active">
-        <a ui-sref="weathergen.data.upload">Upload File</a>
+        <a ui-sref="weathergen.data.file">Upload File</a>
       </li>
     </ul>
   </div>
@@ -15,6 +15,6 @@
 </div>
 
 <hr>
-<pre>data.source: {{ data.source | json }}</pre>
-<pre>data.attrs: {{ data.attrs | json }}</pre>
-<pre>data.values.length: {{ data.values.length | json }}</pre>
+<pre>data.source: {{ data.source | json }}
+data.attrs: {{ data.attrs | json }}
+data.values.length: {{ data.values.length | json }}</pre>

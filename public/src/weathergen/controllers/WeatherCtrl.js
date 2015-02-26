@@ -1,13 +1,11 @@
 
 angular.module('cst.weathergen')
-  .controller('WeatherCtrl', ['$scope', '$state', 
-    function($scope, $state) { 
-      console.log('WeatherCtrl');
+  .controller('WeatherCtrl', function() {
+    console.log('WeatherCtrl: load');
 
-      $scope.data = {
-        source: null,
-        attrs: {},
-        values: []
-      };
-    }
-  ]);
+    this.data = {
+      source: null,
+      attrs: {},
+      values: []
+    };
+  });
