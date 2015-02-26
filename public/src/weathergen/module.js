@@ -32,11 +32,6 @@ app.config(['$stateProvider',
         controller: 'DataViewCtrl'
         // controllerAs: 'chart'
       });
-      // .state('weathergen.historical', {
-      //   url: '/historical',
-      //   templateUrl: 'weathergen/templates/historical.html',
-      //   controller: 'HistoricalCtrl'
-      // })
       // .state('weathergen.simulate', {
       //   url: '/simulate',
       //   templateUrl: 'weathergen/templates/simulate.html',
