@@ -52,10 +52,10 @@ router.post('/wgen', function(req, res) {
 router.get('/wgen/:id', function(req, res) {
   var Job = kue.Job;
   Job.get(req.params.id, function(err, job) {
-    if (err) {
-      res.send(500, err);
-    } else {
+    if (job) {
       res.send(job);
+    } else {
+      res.send(404, err.message);
     }
   });
 });

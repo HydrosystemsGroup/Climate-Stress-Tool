@@ -1,0 +1,80 @@
+<div class="row">
+  <div class="col-sm-4">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Status</h3>
+      </div>
+      <div class="panel-body">
+        <p ng-switch on="job.job.state">
+          <span class="label label-info" ng-switch-when="inactive">Queued</span>
+          <span class="label label-success" ng-switch-when="active">Running</span>
+          <span class="label label-danger" ng-switch-when="failed">Failed</span>
+          <span class="label label-primary" ng-switch-when="complete">Completed</span>
+          <span class="label label-default" ng-switch-default>Waiting...</span>
+        </p>
+
+        <ul class='list-unstyled'>
+          <li>UID: {{job.job.data.uid}}</li>
+          <li>Started: {{job.job.created_at | date:"short"}}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-8" ng-show="job && job.job.data">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Inputs</h3>
+      </div>
+      <div class="panel-body">
+        <pre>{{job.job.data.inputs | json}}</pre>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" ng-show="job.complete">
+  <div class="col-sm-12">
+    <div class="panel panel-default" ng-show="job.job.error">
+      <div class="panel-heading">
+        <h3 class="panel-title">Error</h3>
+      </div>
+      <div class="panel-body">
+        <pre>{{job.job.error}}</pre>
+      </div>
+    </div>
+    <div ng-switch="job.job.type" ng-show="!job.job.error">
+      <div class="panel panel-default" ng-switch-when="wgen">
+        <div class="panel-heading">
+          <h3 class="panel-title">Results</h3>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-sm-12">
+              <div class='pull-right'>
+                <a class="btn btn-primary" ng-href="/api/wgen/{{job.job.id}}/files/sim.csv" target="_self">Download</a>
+                <div class="btn-group">
+                  <label class="btn btn-success" ng-model="chart.variable" btn-radio="'prcp'" uncheckable>Precip</label>
+                  <label class="btn btn-success" ng-model="chart.variable" btn-radio="'tmin'" uncheckable>Tmin</label>
+                  <label class="btn btn-success" ng-model="chart.variable" btn-radio="'tmax'" uncheckable>Tmax</label>
+                  <label class="btn btn-success" ng-model="chart.variable" btn-radio="'temp'" uncheckable>Tmean</label>
+                </div>
+              </div>
+              <timeseries-chart data="chart.data" accessor-x="date" accessor-y="{{chart.variable}}" label-y="{{chart.labels[chart.variable]}}" min-y="0"></timeseries-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default" ng-switch-when="batch">
+        <div class="panel-heading">
+          <h3 class="panel-title">Results</h3>
+        </div>
+        <div class="panel-body">
+          <a class="btn btn-primary" ng-href="/api/wgen/{{job.job.id}}/files/weathergen.zip" target="_self">Download</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div ui-view></div>

@@ -1,9 +1,8 @@
 
 angular.module('cst.weathergen')
-  .controller('SimCtrl', ['$scope',
-    function($scope) {
-      console.log('SimCtrl');
-
-      $scope.jobs = [];
+  .controller('SimCtrl', ['jobService',
+    function(jobService) {
+      console.log('SimCtrl: load');
+      this.jobs = jobService;
     }
   ]);

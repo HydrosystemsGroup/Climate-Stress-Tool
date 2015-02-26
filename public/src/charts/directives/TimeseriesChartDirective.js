@@ -48,15 +48,16 @@ angular.module('cst.charts')
           .attr("dy", "-0.6em")
           .attr("dx", -margin.left)
           .style("text-anchor", "start");
-      
-      scope.$watchCollection('[data, accessorY]', function(data) {
+
+      scope.$watchCollection('[data, accessorY]', function() {
+        // console.log('timeseriesChart: watcher', arguments);
         render();
       });
-        
+
       var render = function() {
         yLabel
           .text(scope.labelY);
-        
+
         if (scope.data && scope.accessorY) {
           x.domain(d3.extent(scope.data, function(d) { return d[scope.accessorX]; }));
           var y_extent = d3.extent(scope.data, function(d) { return d[scope.accessorY]; });
@@ -74,7 +75,6 @@ angular.module('cst.charts')
           g.selectAll(".line")
               .attr("d", line);
         } else {
-          console.log('remove line');
           x.domain([null, null]);
           y.domain([null, null]);
           g.select('.x.axis').call(xAxis);

@@ -35,35 +35,54 @@ app.config(['$stateProvider',
         url: '/sim',
         templateUrl: 'weathergen/templates/sim.html',
         controller: 'SimCtrl',
+        controllerAs: 'sim'
       })
       .state('weathergen.sim.run', {
         url: '/run',
         templateUrl: 'weathergen/templates/sim-run.html',
         controller: 'SimRunCtrl',
-        controllerAs: 'setup'
+        controllerAs: 'setupRun'
       })
       .state('weathergen.sim.batch', {
         url: '/batch',
         templateUrl: 'weathergen/templates/sim-batch.html',
         controller: 'SimBatchCtrl',
-        controllerAs: 'setup'
+        controllerAs: 'setupBatch'
       })
       .state('weathergen.sim.jobs', {
         url: '/jobs',
         templateUrl: 'weathergen/templates/sim-jobs.html',
         controller: 'SimJobsCtrl'
       })
-      .state('weathergen.sim.results', {
-        url: '/results/:id',
-        templateUrl: 'weathergen/templates/sim-results.html',
-        controller: 'SimResultsCtrl'
+      .state('weathergen.sim.job', {
+        url: '/jobs/:id',
+        templateUrl: 'weathergen/templates/sim-job.html',
+        controller: 'SimJobCtrl',
+        controllerAs: 'job',
+        resolve: {
+          job: function($stateParams, $state, messageCenterService, jobService) {
+            console.log('resolve job');
+            return jobService.getJob($stateParams.id)
+              .success(function(data) { return data; })
+              .error(function(data) {
+                messageCenterService.add('danger', 'Error getting job: ' + data, {
+                  status: messageCenterService.status.next,
+                  timeout: 3000
+                });
+                $state.go('weathergen.sim.jobs');
+              });
+          }
+        },
+        onExit: function(jobService) {
+          jobService.stopPoll();
+        }
       })
-      .state('weathergen.sim.results.run', {
+      .state('weathergen.sim.job.run', {
         url: '/run',
         templateUrl: 'weathergen/templates/sim-results-run.html',
         controller: 'SimResultsRunCtrl'
       })
-      .state('weathergen.sim.results.batch', {
+      .state('weathergen.sim.job.batch', {
         url: '/batch',
         templateUrl: 'weathergen/templates/sim-results-batch.html',
         controller: 'SimResultsBatchCtrl'
