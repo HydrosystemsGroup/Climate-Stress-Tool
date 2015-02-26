@@ -1,5 +1,5 @@
 
-var app = angular.module('cst', 
+var app = angular.module('cst',
   ['ui.router',
    'ui.grid',
    'ui.grid.edit',
@@ -29,6 +29,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
       .state('map', {
         url: '/map',
         controller: 'MapCtrl',
+        controllerAs: 'map',
         templateUrl: 'map/templates/map.html'
       });
 

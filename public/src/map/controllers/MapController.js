@@ -1,11 +1,22 @@
 
 angular.module('cst.map')
-  .controller('MapCtrl', ['$scope', function($scope) {
-    $scope.coordinate = [];
-    $scope.features = {};
+  .controller('MapCtrl', function() {
+    console.log('MapCtrl: load');
 
-    $scope.clearCoordinate = function() {
-      $scope.coordinate = [];
-      $scope.features = {};
+    this.coordinate = [];
+    this.features = [];
+
+    this.clearCoordinate = function() {
+      this.coordinate = [];
+      this.features = [];
     };
-  }]);
+    // this.location = {
+    //   coordinate: [],
+    //   features: []
+    // };
+
+    // this.clearCoordinate = function() {
+    //   this.location.coordinate = [];
+    //   this.location.features = [];
+    // };
+  });

@@ -6,10 +6,9 @@ angular.module('cst.map')
       replace: true,
       scope: {
         coordinate: "=",
-        features: '='
+        features: "="
       },
       link: function (scope, element, attr) {
-        // console.log('hi', scope.coordinate);
         var feature = new ol.Feature({
           geometry: null
         });
@@ -70,7 +69,6 @@ angular.module('cst.map')
         var map = new ol.Map({
           layers: [
             new ol.layer.Tile({
-              // source: new ol.source.MapQuest({layer: 'sat'})
               source: new ol.source.OSM()
             }),
             vectorLayer,
@@ -93,7 +91,6 @@ angular.module('cst.map')
           scope.$apply(function() {
             scope.coordinate = wgs84;
           });
-          // console.log(scope.coordinate);
         });
         window.map = map;
 
@@ -110,7 +107,7 @@ angular.module('cst.map')
                 layer: layer.get('name'),
                 id: feature.get(layer.get('name')),
                 name: feature.get('NAME')
-              }); 
+              });
             }
           });
           // }, this, function(layer) { return layer.get('name')=='huc12'; });
@@ -144,13 +141,11 @@ angular.module('cst.map')
         scope.$watch('coordinate', function(value) {
           if (value) {
             value = [+value[0], +value[1]];
-            // console.log(value);
             var coordinate = ol.proj.transform(value, 'EPSG:4326', 'EPSG:3857');
-            feature.setGeometry(new ol.geom.Point(coordinate));  
+            feature.setGeometry(new ol.geom.Point(coordinate));
 
             var pixel = map.getPixelFromCoordinate(coordinate);
             scope.features = getFeaturesFromPixel(pixel);
-            // console.log(scope.features);
           } else {
             feature.setGeometry();
           }
