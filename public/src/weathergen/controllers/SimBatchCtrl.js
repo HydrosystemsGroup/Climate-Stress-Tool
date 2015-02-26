@@ -1,10 +1,10 @@
 
 angular.module('cst.weathergen')
-  .controller('SimulateBatchCtrl', ['$scope', '$state', '$http', 'messageCenterService',
+  .controller('SimBatchCtrl', ['$scope', '$state', '$http', 'messageCenterService',
     function($scope, $state, $http, messageCenterService) {
-      console.log('SimulateBatchCtrl');
+      console.log('SimBatchCtrl');
 
-      $scope.inputs = {
+      $scope.form = {
         n_trial: 1,
         n_year: 10,
         start_month: 10,
@@ -65,21 +65,20 @@ angular.module('cst.weathergen')
         var variables = ['dry_spell', 'wet_spell', 'prcp_mean', 'prcp_cv', 'temp_mean'];
 
         var ranges = {};
-        var n = $scope.inputs.n_trial;
+        var n = $scope.form.n_trial;
         variables.forEach(function(v) {
-          ranges[v] = d3.range($scope.inputs[v].minVal, $scope.inputs[v].maxVal + 0.0001, $scope.inputs[v].step);
+          ranges[v] = d3.range($scope.form[v].minVal, $scope.form[v].maxVal + 0.0001, $scope.form[v].step);
           n = n * ranges[v].length;
           console.log(v, ranges[v]);
         });
-        console.log('No. runs: ', n);
 
         $http.post('/api/batch', {
             data: $scope.data.values,
-            inputs: {
-              n_trial: +$scope.inputs.n_trial,
-              n_year: +$scope.inputs.n_year,
-              start_month: +$scope.inputs.start_month,
-              start_water_year: +$scope.inputs.start_water_year,
+            form: {
+              n_trial: +$scope.form.n_trial,
+              n_year: +$scope.form.n_year,
+              start_month: +$scope.form.start_month,
+              start_water_year: +$scope.form.start_water_year,
               dry_spell_changes: ranges.dry_spell,
               wet_spell_changes: ranges.wet_spell,
               prcp_mean_changes: ranges.prcp_mean,

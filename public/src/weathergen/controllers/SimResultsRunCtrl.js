@@ -1,8 +1,8 @@
 
 angular.module('cst.weathergen')
-  .controller('SimulateResultsWgenCtrl', ['$scope', '$state', '$stateParams', '$http', '$interval', 'messageCenterService',
+  .controller('SimResultsWgenCtrl', ['$scope', '$state', '$stateParams', '$http', '$interval', 'messageCenterService',
     function($scope, $state, $stateParams, $http, $interval, messageCenterService) {
-      console.log('SimulateResultsWgenCtrl');
+      console.log('SimResultsWgenCtrl');
 
       $scope.variableLabels = {
         prcp: 'Precip (mm/day)',

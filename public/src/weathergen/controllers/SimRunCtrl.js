@@ -1,8 +1,8 @@
 
 angular.module('cst.weathergen')
-  .controller('SimulateSetupCtrl', ['$scope', '$http', '$state', 'messageCenterService',
+  .controller('SimRunCtrl', ['$scope', '$http', '$state', 'messageCenterService',
     function($scope, $http, $state, messageCenterService) {
-      console.log('SimulateSetupCtrl');
+      console.log('SimRunCtrl');
 
       $scope.inputs = {
           n_year: 10,

@@ -31,39 +31,41 @@ app.config(['$stateProvider',
         templateUrl: 'weathergen/templates/data-view.html',
         controller: 'DataViewCtrl'
       })
-      .state('weathergen.simulate', {
-        url: '/simulate',
-        templateUrl: 'weathergen/templates/simulate.html',
-        controller: 'SimulateCtrl',
+      .state('weathergen.sim', {
+        url: '/sim',
+        templateUrl: 'weathergen/templates/sim.html',
+        controller: 'SimCtrl',
       })
-      .state('weathergen.simulate.setup', {
-        url: '/setup',
-        templateUrl: 'weathergen/templates/simulate-setup.html',
-        controller: 'SimulateSetupCtrl'
+      .state('weathergen.sim.run', {
+        url: '/run',
+        templateUrl: 'weathergen/templates/sim-run.html',
+        controller: 'SimRunCtrl',
+        controllerAs: 'setup'
       })
-      .state('weathergen.simulate.batch', {
+      .state('weathergen.sim.batch', {
         url: '/batch',
-        templateUrl: 'weathergen/templates/simulate-batch.html',
-        controller: 'SimulateBatchCtrl'
+        templateUrl: 'weathergen/templates/sim-batch.html',
+        controller: 'SimBatchCtrl',
+        controllerAs: 'setup'
       })
-      .state('weathergen.simulate.jobs', {
+      .state('weathergen.sim.jobs', {
         url: '/jobs',
-        templateUrl: 'weathergen/templates/simulate-jobs.html',
-        controller: 'SimulateJobsCtrl'
+        templateUrl: 'weathergen/templates/sim-jobs.html',
+        controller: 'SimJobsCtrl'
       })
-      .state('weathergen.simulate.results', {
+      .state('weathergen.sim.results', {
         url: '/results/:id',
-        templateUrl: 'weathergen/templates/simulate-results.html',
-        controller: 'SimulateResultsCtrl'
+        templateUrl: 'weathergen/templates/sim-results.html',
+        controller: 'SimResultsCtrl'
       })
-      .state('weathergen.simulate.results.wgen', {
-        url: '/wgen',
-        templateUrl: 'weathergen/templates/simulate-results-wgen.html',
-        controller: 'SimulateResultsWgenCtrl'
+      .state('weathergen.sim.results.run', {
+        url: '/run',
+        templateUrl: 'weathergen/templates/sim-results-run.html',
+        controller: 'SimResultsRunCtrl'
       })
-      .state('weathergen.simulate.results.batch', {
+      .state('weathergen.sim.results.batch', {
         url: '/batch',
-        templateUrl: 'weathergen/templates/simulate-results-batch.html',
-        controller: 'SimulateResultsBatchCtrl'
+        templateUrl: 'weathergen/templates/sim-results-batch.html',
+        controller: 'SimResultsBatchCtrl'
       });
   }]);

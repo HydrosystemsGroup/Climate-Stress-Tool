@@ -1,8 +1,8 @@
 
 angular.module('cst.weathergen')
-  .controller('SimulateResultsCtrl', ['$scope', '$state', '$stateParams', '$http', '$interval', 'messageCenterService',
+  .controller('SimResultsCtrl', ['$scope', '$state', '$stateParams', '$http', '$interval', 'messageCenterService',
     function($scope, $state, $stateParams, $http, $interval, messageCenterService) { 
-      console.log('SimulateResultsCtrl');
+      console.log('SimResultsCtrl');
 
       if ($stateParams.id === '') {
         $state.go('weathergen.simulate.jobs');
