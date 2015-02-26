@@ -7,7 +7,7 @@
       <li role="presentation" ui-sref-active="active">
         <a ui-sref="weathergen.data.file">Upload File</a>
       </li>
-      <li role="presentation" ui-sref-active="active" ng-class="{disabled: !data.data.hasData()}">
+      <li role="presentation" ui-sref-active="active" ng-class="{disabled: !wgen.data.hasData()}">
         <a ui-sref="weathergen.data.view">View Data</a>
       </li>
     </ul>
@@ -16,5 +16,3 @@
     <div ui-view></div>
   </div>
 </div>
-<hr>
-<pre>{{data.hasData | json}}</pre>

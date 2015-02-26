@@ -30,41 +30,40 @@ app.config(['$stateProvider',
         url: '/view',
         templateUrl: 'weathergen/templates/data-view.html',
         controller: 'DataViewCtrl'
-        // controllerAs: 'chart'
+      })
+      .state('weathergen.simulate', {
+        url: '/simulate',
+        templateUrl: 'weathergen/templates/simulate.html',
+        controller: 'SimulateCtrl',
+      })
+      .state('weathergen.simulate.setup', {
+        url: '/setup',
+        templateUrl: 'weathergen/templates/simulate-setup.html',
+        controller: 'SimulateSetupCtrl'
+      })
+      .state('weathergen.simulate.batch', {
+        url: '/batch',
+        templateUrl: 'weathergen/templates/simulate-batch.html',
+        controller: 'SimulateBatchCtrl'
+      })
+      .state('weathergen.simulate.jobs', {
+        url: '/jobs',
+        templateUrl: 'weathergen/templates/simulate-jobs.html',
+        controller: 'SimulateJobsCtrl'
+      })
+      .state('weathergen.simulate.results', {
+        url: '/results/:id',
+        templateUrl: 'weathergen/templates/simulate-results.html',
+        controller: 'SimulateResultsCtrl'
+      })
+      .state('weathergen.simulate.results.wgen', {
+        url: '/wgen',
+        templateUrl: 'weathergen/templates/simulate-results-wgen.html',
+        controller: 'SimulateResultsWgenCtrl'
+      })
+      .state('weathergen.simulate.results.batch', {
+        url: '/batch',
+        templateUrl: 'weathergen/templates/simulate-results-batch.html',
+        controller: 'SimulateResultsBatchCtrl'
       });
-      // .state('weathergen.simulate', {
-      //   url: '/simulate',
-      //   templateUrl: 'weathergen/templates/simulate.html',
-      //   controller: 'SimulateCtrl',
-      // })
-      // .state('weathergen.simulate.setup', {
-      //   url: '/setup',
-      //   templateUrl: 'weathergen/templates/simulate-setup.html',
-      //   controller: 'SimulateSetupCtrl'
-      // })
-      // .state('weathergen.simulate.batch', {
-      //   url: '/batch',
-      //   templateUrl: 'weathergen/templates/simulate-batch.html',
-      //   controller: 'SimulateBatchCtrl'
-      // })
-      // .state('weathergen.simulate.jobs', {
-      //   url: '/jobs',
-      //   templateUrl: 'weathergen/templates/simulate-jobs.html',
-      //   controller: 'SimulateJobsCtrl'
-      // })
-      // .state('weathergen.simulate.results', {
-      //   url: '/results/:id',
-      //   templateUrl: 'weathergen/templates/simulate-results.html',
-      //   controller: 'SimulateResultsCtrl'
-      // })
-      // .state('weathergen.simulate.results.wgen', {
-      //   url: '/wgen',
-      //   templateUrl: 'weathergen/templates/simulate-results-wgen.html',
-      //   controller: 'SimulateResultsWgenCtrl'
-      // })
-      // .state('weathergen.simulate.results.batch', {
-      //   url: '/batch',
-      //   templateUrl: 'weathergen/templates/simulate-results-batch.html',
-      //   controller: 'SimulateResultsBatchCtrl'
-      // });
   }]);

@@ -4,9 +4,9 @@
       <li role="presentation" ui-sref-active="active">
         <a ui-sref="weathergen.data">Historical Data</a>
       </li>
-      <!-- <li role="presentation" ui-sref-active="active">
+      <li role="presentation" ui-sref-active="active" ng-class="{disabled: !wgen.data.hasData()}">
         <a ui-sref="weathergen.simulate">Simulation</a>
-      </li> -->
+      </li>
     </ul>
   </div>
   <div class="col-sm-10">

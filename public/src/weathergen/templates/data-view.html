@@ -7,6 +7,6 @@
       <label class="btn btn-success" ng-model="chart.variable" btn-radio="'wind'" uncheckable>Wind</label>
     </div>
 
-    <timeseries-chart data="data.data.values" accessor-x="date" accessor-y="{{chart.variable}}" label-y="{{variableLabels[chart.variable]}}" min-y="0"></timeseries-chart>
+    <timeseries-chart data="wgen.data.values" accessor-x="date" accessor-y="{{chart.variable}}" label-y="{{variableLabels[chart.variable]}}" min-y="0"></timeseries-chart>
   </div>
 </div>
