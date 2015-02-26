@@ -5,19 +5,33 @@ angular.module('cst.map')
       restrict: 'E',
       replace: true,
       scope: {
+        height: "@",
+        width: "@",
         coordinate: "=",
         features: "="
       },
       link: function (scope, element, attr) {
+        element.height(scope.height || 300);
+        element.width(scope.width || 300);
+
         var feature = new ol.Feature({
           geometry: null
         });
 
-        var vectorSource = new ol.source.Vector({
+        var featureSource = new ol.source.Vector({
           features: [feature]
         });
 
-        var styleArray = [];
+        var featureLayer = new ol.layer.Vector({
+          source: featureSource,
+          style: new ol.style.Style({
+            image: new ol.style.Circle({
+              radius: 5,
+              fill: new ol.style.Fill({color: '#ff0000'}),
+              stroke: new ol.style.Stroke({color: '#ffffff', width: 1})
+            })
+          })
+        });
 
         var huc8Layer = new ol.layer.Vector({
           source: new ol.source.TopoJSON({
@@ -40,13 +54,9 @@ angular.module('cst.map')
             url: 'https://s3.amazonaws.com/climate-stress-tool/WBDHU12_east_topo.json'
           }),
           name: 'HUC12',
-
           minResolution: 0,
           maxResolution: 200,
           style: [new ol.style.Style({
-            // fill: new ol.style.Fill({
-            //   color: 'rgba(255, 255, 255, 0.1)'
-            // }),
             stroke: new ol.style.Stroke({
               color: 'rgba(55,126,184,0.9)',
               width: 1
@@ -54,24 +64,12 @@ angular.module('cst.map')
           })]
         });
 
-        var vectorLayer = new ol.layer.Vector({
-          source: vectorSource,
-          style: new ol.style.Style({
-            image: new ol.style.Circle({
-              radius: 5,
-              fill: new ol.style.Fill({color: '#ff0000'}),
-              stroke: new ol.style.Stroke({color: '#ffffff', width: 1})
-            })
-          })
-        });
-
-        // window.layer = layer;
         var map = new ol.Map({
           layers: [
             new ol.layer.Tile({
               source: new ol.source.OSM()
             }),
-            vectorLayer,
+            featureLayer,
             huc8Layer,
             huc12Layer
           ],
@@ -84,24 +82,20 @@ angular.module('cst.map')
         map.setTarget(element[0]);
 
         map.on('click', function(evt) {
-          var coord = evt.coordinate;
-          var wgs84 = ol.proj.transform(coord, 'EPSG:3857', 'EPSG:4326');
-          // var hdms = ol.coordinate.toStringHDMS(wgs84);
+          var coordinate = ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
 
           scope.$apply(function() {
-            scope.coordinate = wgs84;
+            scope.coordinate = {
+              latitude: coordinate[1],
+              longitude: coordinate[0]
+            };
           });
         });
-        window.map = map;
 
         var getFeaturesFromPixel = function(pixel) {
-
           var features = [];
+
           map.forEachFeatureAtPixel(pixel, function(feature, layer) {
-            // console.log(feature.getKeys(), feature.get('HUC8'), feature.get('NAME'));
-            // console.log(layer.get('name'));
-            // features.push(feature);
-            // layers.push(layer);
             if (layer.get('name')) {
               features.push({
                 layer: layer.get('name'),
@@ -110,27 +104,7 @@ angular.module('cst.map')
               });
             }
           });
-          // }, this, function(layer) { return layer.get('name')=='huc12'; });
-          // console.log(features);
           return features;
-
-          // var info = document.getElementById('info');
-          // if (feature) {
-          //   info.innerHTML = feature.getId() + ': ' + feature.get('name');
-          // } else {
-          //   info.innerHTML = '&nbsp;';
-          // }
-
-          // if (feature !== highlight) {
-          //   if (highlight) {
-          //     featureOverlay.removeFeature(highlight);
-          //   }
-          //   if (feature) {
-          //     featureOverlay.addFeature(feature);
-          //   }
-          //   highlight = feature;
-          // }
-
         };
 
         $(map.getViewport()).on('mousemove', function(evt) {
@@ -138,10 +112,10 @@ angular.module('cst.map')
           getFeaturesFromPixel(pixel);
         });
 
-        scope.$watch('coordinate', function(value) {
-          if (value) {
-            value = [+value[0], +value[1]];
-            var coordinate = ol.proj.transform(value, 'EPSG:4326', 'EPSG:3857');
+        scope.$watch('coordinate', function(coordinate) {
+          if (coordinate) {
+            coordinate = ol.proj.transform([+coordinate.longitude, +coordinate.latitude],
+                                           'EPSG:4326', 'EPSG:3857');
             feature.setGeometry(new ol.geom.Point(coordinate));
 
             var pixel = map.getPixelFromCoordinate(coordinate);
@@ -151,6 +125,6 @@ angular.module('cst.map')
           }
         }, true);
       },
-      template: '<div class="map" style="height: 300px"></div>'
+      template: '<div class="map"></div>'
     };
   });
