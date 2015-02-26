@@ -13,7 +13,8 @@ app.config(['$stateProvider',
       .state('weathergen.data', {
         url: '/data',
         templateUrl: 'weathergen/templates/data.html',
-        controller: 'DataCtrl'
+        controller: 'DataCtrl',
+        controllerAs: 'data'
       })
       .state('weathergen.data.map', {
         url: '/map',
@@ -24,6 +25,12 @@ app.config(['$stateProvider',
       .state('weathergen.data.file', {
         url: '/file',
         templateUrl: 'weathergen/templates/data-file.html'
+      })
+      .state('weathergen.data.view', {
+        url: '/view',
+        templateUrl: 'weathergen/templates/data-view.html',
+        controller: 'DataViewCtrl'
+        // controllerAs: 'chart'
       });
       // .state('weathergen.historical', {
       //   url: '/historical',

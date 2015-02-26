@@ -1,0 +1,12 @@
+<div class="row">
+  <div class="col-sm-9">
+    <div class="btn-group pull-right">
+      <label class="btn btn-success" ng-model="chart.variable" btn-radio="'prcp'" uncheckable>Precip</label>
+      <label class="btn btn-success" ng-model="chart.variable" btn-radio="'tmin'" uncheckable>Tmin</label>
+      <label class="btn btn-success" ng-model="chart.variable" btn-radio="'tmax'" uncheckable>Tmax</label>
+      <label class="btn btn-success" ng-model="chart.variable" btn-radio="'wind'" uncheckable>Wind</label>
+    </div>
+
+    <timeseries-chart data="data.data.values" accessor-x="date" accessor-y="{{chart.variable}}" label-y="{{variableLabels[chart.variable]}}" min-y="0"></timeseries-chart>
+  </div>
+</div>
