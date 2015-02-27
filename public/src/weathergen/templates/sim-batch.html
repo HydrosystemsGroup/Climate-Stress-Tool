@@ -4,37 +4,37 @@
       <div class="form-group">
         <label for="inputNumberTrials" class="col-sm-3 control-label"># Trials</label>
         <div class="col-sm-3">
-          <input type="text" class="form-control" id="inputNumberTrials" ng-model="inputs.n_trial">
+          <input type="text" class="form-control" id="inputNumberTrials" ng-model="form.n_trial">
         </div>
       </div>
       <div class="form-group">
         <label for="inputNumberYears" class="col-sm-3 control-label"># Years</label>
         <div class="col-sm-3">
-          <input type="text" class="form-control" id="inputNumberYears" ng-model="inputs.n_year">
+          <input type="text" class="form-control" id="inputNumberYears" ng-model="form.n_year">
         </div>
       </div>
       <div class="form-group">
         <label for="inputStartMonth" class="col-sm-3 control-label">Start Month</label>
         <div class="col-sm-3">
-          <input type="text" class="form-control" id="inputStartMonth" ng-model="inputs.start_month">
+          <input type="text" class="form-control" id="inputStartMonth" ng-model="form.start_month">
         </div>
       </div>
       <div class="form-group">
         <label for="inputStartYear" class="col-sm-3 control-label">Start Water Year</label>
         <div class="col-sm-3">
-          <input type="text" class="form-control" id="inputStartYear" ng-model="inputs.start_water_year">
+          <input type="text" class="form-control" id="inputStartYear" ng-model="form.start_water_year">
         </div>
       </div>
       <div class="form-group">
         <label for="inputPrecipMean" class="col-sm-3 control-label">Mean Precip</label>
         <div class="col-sm-3">
-          <div range-slider min="inputs.prcp_mean.range.min" max="inputs.prcp_mean.range.max" model-min="inputs.prcp_mean.minVal" model-max="inputs.prcp_mean.maxVal" step="{{inputs.prcp_mean.step}}" decimal-places="{{inputs.prcp_mean.decimals}}"></div>
+          <div range-slider min="form.prcp_mean.range.min" max="form.prcp_mean.range.max" model-min="form.prcp_mean.minVal" model-max="form.prcp_mean.maxVal" step="{{form.prcp_mean.step}}" decimal-places="{{form.prcp_mean.decimals}}"></div>
         </div>
       </div>
       <div class="form-group">
         <label for="inputTemp" class="col-sm-3 control-label">Mean Temperature</label>
         <div class="col-sm-3">
-          <div range-slider min="inputs.temp_mean.range.min" max="inputs.temp_mean.range.max" model-min="inputs.temp_mean.minVal" model-max="inputs.temp_mean.maxVal" step="{{inputs.temp_mean.step}}" decimal-places="{{inputs.dry_spell.decimals}}"></div>
+          <div range-slider min="form.temp_mean.range.min" max="form.temp_mean.range.max" model-min="form.temp_mean.minVal" model-max="form.temp_mean.maxVal" step="{{form.temp_mean.step}}" decimal-places="{{form.dry_spell.decimals}}"></div>
         </div>
       </div>
       <div class="form-group">

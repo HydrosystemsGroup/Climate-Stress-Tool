@@ -76,15 +76,5 @@ app.config(['$stateProvider',
         onExit: function(jobService) {
           jobService.stopPoll();
         }
-      })
-      .state('weathergen.sim.job.run', {
-        url: '/run',
-        templateUrl: 'weathergen/templates/sim-results-run.html',
-        controller: 'SimResultsRunCtrl'
-      })
-      .state('weathergen.sim.job.batch', {
-        url: '/batch',
-        templateUrl: 'weathergen/templates/sim-results-batch.html',
-        controller: 'SimResultsBatchCtrl'
       });
   }]);

@@ -1,8 +1,8 @@
 
 angular.module('cst.weathergen')
-  .controller('SimBatchCtrl', ['$scope', '$state', '$http', 'messageCenterService',
-    function($scope, $state, $http, messageCenterService) {
-      console.log('SimBatchCtrl');
+  .controller('SimBatchCtrl', ['$scope', '$state', 'messageCenterService', 'jobService', 'dataService',
+    function($scope, $state, messageCenterService, jobService, dataService) {
+      console.log('SimBatchCtrl: load');
 
       $scope.form = {
         n_trial: 1,
@@ -72,26 +72,25 @@ angular.module('cst.weathergen')
           console.log(v, ranges[v]);
         });
 
-        $http.post('/api/batch', {
-            data: $scope.data.values,
-            form: {
-              n_trial: +$scope.form.n_trial,
-              n_year: +$scope.form.n_year,
-              start_month: +$scope.form.start_month,
-              start_water_year: +$scope.form.start_water_year,
-              dry_spell_changes: ranges.dry_spell,
-              wet_spell_changes: ranges.wet_spell,
-              prcp_mean_changes: ranges.prcp_mean,
-              prcp_cv_changes: ranges.prcp_cv,
-              temp_changes: ranges.temp_mean
-            }
-          })
-          .success(function(data, status, headers, config) {
-            $scope.jobs.push(data);
-            $state.go('weathergen.simulate.results', {id: data.id});
-          })
-          .error(function(data, status, headers, config) {
-            messageCenterService.add('danger', 'Error submitting simulation batch job');
+        var inputs = {
+          n_trial: +$scope.form.n_trial,
+          n_year: +$scope.form.n_year,
+          start_month: +$scope.form.start_month,
+          start_water_year: +$scope.form.start_water_year,
+          dry_spell_changes: ranges.dry_spell,
+          wet_spell_changes: ranges.wet_spell,
+          prcp_mean_changes: ranges.prcp_mean,
+          prcp_cv_changes: ranges.prcp_cv,
+          temp_changes: ranges.temp_mean
+        };
+
+        jobService.postJob('batch', dataService.values, inputs)
+          .then(function(response) {
+            console.log('SimRunCtrl: run success', response.data);
+            $state.go('weathergen.sim.job', {id: response.data.id});
+          }, function(error) {
+            console.log('SimRunCtrl: run fail', response.data);
+            messageCenterService.add('danger', 'Error submitting simulation job');
           });
       };
     }

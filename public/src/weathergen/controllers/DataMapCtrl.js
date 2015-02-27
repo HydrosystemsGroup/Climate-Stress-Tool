@@ -21,7 +21,7 @@ angular.module('cst.weathergen')
         dataService.getValuesByLocation(this.coordinate.latitude, this.coordinate.longitude)
           .then(function() {
             ctrl.fetching = false;
-            messageCenterService.add('success', 'Historical data retrieved');
+            $state.go('weathergen.data.view');
           }, function(error) {
             ctrl.fetching = false;
             console.log(error);
