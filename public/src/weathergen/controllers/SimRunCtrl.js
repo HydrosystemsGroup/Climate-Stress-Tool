@@ -12,7 +12,7 @@ angular.module('cst.weathergen')
           wet_spell_changes: 1,
           prcp_mean_changes: 1,
           prcp_cv_changes: 1,
-          temp_changes: 0,
+          temp_mean_changes: 0,
         };
 
       $scope.run = function() {
@@ -24,7 +24,7 @@ angular.module('cst.weathergen')
           wet_spell_changes: +$scope.inputs.wet_spell_changes,
           prcp_mean_changes: +$scope.inputs.prcp_mean_changes,
           prcp_cv_changes: +$scope.inputs.prcp_cv_changes,
-          temp_changes: +$scope.inputs.temp_changes
+          temp_mean_changes: +$scope.inputs.temp_mean_changes
         };
 
         jobService.postJob('run', dataService.values, inputs)

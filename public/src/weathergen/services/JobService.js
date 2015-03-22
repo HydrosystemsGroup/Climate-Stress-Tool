@@ -78,7 +78,8 @@ angular.module('cst.weathergen')
               prcp: +d.PRCP,
               tmin: +d.TMIN,
               tmax: +d.TMAX,
-              temp: +d.TEMP
+              temp: +d.TEMP,
+              wind: +d.WIND
             };
           }).get(function(error, rows) {
             if (error) {

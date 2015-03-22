@@ -56,6 +56,7 @@
                   <label class="btn btn-success" ng-model="chart.variable" btn-radio="'tmin'" uncheckable>Tmin</label>
                   <label class="btn btn-success" ng-model="chart.variable" btn-radio="'tmax'" uncheckable>Tmax</label>
                   <label class="btn btn-success" ng-model="chart.variable" btn-radio="'temp'" uncheckable>Tmean</label>
+                  <label class="btn btn-success" ng-model="chart.variable" btn-radio="'wind'" uncheckable>Wind</label>
                 </div>
               </div>
               <timeseries-chart data="chart.data" accessor-x="date" accessor-y="{{chart.variable}}" label-y="{{chart.labels[chart.variable]}}" min-y="0"></timeseries-chart>

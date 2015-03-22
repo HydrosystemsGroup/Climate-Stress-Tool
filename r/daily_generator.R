@@ -7,15 +7,9 @@ fail <- function(txt, status=1) {
 
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(lubridate))
-suppressPackageStartupMessages(library(tidyr))
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(gridExtra))
 suppressPackageStartupMessages(library(weathergen))
-suppressPackageStartupMessages(library(forecast))
-suppressPackageStartupMessages(library(RPostgreSQL))
 suppressPackageStartupMessages(library(jsonlite))
-
-theme_set(theme_bw())
+suppressPackageStartupMessages(library(zoo))
 
 # parse command line arguments
 args <- commandArgs(trailingOnly = TRUE)
@@ -26,15 +20,17 @@ wd <- args[1]
 if (!file.exists(wd)) {
   fail("Error: Working directory does not exist")
 }
-cat(paste0("Working Directory: ", wd), '\n')
+cat(paste0("Working Directory: ", wd), '\n\n')
 setwd(wd)
 
 # load inputs ----
+cat('Loading parameters...')
 inputs <- fromJSON('inputs.json')
 
-inputs_names <- c("n_year","start_month","start_water_year","dry_spell_changes","wet_spell_changes","prcp_mean_changes","prcp_cv_changes","temp_changes")
+inputs_names <- c("n_year","start_month","start_water_year","dry_spell_changes","wet_spell_changes","prcp_mean_changes","prcp_cv_changes","temp_mean_changes")
 missing_inputs <- setdiff(inputs_names, names(inputs))
 if (length(missing_inputs) > 0) {
+  cat('\nFailed to load parameters\n')
   fail(paste0("Error: Missing input parameters (", paste(missing_inputs, collapse=','), ')'))
 }
 
@@ -45,37 +41,17 @@ dry_spell_changes <- inputs[['dry_spell_changes']]
 wet_spell_changes <- inputs[['wet_spell_changes']]
 prcp_mean_changes <- inputs[['prcp_mean_changes']]
 prcp_cv_changes <- inputs[['prcp_cv_changes']]
-temp_changes <- inputs[['temp_changes']]
+temp_mean_changes <- inputs[['temp_mean_changes']]
+cat('done\n\n')
 
 cat('Input Parameters:\n')
 for (nm in inputs_names) {
-  cat(paste(nm, inputs[[nm]], sep=': '), '\n')
+  cat(' ', paste(nm, inputs[[nm]], sep=': '), '\n')
 }
-
-# n_year <- 10
-# start_month <- 10
-# start_water_year <- 2000
-# dry_spell_changes <- 1
-# wet_spell_changes <- 1
-# prcp_mean_changes <- 1
-# prcp_cv_changes <- 1
-# temp_changes <- 0
+cat('\n')
 
 # load data ----
-# drv <- dbDriver("PostgreSQL")
-# con <- dbConnect(drv, dbname = "cst")
-# clim.da <- dbGetQuery(con, statement = paste(
-#   "SELECT to_date(d.year || '-' || trim(to_char(d.month, '00')) || '-' || trim(to_char(d.day, '00')), 'YYYY-MM-DD') as date,",
-#        "prcp, tmax, tmin, wind",
-#   "FROM maurer_day d, (",
-#   paste0("SELECT ST_Distance(m.geom, ST_SetSRID(ST_MakePoint(", longitude, ", ", latitude, "), 4326)) as distance,"),
-#          "m.gid, m.latitude, m.longitude",
-#     "FROM maurer_locations m",
-#     "ORDER BY distance",
-#     "LIMIT 1",
-#   ") AS l",
-#   "WHERE d.location_id=l.gid",
-#   "ORDER BY date"));
+cat("Loading input data...")
 clim.da <- fromJSON('data.json')
 
 clim.da$date <- ymd_hms(clim.da$date)
@@ -87,24 +63,28 @@ clim.mon <- group_by(clim.da, DATE=floor_date(DATE, 'month')) %>%
   summarise(PRCP=sum(PRCP),
             TMAX=mean(TMAX),
             TMIN=mean(TMIN),
-            TEMP=mean(TEMP))
+            TEMP=mean(TEMP),
+            WIND=mean(WIND))
 clim.wyr <- group_by(clim.da, WYEAR=wyear(DATE, start_month=start_month)) %>%
   summarise(N=n(),
             PRCP=sum(PRCP),
             TMAX=mean(TMAX),
             TMIN=mean(TMIN),
-            TEMP=mean(TEMP))
+            TEMP=mean(TEMP),
+            WIND=mean(WIND))
 
 complete_years <- clim.wyr$WYEAR[which(clim.wyr$N>=365)]
 
 clim.da <- filter(clim.da, wyear(DATE, start_month=start_month) %in% complete_years)
 clim.mon <- filter(clim.mon, wyear(DATE, start_month=start_month) %in% complete_years)
 clim.wyr <- filter(clim.wyr, WYEAR %in% complete_years)
+cat('done\n\n')
 
 # annual sim ----
+cat("Running weather generator...")
 sim <- tryCatch({
-  wgen_daily(obs_day = zoo(x = clim.da[, c('PRCP', 'TEMP', 'TMIN', 'TMAX', 'WIND')],
-                           order.by = clim.da[['DATE']]),
+  suppressWarnings(wgen_daily(obs_day = zoo(x = clim.da[, c('PRCP', 'TEMP', 'TMIN', 'TMAX', 'WIND')],
+                                            order.by = clim.da[['DATE']]),
              n_year=n_year, n_knn_annual=100,
              dry_wet_threshold=0.3, wet_extreme_quantile_threshold=0.8,
              start_month=start_month, start_water_year=start_water_year, include_leap_days=FALSE,
@@ -113,51 +93,17 @@ sim <- tryCatch({
              wet_spell_changes=wet_spell_changes,
              prcp_mean_changes=prcp_mean_changes,
              prcp_cv_changes=prcp_cv_changes,
-             temp_changes=temp_changes)
+             temp_mean_changes=temp_mean_changes))
 }, error = function(err) {
+  cat("\n\nFailed to run weather generator:\n")
+  cat(as.character(err), '\n')
   fail(as.character(err))
 })
+cat("done\n\n")
 
-select(sim$out, DATE, PRCP, TEMP, TMIN, TMAX) %>%
+
+cat("Saving output to csv...")
+select(sim$out, DATE, PRCP, TEMP, TMIN, TMAX, WIND) %>%
   write.csv(file='sim.csv', row.names=FALSE)
-
-# out.day <- select(sim[['out']], DATE, PRCP, TEMP, TMIN, TMAX)
-# out.mon <- mutate(out.day, DATE=floor_date(DATE, unit='month')) %>%
-#   group_by(DATE) %>%
-#   summarize(PRCP=sum(PRCP),
-#             TEMP=mean(TEMP),
-#             TMIN=mean(TMIN),
-#             TMAX=mean(TMAX))
-# out.wyr <- mutate(out.day, WYEAR=wyear(DATE)) %>%
-#   group_by(WYEAR) %>%
-#   summarize(PRCP=sum(PRCP),
-#             TEMP=mean(TEMP),
-#             TMIN=mean(TMIN),
-#             TMAX=mean(TMAX))
-
-# p.day.prcp <- out.day %>%
-#   ggplot(aes(DATE, PRCP)) +
-#   geom_line() +
-#   labs(x='Date', y='Precipitation (mm/day)') +
-#   theme_bw()
-# p.day.temp <- out.day %>%
-#   ggplot(aes(DATE, TEMP)) +
-#   geom_ribbon(aes(ymin=TMIN, ymax=TMAX)) +
-#   geom_line() +
-#   labs(x='Date', y='Temperature (deg C)') +
-#   theme_bw()
-#
-# png(filename='daily.png', width=600, height=400)
-# grid.arrange(p.day.prcp, p.day.temp, ncol=1)
-# dev.off()
-
-# box.wyr <- rbind(select(clim.wyr, WYEAR, PRCP, TMAX, TMIN, TEMP) %>% mutate(SOURCE='Historical'),
-#                  mutate(out.wyr, SOURCE='Simulated'))
-# p.wyr.prcp.box <- box.wyr %>%
-#   ggplot(aes(SOURCE, PRCP)) +
-#   geom_boxplot() +
-#   theme_bw()
-
 save(sim, file='sim.rda')
-
-cat(paste0("Saved output to: ", file.path(getwd(), 'sim.csv')))
+cat("done\n")

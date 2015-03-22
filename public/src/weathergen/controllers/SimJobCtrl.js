@@ -14,7 +14,8 @@ angular.module('cst.weathergen')
           prcp: 'Precip (mm/day)',
           tmin: 'Min Temp (degC)',
           tmax: 'Max Temp (degC)',
-          temp: 'Mean Temp (degC)'
+          temp: 'Mean Temp (degC)',
+          wind: 'Wind (m/s)'
         },
         data: []
       };
