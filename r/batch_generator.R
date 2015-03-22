@@ -7,15 +7,9 @@ fail <- function(txt, status=1) {
 
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(lubridate))
-suppressPackageStartupMessages(library(tidyr))
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(gridExtra))
 suppressPackageStartupMessages(library(weathergen))
-suppressPackageStartupMessages(library(forecast))
-suppressPackageStartupMessages(library(RPostgreSQL))
 suppressPackageStartupMessages(library(jsonlite))
-
-theme_set(theme_bw())
+suppressPackageStartupMessages(library(zoo))
 
 # parse command line arguments
 args <- commandArgs(trailingOnly = TRUE)
@@ -26,15 +20,17 @@ wd <- args[1]
 if (!file.exists(wd)) {
   fail("Error: Working directory does not exist")
 }
-cat(paste0("Working Directory: ", wd), '\n')
+cat(paste0("Working Directory: ", wd), '\n\n')
 setwd(wd)
 
 # load inputs ----
+cat('Loading parameters...')
 inputs <- fromJSON('inputs.json')
 
-inputs_names <- c("n_trial","n_year","start_month","start_water_year","dry_spell_changes","wet_spell_changes","prcp_mean_changes","prcp_cv_changes","temp_changes")
+inputs_names <- c("n_trial", "n_year","start_month","start_water_year","dry_spell_changes","wet_spell_changes","prcp_mean_changes","prcp_cv_changes","temp_mean_changes")
 missing_inputs <- setdiff(inputs_names, names(inputs))
 if (length(missing_inputs) > 0) {
+  cat('\nFailed to load parameters\n')
   fail(paste0("Error: Missing input parameters (", paste(missing_inputs, collapse=','), ')'))
 }
 
@@ -46,7 +42,8 @@ dry_spell_changes <- inputs[['dry_spell_changes']]
 wet_spell_changes <- inputs[['wet_spell_changes']]
 prcp_mean_changes <- inputs[['prcp_mean_changes']]
 prcp_cv_changes <- inputs[['prcp_cv_changes']]
-temp_changes <- inputs[['temp_changes']]
+temp_mean_changes <- inputs[['temp_mean_changes']]
+cat('done\n\n')
 
 cat('Input Parameters:\n')
 for (nm in inputs_names) {
@@ -54,7 +51,10 @@ for (nm in inputs_names) {
   cat(paste(inputs[[nm]], collapse=', '))
   cat('\n')
 }
+cat('\n')
 
+# load data ----
+cat("Loading input data...")
 clim.da <- fromJSON('data.json')
 
 clim.da$date <- ymd_hms(clim.da$date)
@@ -79,10 +79,12 @@ complete_years <- clim.wyr$WYEAR[which(clim.wyr$N>=365)]
 clim.da <- filter(clim.da, wyear(DATE, start_month=start_month) %in% complete_years)
 clim.mon <- filter(clim.mon, wyear(DATE, start_month=start_month) %in% complete_years)
 clim.wyr <- filter(clim.wyr, WYEAR %in% complete_years)
+cat('done\n\n')
 
 # create params ----
+cat('Setting up parameters...')
 params <- expand.grid(trial     = seq(1, n_trial),
-                      temp_mean = temp_changes,
+                      temp_mean = temp_mean_changes,
                       prcp_mean = prcp_mean_changes,
                       prcp_cv   = prcp_cv_changes,
                       dry_spell = dry_spell_changes,
@@ -94,8 +96,10 @@ write.csv(params, file = 'runs.csv', row.names = FALSE)
 
 toJSON(params) %>%
   write(file = 'runs.json')
+cat('done\n\n')
 
 # run sim ----
+cat('Running weather generator...\n\n')
 for (i in seq(1, nrow(params))) {
   i_params <- as.list(params[i, ])
 
@@ -103,11 +107,11 @@ for (i in seq(1, nrow(params))) {
     dir.create(i_params[['folder']])
   }
 
-  cat('\nRunning: ', i_params[['folder']], '\n')
+  cat('Running: ', i_params[['folder']], '\n')
 
   sim <- tryCatch({
-    wgen_daily(obs_day = zoo(x = clim.da[, c('PRCP', 'TEMP', 'TMIN', 'TMAX', 'WIND')],
-                             order.by = clim.da[['DATE']]),
+    suppressWarnings(wgen_daily(obs_day = zoo(x = clim.da[, c('PRCP', 'TEMP', 'TMIN', 'TMAX', 'WIND')],
+                                              order.by = clim.da[['DATE']]),
                n_year=n_year, n_knn_annual=100,
                dry_wet_threshold=0.3, wet_extreme_quantile_threshold=0.8,
                start_month=start_month, start_water_year=start_water_year, include_leap_days=FALSE,
@@ -116,21 +120,24 @@ for (i in seq(1, nrow(params))) {
                wet_spell_changes=i_params[['wet_spell']],
                prcp_mean_changes=i_params[['prcp_mean']],
                prcp_cv_changes=i_params[['prcp_cv']],
-               temp_changes=i_params[['temp_mean']])
+               temp_mean_changes=i_params[['temp_mean']]))
   }, error = function(err) {
+    cat("\n\nFailed to run weather generator:\n")
+    cat(as.character(err), '\n')
     fail(as.character(err))
   })
 
-  select(sim$out, DATE, PRCP, TEMP, TMIN, TMAX) %>%
+  cat("Saving output to csv...")
+  select(sim$out, DATE, PRCP, TEMP, TMIN, TMAX, WIND) %>%
     write.csv(file = file.path(i_params[['folder']], 'output.csv'), row.names = FALSE)
 
   toJSON(x = i_params, auto_unbox = TRUE) %>%
     write(file = file.path(i_params[['folder']], 'run_params.json'))
-
-  cat(paste0("Saved run to: ", file.path(getwd(), i_params[['folder']])))
+  cat('done\n\n')
 }
 
 # save to zip ----
+cat('Compressing output to zip file...')
 tstamp <- format(Sys.time(), '%Y%m%d_%H%M')
 temp_base <- tempdir()
 temp_path <- file.path(temp_base, tstamp)
@@ -143,5 +150,4 @@ zip_path <- file.path(temp_base, zip_name)
 zip(zip_path, files, flags = "-r9X")
 file.copy(zip_path, getwd())
 
-cat('\n\n')
-cat(paste0("Saved zip file: ", file.path(getwd(), zip_name)))
+cat('done\n')

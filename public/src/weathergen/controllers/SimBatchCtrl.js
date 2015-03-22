@@ -81,7 +81,7 @@ angular.module('cst.weathergen')
           wet_spell_changes: ranges.wet_spell,
           prcp_mean_changes: ranges.prcp_mean,
           prcp_cv_changes: ranges.prcp_cv,
-          temp_changes: ranges.temp_mean
+          temp_mean_changes: ranges.temp_mean
         };
 
         jobService.postJob('batch', dataService.values, inputs)
