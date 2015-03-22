@@ -1,5 +1,5 @@
 
-var app = angular.module('cst.weathergen', ['MessageCenterModule']);
+var app = angular.module('cst.weathergen', ['MessageCenterModule', 'angularFileUpload']);
 
 app.config(['$stateProvider',
   function ($stateProvider) {
@@ -24,7 +24,8 @@ app.config(['$stateProvider',
       })
       .state('weathergen.data.file', {
         url: '/file',
-        templateUrl: 'weathergen/templates/data-file.html'
+        templateUrl: 'weathergen/templates/data-file.html',
+        controller: 'DataFileCtrl'
       })
       .state('weathergen.data.view', {
         url: '/view',

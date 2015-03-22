@@ -10,11 +10,8 @@ var app = angular.module('cst',
    'MessageCenterModule',
    'cst.templates',
    'cst.home',
-   // 'cst.ocpu',
    'cst.weathergen',
-   // 'cst.model',
    'cst.charts',
-   // 'cst.sim',
    'cst.map']);
 
 app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
