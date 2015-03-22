@@ -37,16 +37,19 @@ To run the development server:
 ```
 redis-server
 ```
+
 2. start grunt and npm:
 ```
 grunt dev
 npm run dev
 ```
+
 3. start worker app:
 ```
 cd worker
 node app.js
 ```
+
 4. navigate to `http://localhost:3000/`
 
 The job queue is accessible at `http://localhost:3000/jobs`
