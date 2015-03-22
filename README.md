@@ -33,18 +33,18 @@ The application provides access to the [Gridded Meteorological Data: 1949-2010](
 
 To run the development server:
 
-1. start redis server:
+Start redis server:
 ```
 redis-server
 ```
 
-2. start grunt and npm:
+Start grunt and npm:
 ```
 grunt dev
 npm run dev
 ```
 
-3. start worker app:
+Start worker app:
 ```
 cd worker
 node app.js
