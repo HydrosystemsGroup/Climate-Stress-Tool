@@ -16,6 +16,7 @@ router.post('/wgen', function(req, res) {
   console.log(req.body);
   // var data = req.body.data;
   var uid = uuid.v4();
+  var sessionID = req.sessionID;
   var wd = path.join(config.run_folder, uid);
   var data = req.body.data;
   var inputs = req.body.inputs;
@@ -31,11 +32,19 @@ router.post('/wgen', function(req, res) {
             title: 'wgen job',
             wd: wd,
             uid: uid,
+            sessionID: sessionID,
             inputs: inputs
         }).save( function(err){
+          if( err ) return res.send(400, 'Error submitting job');
+
           console.log("Job Saved!");
-          console.log(job.data);
-          if( err ) res.send(400, 'Error submitting job');
+          // console.log(job.data);
+          if (req.session.jobs) {
+            req.session.jobs.push(job.id);
+          } else {
+            req.session.jobs = [job.id];
+          }
+
           res.send(job);
         });
         job.on('failed', function() {
@@ -47,6 +56,11 @@ router.post('/wgen', function(req, res) {
       });
     });
   });
+});
+
+router.get('/jobs', function(req, res) {
+  var jobs = req.session.jobs || [];
+  res.send(200, jobs);
 });
 
 router.get('/wgen/:id', function(req, res) {
@@ -83,7 +97,7 @@ router.get('/wgen/:id/files/:filename', function(req, res) {
   console.log('Get Job Results: ' + req.params.id);
   Job.get(req.params.id, function(err, job) {
     if (err) {
-      console.log(err)
+      console.log(err);
     } else if (job.toJSON().state === 'complete') {
       // console.log(job.data);
       var filepath = path.join(job.data.wd, req.params.filename);
@@ -175,6 +189,7 @@ router.post('/batch', function(req, res) {
   console.log(req.body);
   // var data = req.body.data;
   var uid = uuid.v4();
+  var sessionID = req.sessionID;
   var wd = path.join(config.run_folder, uid);
   var data = req.body.data;
   var inputs = req.body.inputs;
@@ -190,11 +205,19 @@ router.post('/batch', function(req, res) {
             title: 'batch job',
             wd: wd,
             uid: uid,
+            sessionID: sessionID,
             inputs: inputs
         }).save( function(err){
+          if (err) return res.send(400, 'Error submitting job');
+
           console.log("Job Saved!");
-          console.log(job.data);
-          if( err ) res.send(400, 'Error submitting job');
+          // console.log(job.data);
+          if (req.session.jobs) {
+            req.session.jobs.push(job.id);
+          } else {
+            req.session.jobs = [job.id];
+          }
+
           res.send(job);
         });
         job.on('failed', function() {

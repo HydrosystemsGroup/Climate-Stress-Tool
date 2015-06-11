@@ -1,6 +1,7 @@
 var fs = require('fs'),
     express = require('express'),
     session = require('express-session'),
+    FileStore = require('session-file-store')(session),
     flash = require('connect-flash'),
     favicon = require('static-favicon'),
     logger = require('morgan'),
@@ -21,6 +22,15 @@ module.exports = function (app, config) {
     console.log("Creating run folder: " + config.run_folder);
     fs.mkdirSync(config.run_folder);
   }
+
+  app.use(session({
+    store: new FileStore({
+      path: config.session_folder
+    }),
+    secret: 'climate-stress',
+    resave: true,
+    saveUninitialized: true
+  }));
 
   app.use(compression());
 
@@ -44,7 +54,7 @@ module.exports = function (app, config) {
 
   app.use(flash());
 
-  app.use('/jobs', kue.app);
+  app.use('/kue', kue.app);
   require('./routes')(app);
 
   // error handlers

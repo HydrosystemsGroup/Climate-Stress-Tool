@@ -6,3 +6,5 @@ dump.rdb
 .Rproj.user
 public/dist/
 runs/
+sessions/
+

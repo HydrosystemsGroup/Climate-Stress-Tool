@@ -24,6 +24,7 @@
     "morgan": "^1.0.1",
     "node-uuid": "^1.4.2",
     "pg": "^4.0.0",
+    "session-file-store": "0.0.13",
     "static-favicon": "^1.0.2"
   },
   "devDependencies": {

@@ -6,6 +6,7 @@ module.exports = {
     env: 'development',
     root: rootPath,
     run_folder: path.join(rootPath, 'runs'),
+    session_folder: path.join(rootPath, 'sessions'),
     app: {
       name: 'Climate Stress Tool - dev'
     }
@@ -14,6 +15,7 @@ module.exports = {
     env: 'test',
     root: rootPath,
     run_folder: path.join(rootPath, 'runs'),
+    session_folder: path.join(rootPath, 'sessions'),
     app: {
       name: 'Climate Stress Tool - test'
     }
@@ -22,6 +24,7 @@ module.exports = {
     env: 'production',
     root: rootPath,
     run_folder: path.join(rootPath, 'runs'),
+    session_folder: path.join(rootPath, 'sessions'),
     app: {
       name: 'Climate Stress Tool'
     }

@@ -32,10 +32,10 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
         templateUrl: 'map/templates/map.html'
       });
 
-    $locationProvider.html5Mode({
-      enabled: true,
-      requireBase: false
-    });
+    // $locationProvider.html5Mode({
+    //   enabled: true,
+    //   requireBase: false
+    // });
   }])
   .run(
     [ '$rootScope', '$state', '$stateParams',
