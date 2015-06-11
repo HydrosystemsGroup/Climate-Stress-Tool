@@ -11,7 +11,7 @@ angular.module('cst.weathergen')
       $scope.loadFile = function(file) {
         console.log('loading');
         $scope.loading = true;
-        console.log(arguments);
+        console.log(file[0]);
         dataService.getValuesFromFile(file[0])
           .then(function(data) {
             ctrl.loading = false;

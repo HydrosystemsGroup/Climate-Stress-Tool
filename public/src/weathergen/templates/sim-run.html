@@ -1,59 +1,129 @@
-<div class="row">
-  <div class="col-sm-4">
-    <form class="form-horizontal" role="form">
-      <div class="form-group">
-        <label for="inputNumberYears" class="col-sm-8 control-label"># Years</label>
-        <div class="col-sm-4">
-          <input type="text" class="form-control" id="inputNumberYears" ng-model="inputs.n_year">
+<section class="content-header">
+  <h1>
+    Set Up Weather Generator <small>for Single Run</small>
+  </h1>
+</section>
+
+<section class="content">
+  <div ng-switch="wgen.data.hasData()">
+    <div ng-switch-when="false" class="row">
+      <div class="col-md-4">
+        <div class="box">
+          <div class="box-body">
+            <h3 class="text-red"><i class="fa fa-warning"></i> Data has not been loaded!</h3>
+            <p>In order to set up the weather generator, you need to load some data first. Please choose one of the following options.</p>
+            <ul>
+              <li><a ui-sref="weathergen.data.map">Load Data by Location using a Map</a></li>
+              <li><a ui-sref="weathergen.data.file">Load Data by Uploading a File</a></li>
+            </ul>
+          </div>
         </div>
       </div>
-      <div class="form-group">
-        <label for="inputStartMonth" class="col-sm-8 control-label">Start Month</label>
-        <div class="col-sm-4">
-          <input type="text" class="form-control" id="inputStartMonth" ng-model="inputs.start_month">
+    </div>
+    <div ng-switch-when="true" class="row">
+      <div class="col-md-6">
+        <div class="box">
+          <form class="form-horizontal" role="form">
+            <div class="box-body">
+              <h4>Simulation Timespan</h4>
+              <div class="form-group">
+                <label for="inputNumberYears" class="col-sm-2 control-label"># Years</label>
+                <div class="col-sm-2">
+                  <input type="text" class="form-control" id="inputNumberYears" ng-model="inputs.n_year">
+                </div>
+                <div class="col-sm-8">
+                  <p class="help-block">Total number of sumulation years</p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputStartMonth" class="col-sm-2 control-label">Start Month</label>
+                <div class="col-sm-2">
+                  <input type="text" class="form-control" id="inputStartMonth" ng-model="inputs.start_month">
+                </div>
+                <div class="col-sm-8">
+                  <p class="help-block">Initial month of the water year for output timeseries.</p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputStartYear" class="col-sm-2 control-label">Start Water Year</label>
+                <div class="col-sm-2">
+                  <input type="text" class="form-control" id="inputStartYear" ng-model="inputs.start_water_year">
+                </div>
+                <div class="col-sm-8">
+                  <p class="help-block">
+                    Initial water year for output timeseries
+                    <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="bottom" data-html="true" title="If the Start Month is not 1 (January), then the output timeseries will begin on the previous calendar year.<br><br>For example, if Start Month is 10 and Start Year is 2000 then the first timestep will be Oct 1, 1999"></i>
+                  </p>
+                </div>
+              </div>
+              <h4>Adjustment Factors</h4>
+              <div class="form-group">
+                <label for="inputPrecipMean" class="col-sm-2 control-label">Mean Precip Factor</label>
+                <div class="col-sm-2">
+                  <input type="text" class="form-control" id="inputPrecipMean" ng-model="inputs.prcp_mean_changes">
+                </div>
+                <div class="col-sm-8">
+                  <p class="help-block">
+                    Multiplicative factor to increase or decrease overall mean precipitation
+                    <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="bottom" data-html="true" title="Set to 1 for no adjustment to mean precipitation.<br><br>Values greater than 1 increase the mean (e.g. 1.1 increases by 10%) and values less than 1 decrease the mean."></i>
+                  </p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputPrecipCV" class="col-sm-2 control-label">CV Precip Factor</label>
+                <div class="col-sm-2">
+                  <input type="text" class="form-control" id="inputPrecipCV" ng-model="inputs.prcp_cv_changes">
+                </div>
+                <div class="col-sm-8">
+                  <p class="help-block">
+                    Multiplicative factor to increase or decrease precipitation variability
+                    <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="bottom" data-html="true" title="Set to 1 for no adjustment to variability precipitation.<br><br>Values greater than 1 increase the variability (e.g. 1.1 increases by 10%) and values less than 1 decrease the variability."></i>
+                  </p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputTemp" class="col-sm-2 control-label">Temperature Factor</label>
+                <div class="col-sm-2">
+                  <input type="text" class="form-control" id="inputTemp" ng-model="inputs.temp_mean_changes">
+                </div>
+                <div class="col-sm-8">
+                  <p class="help-block">
+                    Additive factor to increase or decrease overall mean temperature
+                    <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="bottom" data-html="true" title="Set to 0 for no adjustment to mean temperature.<br><br>Values greater than 0 increase the mean (e.g. 5 increases the mean temperature by 5 C) and values less than 0 decrease the mean."></i>
+                  </p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputDrySpell" class="col-sm-2 control-label">Dry Spell Factor</label>
+                <div class="col-sm-2">
+                  <input type="text" class="form-control" id="inputDrySpell" ng-model="inputs.dry_spell_changes">
+                </div>
+                <div class="col-sm-8">
+                  <p class="help-block">
+                    Multiplicative factor to increase or decrease mean length of dry spells
+                    <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="bottom" data-html="true" title="Set to 1 for no adjustment.<br><br>Values greater than 1 increase the mean (e.g. 1.1 increases by 10%) and values less than 1 decrease the mean."></i>
+                  </p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputWetSpell" class="col-sm-2 control-label">Wet Spell Factor</label>
+                <div class="col-sm-2">
+                  <input type="text" class="form-control" id="inputWetSpell" ng-model="inputs.wet_spell_changes">
+                </div>
+                <div class="col-sm-8">
+                  <p class="help-block">
+                    Multiplicative factor to increase or decrease mean length of wet spells
+                    <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="bottom" data-html="true" title="Set to 1 for no adjustment.<br><br>Values greater than 1 increase the mean (e.g. 1.1 increases by 10%) and values less than 1 decrease the mean."></i>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="box-footer">
+              <button class="btn btn-primary loadinggif" ng-click='run()'>Run</button>
+            </div>
+          </form>
         </div>
       </div>
-      <div class="form-group">
-        <label for="inputStartYear" class="col-sm-8 control-label">Start Water Year</label>
-        <div class="col-sm-4">
-          <input type="text" class="form-control" id="inputStartYear" ng-model="inputs.start_water_year">
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="inputDrySpell" class="col-sm-8 control-label">Dry Spell Factor</label>
-        <div class="col-sm-4">
-          <input type="text" class="form-control" id="inputDrySpell" ng-model="inputs.dry_spell_changes">
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="inputWetSpell" class="col-sm-8 control-label">Wet Spell Factor</label>
-        <div class="col-sm-4">
-          <input type="text" class="form-control" id="inputWetSpell" ng-model="inputs.wet_spell_changes">
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="inputPrecipMean" class="col-sm-8 control-label">Mean Precip Factor</label>
-        <div class="col-sm-4">
-          <input type="text" class="form-control" id="inputPrecipMean" ng-model="inputs.prcp_mean_changes">
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="inputPrecipCV" class="col-sm-8 control-label">CV Precip Factor</label>
-        <div class="col-sm-4">
-          <input type="text" class="form-control" id="inputPrecipCV" ng-model="inputs.prcp_cv_changes">
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="inputTemp" class="col-sm-8 control-label">Temperature Factor</label>
-        <div class="col-sm-4">
-          <input type="text" class="form-control" id="inputTemp" ng-model="inputs.temp_mean_changes">
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="col-sm-4 col-sm-offset-8">
-          <button class="btn btn-primary loadinggif" ng-click='run()'>Run</button>
-        </div>
-      </div>
-    </form>
+    </div>
   </div>
-</div>
+</section>

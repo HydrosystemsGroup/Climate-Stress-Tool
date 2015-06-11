@@ -72,8 +72,13 @@
                 <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
-                <li><a href="#"><i class="fa fa-circle-o"></i> Configure</a></li>
-                <li><a href="#"><i class="fa fa-circle-o"></i> Status</a></li>
+                <li>
+                  <a href="#"><i class="fa fa-circle-o"></i> Configure <i class="fa fa-angle-left pull-right"></i></a>
+                   <ul class="treeview-menu">
+                    <li><a ui-sref="weathergen.sim.run">Single Run</a></li>
+                    <li><a ui-sref="weathergen.sim.batch">Batch Run</a></li>
+                  </ul>
+                </li>
                 <li><a href="#"><i class="fa fa-circle-o"></i> Results</a></li>
               </ul>
             </li>

@@ -34,7 +34,7 @@ app.config(['$stateProvider',
       })
       .state('weathergen.sim', {
         url: '/sim',
-        templateUrl: 'weathergen/templates/sim.html',
+        template: '<div ui-view></div>',
         controller: 'SimCtrl',
         controllerAs: 'sim'
       })

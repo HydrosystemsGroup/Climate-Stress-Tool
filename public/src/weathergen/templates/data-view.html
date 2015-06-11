@@ -11,7 +11,7 @@
         <div class="box">
           <div class="box-body">
             <h3 class="text-red"><i class="fa fa-warning"></i> Data has not been loaded!</h3>
-            <p>In order to view historical data, you need to load some data first.</p>
+            <p>In order to view historical data, you need to load some data first. Please choose one of the following options.</p>
             <ul>
               <li><a ui-sref="weathergen.data.map">Load Data by Location using a Map</a></li>
               <li><a ui-sref="weathergen.data.file">Load Data by Uploading a File</a></li>
@@ -37,10 +37,10 @@
       </div>
       <div class="col-md-2">
         <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Data Summary</h3>
+          </div>
           <div class="box-body">
-            <div class="box-header with-border">
-              <h3 class="box-title">Data Summary</h3>
-            </div>
             <table class="table">
               <tbody>
                 <tr>
@@ -53,6 +53,47 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+        <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">Data Source</h3>
+          </div>
+          <div class="box-body">
+            <div ng-switch="wgen.data.source">
+              <div ng-switch-when="location">
+                <table class="table">
+                  <tbody>
+                    <tr>
+                      <td>Source:</td>
+                      <td><b>Location</b></td>
+                    </tr>
+                    <tr>
+                      <td>Latitude:</td>
+                      <td>{{wgen.data.attrs.latitude}}</td>
+                    </tr>
+                    <tr>
+                      <td>Longitude:</td>
+                      <td>{{wgen.data.attrs.longitude}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div ng-switch-when="file">
+                <table class="table">
+                  <tbody>
+                    <tr>
+                      <td>Source:</td>
+                      <td><b>File</b></td>
+                    </tr>
+                    <tr>
+                      <td>Filename:</td>
+                      <td>{{wgen.data.attrs.file.name}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
