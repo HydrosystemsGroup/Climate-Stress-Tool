@@ -16,7 +16,7 @@ router.post('/wgen', function(req, res) {
   console.log(req.body);
   // var data = req.body.data;
   var uid = uuid.v4();
-  var wd = path.join(config.sim_dir, uid);
+  var wd = path.join(config.run_folder, uid);
   var data = req.body.data;
   var inputs = req.body.inputs;
 
@@ -175,7 +175,7 @@ router.post('/batch', function(req, res) {
   console.log(req.body);
   // var data = req.body.data;
   var uid = uuid.v4();
-  var wd = path.join(config.sim_dir, uid);
+  var wd = path.join(config.run_folder, uid);
   var data = req.body.data;
   var inputs = req.body.inputs;
 

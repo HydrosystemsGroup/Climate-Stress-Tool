@@ -1,11 +1,11 @@
-var path = require('path')
-  , rootPath = path.normalize(__dirname + '/..');
+var path = require('path'),
+    rootPath = path.normalize(__dirname + '/..');
 
 module.exports = {
   development: {
     env: 'development',
     root: rootPath,
-    sim_dir: '/Users/jeff/Projects/UMass/runs',
+    run_folder: path.join(rootPath, 'runs'),
     app: {
       name: 'Climate Stress Tool - dev'
     }
@@ -13,7 +13,7 @@ module.exports = {
   test: {
     env: 'test',
     root: rootPath,
-    sim_dir: '/Users/jeff/Projects/UMass/runs',
+    run_folder: path.join(rootPath, 'runs'),
     app: {
       name: 'Climate Stress Tool - test'
     }
@@ -21,9 +21,9 @@ module.exports = {
   production: {
     env: 'production',
     root: rootPath,
-    sim_dir: '/Users/jeff/Projects/UMass/runs',
+    run_folder: path.join(rootPath, 'runs'),
     app: {
       name: 'Climate Stress Tool'
     }
   }
-}
+};

@@ -5,13 +5,13 @@ Climate Stress Tool developed by the [UMass HydroSystems Research Group](http://
 
 [Jeffrey D. Walker, PhD](http://walkerjeff.com)
 
-This application provides a web-based interface to the [weathergen R package](http://walkerjeffd.github.io/weathergen), which provides access to a semi-parametric stochastic weather generator developed by Scott Steinschneider. More details on the weather generator are available in:
+This application is web-based interface to the [weathergen R package](http://walkerjeffd.github.io/weathergen), which contains a semi-parametric stochastic weather generator developed by Scott Steinschneider. More details on the weather generator are available in:
 
 > Steinschneider, S., & Brown, C. (2013). A semiparametric multivariate, multisite weather generator with low-frequency variability for use in climate risk assessments. Water Resources Research, 49(11), 7205–7220. doi:10.1002/wrcr.20528
 
 ## Overview
 
-The Climate Stress Tool web application is comprside of:
+The Climate Stress Tool web application is comprised of:
 
 - a REST API for retrieving climate datasets and submitting jobs for running the weather generator
 - a client-side application for fetching historical data (or uploading data in text files), running the weather generator, and downloading the results
