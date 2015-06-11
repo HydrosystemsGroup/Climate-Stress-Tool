@@ -14,6 +14,7 @@
     <link href="/libs/ol3/css/ol.css" rel="stylesheet">
     <link href="/libs/angular-ui-grid/ui-grid.css" rel="stylesheet">
     <link href="/libs/angular-rangeslider/angular.rangeSlider.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet" type="text/css" />
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -26,7 +27,7 @@
     <div class="wrapper">
 
       <header class="main-header">
-        <a href="#" class="logo">
+        <a ui-sref="home" class="logo">
           <span class="logo-mini"><b>CST</b></span>
           <span class="logo-lg"><b>Climate Stress Tool</b></span>
         </a>
@@ -46,7 +47,7 @@
         <section class="sidebar">
           <!-- sidebar menu: : style can be found in sidebar.less -->
           <ul class="sidebar-menu">
-            <li><a href="#"><i class="fa fa-home"></i> <span>Home</span></a></li>
+            <li><a ui-sref="home"><i class="fa fa-home"></i> <span>Home</span></a></li>
             <li class="treeview">
               <a href="#">
                 <i class="fa fa-table"></i>
@@ -55,13 +56,13 @@
               </a>
               <ul class="treeview-menu">
                 <li>
-                  <a href="#"><i class="fa fa-circle-o"></i> Import <i class="fa fa-angle-left pull-right"></i></a>
+                  <a href="#"><i class="fa fa-circle-o"></i> Load Data <i class="fa fa-angle-left pull-right"></i></a>
                   <ul class="treeview-menu">
-                    <li><a href="#">By Location</a></li>
-                    <li><a href="#">Upload File</a></li>
+                    <li><a ui-sref="weathergen.data.map">By Location</a></li>
+                    <li><a ui-sref="weathergen.data.file">From File</a></li>
                   </ul>
                 </li>
-                <li class="disabled"><a href="#" class="disabled"><i class="fa fa-circle-o"></i> View</a></li>
+                <li><a ui-sref="weathergen.data.view"><i class="fa fa-circle-o"></i> View</a></li>
               </ul>
             </li>
             <li class="treeview">

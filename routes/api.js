@@ -16,7 +16,7 @@ router.post('/wgen', function(req, res) {
   console.log(req.body);
   // var data = req.body.data;
   var uid = uuid.v4();
-  var sessionID = req.sessionID;
+  // var sessionID = req.sessionID;
   var wd = path.join(config.run_folder, uid);
   var data = req.body.data;
   var inputs = req.body.inputs;
@@ -32,7 +32,7 @@ router.post('/wgen', function(req, res) {
             title: 'wgen job',
             wd: wd,
             uid: uid,
-            sessionID: sessionID,
+            // sessionID: sessionID,
             inputs: inputs
         }).save( function(err){
           if( err ) return res.send(400, 'Error submitting job');
@@ -189,7 +189,7 @@ router.post('/batch', function(req, res) {
   console.log(req.body);
   // var data = req.body.data;
   var uid = uuid.v4();
-  var sessionID = req.sessionID;
+  // var sessionID = req.sessionID;
   var wd = path.join(config.run_folder, uid);
   var data = req.body.data;
   var inputs = req.body.inputs;
@@ -205,7 +205,7 @@ router.post('/batch', function(req, res) {
             title: 'batch job',
             wd: wd,
             uid: uid,
-            sessionID: sessionID,
+            // sessionID: sessionID,
             inputs: inputs
         }).save( function(err){
           if (err) return res.send(400, 'Error submitting job');

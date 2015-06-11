@@ -31,16 +31,3 @@ svg .line {
     from { transform: scale(1) rotate(0deg);}
     to { transform: scale(1) rotate(360deg);}
 }
-
-.nav > li.disabled.nav-header > a {
-    cursor: default;
-    font-size: 12px;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-/*angular-ui bootstrap fix: http://angular-ui.github.io/bootstrap/*/
-.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
-
-/*add margin space above a row: http://stackoverflow.com/questions/10085723/twitter-bootstrap-add-top-space-between-rows*/
-.top-buffer { margin-top:20px; }

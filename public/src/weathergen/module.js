@@ -6,13 +6,13 @@ app.config(['$stateProvider',
     $stateProvider
       .state('weathergen', {
         url: '/weathergen',
-        templateUrl: 'weathergen/templates/weathergen.html',
+        template: '<div ui-view></div>',
         controller: 'WeatherCtrl',
         controllerAs: 'wgen'
       })
       .state('weathergen.data', {
         url: '/data',
-        templateUrl: 'weathergen/templates/data.html',
+        template: '<div ui-view></div>',
         controller: 'DataCtrl',
         controllerAs: 'data'
       })

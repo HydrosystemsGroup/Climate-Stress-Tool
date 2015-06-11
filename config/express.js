@@ -1,7 +1,7 @@
 var fs = require('fs'),
     express = require('express'),
-    session = require('express-session'),
-    FileStore = require('session-file-store')(session),
+    // session = require('express-session'),
+    // FileStore = require('session-file-store')(session),
     flash = require('connect-flash'),
     favicon = require('static-favicon'),
     logger = require('morgan'),
@@ -23,14 +23,14 @@ module.exports = function (app, config) {
     fs.mkdirSync(config.run_folder);
   }
 
-  app.use(session({
-    store: new FileStore({
-      path: config.session_folder
-    }),
-    secret: 'climate-stress',
-    resave: true,
-    saveUninitialized: true
-  }));
+  // app.use(session({
+  //   store: new FileStore({
+  //     path: config.session_folder
+  //   }),
+  //   secret: 'climate-stress',
+  //   resave: true,
+  //   saveUninitialized: true
+  // }));
 
   app.use(compression());
 
