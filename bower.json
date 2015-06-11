@@ -28,6 +28,7 @@
     "message-center": "~1.0.3",
     "angular-rangeslider": "~0.0.12",
     "ng-file-upload": "~3.2.4",
-    "lodash": "~3.5.0"
+    "lodash": "~3.5.0",
+    "admin-lte": "~2.1.2"
   }
 }
