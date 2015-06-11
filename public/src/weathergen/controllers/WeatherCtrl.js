@@ -4,5 +4,6 @@ angular.module('cst.weathergen')
     function(dataService, $http) {
       console.log('WeatherCtrl: load');
       this.data = dataService;
+      this.debug = true;
     }
   ]);
