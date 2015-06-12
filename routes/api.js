@@ -13,7 +13,7 @@ var kue = require('kue'),
 var conString = "postgres://jeff:jeff@localhost/cst";
 
 router.post('/wgen', function(req, res) {
-  console.log(req.body);
+  // console.log(req.body);
   // var data = req.body.data;
   var uid = uuid.v4();
   // var sessionID = req.sessionID;
@@ -39,11 +39,11 @@ router.post('/wgen', function(req, res) {
 
           console.log("Job Saved!");
           // console.log(job.data);
-          if (req.session.jobs) {
-            req.session.jobs.push(job.id);
-          } else {
-            req.session.jobs = [job.id];
-          }
+          // if (req.session.jobs) {
+          //   req.session.jobs.push(job.id);
+          // } else {
+          //   req.session.jobs = [job.id];
+          // }
 
           res.send(job);
         });
@@ -58,10 +58,10 @@ router.post('/wgen', function(req, res) {
   });
 });
 
-router.get('/jobs', function(req, res) {
-  var jobs = req.session.jobs || [];
-  res.send(200, jobs);
-});
+// router.get('/jobs', function(req, res) {
+//   var jobs = req.session.jobs || [];
+//   res.send(200, jobs);
+// });
 
 router.get('/wgen/:id', function(req, res) {
   var Job = kue.Job;
@@ -186,7 +186,7 @@ router.post('/maurer/annual', function(req, res) {
 });
 
 router.post('/batch', function(req, res) {
-  console.log(req.body);
+  // console.log(req.body);
   // var data = req.body.data;
   var uid = uuid.v4();
   // var sessionID = req.sessionID;
@@ -212,11 +212,11 @@ router.post('/batch', function(req, res) {
 
           console.log("Job Saved!");
           // console.log(job.data);
-          if (req.session.jobs) {
-            req.session.jobs.push(job.id);
-          } else {
-            req.session.jobs = [job.id];
-          }
+          // if (req.session.jobs) {
+          //   req.session.jobs.push(job.id);
+          // } else {
+          //   req.session.jobs = [job.id];
+          // }
 
           res.send(job);
         });
