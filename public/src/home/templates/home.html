@@ -1,14 +1,24 @@
 <section class="content">
-  <h1>Welcome to the Climate Stress Tool</h1>
-  <blockquote>The Climate Stress Tool is a web application for generating synthetic weather data using a stochastic weather generator.</blockquote>
-  <h2>Quick Start</h2>
-  <ul>
-    <li>Load some data</li>
-    <li>Configure the generator</li>
-    <li>Run a generator job</li>
-    <li>View and download results</li>
-  </ul>
-  <p>See the <a href="#">Documentation</a> page for more details.</p>
-  <h2>About</h2>
-  <p>The Climate Stress Tool was developed by <a href="http://walkerjeff.com">Jeffrey D Walker, PhD</a> and the Hydrosystem Research Group at UMass Amherst.</p>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="box">
+        <div class="box-body">
+          <h1>Welcome</h1>
+            <h4>The Climate Stress Tool is a web application for generating synthetic weather data using a stochastic weather generator.</h4>
+            <h2>Quick Start</h2>
+            <ol>
+              <li>Load historical weather data either by selection a <a ui-sref="weathergen.data.map">location on a map</a> (Northeast US only) or <a ui-sref="weathergen.data.file">uploading a file</a></li>
+              <li>View timeseries plots of the historical weather data to confirm data were loaded correctly</li>
+              <li>Configure the weather generator by setting the timespan and various adjustment factors</li>
+              <li>Submit the simulation job to the server and wait for completion</li>
+              <li>View and download weather generator results</li>
+            </ol>
+            <h2>About</h2>
+            <p>The Climate Stress Tool was developed by <a href="http://walkerjeff.com">Jeffrey D Walker, PhD</a> and the Hydrosystem Research Group at UMass Amherst. This application provides a web-based interface to the <a href="http://walkerjeffd.github.io/weathergen/">weathergen</a> R package, which is used to perform the simulation on a remote server.</p>
+            <p>The weather generator algorithm is based on Steinschneider and Brown (2013):</p>
+            <blockquote>Steinschneider, S., and C. Brown (2013), A semiparametric multivariate, multisite weather generator with low-frequency variability for use in climate risk assessments, Water Resour. Res., 49, 7205–7220, <a href="http://dx.doi.org/10.1002/wrcr.20528">doi:10.1002/wrcr.20528</a>.</blockquote>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
