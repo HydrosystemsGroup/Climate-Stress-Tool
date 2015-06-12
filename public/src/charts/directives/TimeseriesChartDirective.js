@@ -1,22 +1,33 @@
 
 angular.module('cst.charts')
-  .directive('timeseriesChart', function() {
+  .directive('timeseriesChart', ['$window', function($window) {
     function link(scope, element, attr) {
       console.log('timeseriesChart');
+      var div = d3.select(element[0]),
+          margin = {top: 20, right: 30, bottom: 30, left: 50},
+          width = 800,
+          height = 300 - margin.top - margin.bottom;
 
-      var div = d3.select(element[0]);
+      scope.onResizeFunction = function() {
+        var bbox = element[0].parentNode.getBoundingClientRect();
+        width = (bbox.width || 800) - margin.left - margin.right;
+        // height = (bbox.height || 300) - margin.top - margin.bottom;
+        console.log('width: ' + width);
+        render();
+      };
 
-      var bbox = div.node().getBoundingClientRect();
+      angular.element($window).bind('resize', function() {
+        scope.onResizeFunction();
+        scope.$apply();
+      });
 
-      var margin = {top: 20, right: 80, bottom: 30, left: 50},
-          width = (bbox.width || 800) - margin.left - margin.right,
-          height = (bbox.height || 300) - margin.top - margin.bottom;
+      // var bbox = div.node().getBoundingClientRect();
 
-      var x = d3.time.scale()
-          .range([0, width]);
+      var svg = d3.select(element[0]).append('svg');
 
-      var y = d3.scale.linear()
-          .range([height, 0]);
+      var x = d3.time.scale();
+
+      var y = d3.scale.linear();
 
       var xAxis = d3.svg.axis()
           .scale(x)
@@ -30,9 +41,8 @@ angular.module('cst.charts')
           .x(function(d) { return x(d[scope.accessorX]); })
           .y(function(d) { return y(d[scope.accessorY]); });
 
-      var svg = d3.select(element[0]).append('svg')
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom);
+      //     .attr("width", width + margin.left + margin.right)
+      //     .attr("height", height + margin.top + margin.bottom);
 
       var g = svg.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -54,7 +64,15 @@ angular.module('cst.charts')
         render();
       });
 
-      var render = function() {
+      scope.onResizeFunction();
+
+      function render() {
+        svg.attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom);
+
+        x.range([0, width]);
+        y.range([height, 0]);
+
         yLabel
           .text(scope.labelY);
 
@@ -81,7 +99,7 @@ angular.module('cst.charts')
           g.select('.y.axis').call(yAxis);
           g.selectAll(".line").remove();
         }
-      };
+      }
     }
 
     return {
@@ -95,4 +113,4 @@ angular.module('cst.charts')
         minY: '='
       }
     };
-  });
+  }]);
