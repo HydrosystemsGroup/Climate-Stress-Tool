@@ -11,8 +11,6 @@ angular.module('cst.charts')
       scope.onResizeFunction = function() {
         var bbox = element[0].parentNode.getBoundingClientRect();
         width = (bbox.width || 800) - margin.left - margin.right;
-        // height = (bbox.height || 300) - margin.top - margin.bottom;
-        console.log('width: ' + width);
         render();
       };
 

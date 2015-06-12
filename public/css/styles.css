@@ -35,3 +35,13 @@ svg .line {
 body {
   font-size: 1.6em;
 }
+
+.content-wrapper {
+  max-width: 1136px;
+}
+.main-sidebar: {
+  background-color: #222d32 !important;
+}
+.wrapper {
+  background-color: #ecf0f5 !important;
+}
