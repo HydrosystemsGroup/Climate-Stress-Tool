@@ -39,13 +39,8 @@
           <pre>{{job.job.error}}</pre>
         </div>
       </div>
-      <div class="box" ng-show="wgen.debug">
-        <div class="box-body">
-          <pre>job: {{ job.job | json }}</pre>
-        </div>
-      </div>
     </div>
-    <div class="col-lg-6" ng-show="job.complete">
+    <div class="col-lg-8" ng-show="job.complete">
       <div ng-switch="job.job.type" ng-show="!job.job.error">
         <div class="box" ng-switch-when="wgen">
           <div class="box-header with-border">
@@ -71,6 +66,11 @@
           </div>
           <div class="box-body">
             <a class="btn btn-primary" ng-href="/api/wgen/{{job.job.id}}/files/weathergen.zip" target="_self">Download Zip</a>
+          </div>
+        </div>
+        <div class="box" ng-show="wgen.debug">
+          <div class="box-body">
+            <pre>job: {{ job.job | json }}</pre>
           </div>
         </div>
       </div>
