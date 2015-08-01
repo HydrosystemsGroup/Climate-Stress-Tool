@@ -1,19 +1,34 @@
-<h1>Reservoir Simulation Model</h1>
-<hr>
-<div class="row">
-  <div class="col-sm-2">
-    <button class="btn btn-primary btn-block" ng-click="addReservoir()">Add Reservoir</button>
-    <button class="btn btn-primary btn-block" ng-click="addDemand()">Add Demand</button>
-    <button class="btn btn-primary btn-block" ng-click="addInflow()">Add Inflow</button>
-    <hr>
-    <button class="btn btn-primary btn-block" ng-click="logNodes()">Show Nodes</button>
-    <button class="btn btn-primary btn-block" ng-click="toJSON()">Log JSON</button>
-    <button class="btn btn-danger btn-block" ng-click="clear()">Clear</button>
+<section class="content-header">
+  <h1>
+    Water Resources System Simulation Model
+  </h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="box">
+        <div class="box-header with-border">
+          <div class="box-title">Model Configuration</div>
+        </div>
+        <div class="box-body">
+          <div id="diagram"></div>
+        </div>
+        <div class="box-footer" ng-show="debug">
+            <button ng-show="debug" class="btn btn-default" ng-click="logNodes()">Show Nodes</button>
+            <button ng-show="debug" class="btn btn-default" ng-click="toJSON()">Log JSON</button>
+          <div class="pull-right">
+            <button class="btn btn-primary"><i class="fa fa-arrow-circle-o-right"></i> Run</button>
+            <button class="btn btn-danger" ng-click="clear()"><i class="fa fa-trash"></i> Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4" ui-view="nodelist">
+    </div>
   </div>
-  <div class="col-sm-6">
-    <div id="diagram"></div>
+  <div class="row">
+    <div ui-view>
+    </div>
   </div>
-  <div class="col-sm-4" ui-view="nodelist"></div>
-</div>
-<hr>
-<div class="row" ui-view></div>
+</section>

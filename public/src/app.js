@@ -12,31 +12,34 @@ var app = angular.module('cst',
    'cst.home',
    'cst.weathergen',
    'cst.charts',
-   'cst.sim',
-   'cst.model',
-   'cst.map']);
+   // 'cst.sim',
+   'cst.model'
+   // 'cst.map'
+   ]);
 
-app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
-  function($stateProvider, $urlRouterProvider, $locationProvider) {
-    $urlRouterProvider.otherwise('/home');
+app
+  .config(
+    ['$stateProvider', '$urlRouterProvider', '$locationProvider',
+    function ($stateProvider, $urlRouterProvider, $locationProvider) {
+      $urlRouterProvider.otherwise('/home');
 
-    $stateProvider
-      .state('home', {
-        url: '/home',
-        templateUrl: 'home/templates/home.html'
-      })
-      .state('map', {
-        url: '/map',
-        controller: 'MapCtrl',
-        controllerAs: 'map',
-        templateUrl: 'map/templates/map.html'
-      });
-  }])
+      $stateProvider
+        .state('home', {
+          url: '/home',
+          templateUrl: 'home/templates/home.html'
+        });
+      // .state('map', {
+      //   url: '/map',
+      //   controller: 'MapCtrl',
+      //   controllerAs: 'map',
+      //   templateUrl: 'map/templates/map.html'
+      // });
+    }]
+  )
   .run(
-    [ '$rootScope', '$state', '$stateParams',
-      function ($rootScope, $state, $stateParams) {
-        $rootScope.$state = $state;
-        $rootScope.$stateParams = $stateParams;
-      }
-    ]
+    ['$rootScope', '$state', '$stateParams',
+    function ($rootScope, $state, $stateParams) {
+      $rootScope.$state = $state;
+      $rootScope.$stateParams = $stateParams;
+    }]
   );

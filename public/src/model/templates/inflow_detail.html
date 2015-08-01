@@ -1,23 +1,36 @@
-<div class="col-sm-12">
-  <h1>Inflow: {{node.name}}</h1>
-
-  <form class="form-horizontal" novalidate>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">Name</label>
-      <div class="col-sm-4">
-        <input class="form-control" type="text" ng-model="node.name">
-      </div>
+<div class="col-lg-8">
+  <div class="box">
+    <div class="box-header with-border">
+      <div class="box-title">Inflow: {{node.name}}</div>
     </div>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">Type</label>
-      <div class="col-sm-4">
-        <p class="form-control-static">{{node.type}}</p>
-      </div>
+    <div class="box-body">
+      <form class="form-horizontal" novalidate>
+        <div class="form-group">
+          <label class="col-lg-2 control-label">Name</label>
+          <div class="col-lg-4">
+            <input class="form-control" type="text" ng-model="node.name">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-lg-2 control-label">Discharge</label>
+          <div class="col-lg-4">
+            <input class="form-control" type="number" ng-model="node.flow">
+          </div>
+          <div class="col-lg-2">
+            <p class="help-block">cfs</p>
+          </div>
+        </div>
+      </form>
     </div>
-  </form>
-  <hr>
-  <button class="btn btn-danger" ng-click="remove()">Delete</button>
-  <hr>
-  <pre>{{node | json}}</pre>
-  <pre>{{cell | json}}</pre>
+    <div class="box-footer">
+      <button class="btn btn-primary" ng-click="save()">Save</button>
+      <button class="btn btn-danger" ng-click="remove()">Delete</button>
+    </div>
+  </div>
+  <div class="box" ng-show="debug">
+    <div class="box-body">
+      <pre>{{node | json}}</pre>
+      <pre>{{cell | json}}</pre>
+    </div>
+  </div>
 </div>

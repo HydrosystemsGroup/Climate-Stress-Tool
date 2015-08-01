@@ -1,8 +1,8 @@
 
 var app = angular.module('cst.model', []);
 
-app.config(['$stateProvider', '$urlRouterProvider', 
-  function($stateProvider, $urlRouterProvider) {
+app.config(['$stateProvider', '$urlRouterProvider',
+  function ($stateProvider, $urlRouterProvider) {
     $stateProvider
       .state('model', {
         url: '/simulation-model',

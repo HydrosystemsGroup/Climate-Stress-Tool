@@ -1,26 +1,30 @@
-<div class="col-sm-6">
-  <h1>Demand: {{node.name}}</h1>
-
-  <form class="form-horizontal" novalidate>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">Name</label>
-      <div class="col-sm-4">
-        <input class="form-control" type="text" ng-model="node.name">
-      </div>
+<div class="col-lg-8">
+  <div class="box">
+    <div class="box-header with-border">
+      <div class="box-title">Demand: {{node.name}}</div>
     </div>
-    <div class="form-group">
-      <label class="col-sm-2 control-label">Type</label>
-      <div class="col-sm-4">
-        <p class="form-control-static">{{node.type}}</p>
-      </div>
+    <div class="box-body">
+      <form class="form-horizontal" novalidate>
+        <div class="form-group">
+          <label class="col-lg-2 control-label">Name</label>
+          <div class="col-lg-4">
+            <input class="form-control" type="text" ng-model="node.name">
+          </div>
+          <div class="col-lg-6">
+            <div class="gridStyle" ui-grid-edit ui-grid-cellNav ui-grid="gridOptions"></div>
+          </div>
+        </div>
+      </form>
     </div>
-  </form>
-  <hr>
-  <button class="btn btn-danger" ng-click="remove()">Delete</button>
-  <hr>
-  <pre>{{node | json}}</pre>
-  <pre>{{cell | json}}</pre>
-</div>
-<div class="col-sm-3">
-  <div class="gridStyle" ui-grid-edit ui-grid-cellNav ui-grid="gridOptions"></div>
+    <div class="box-footer">
+      <button class="btn btn-primary" ng-click="save()">Save</button>
+      <button class="btn btn-danger" ng-click="remove()">Delete</button>
+    </div>
+  </div>
+  <div class="box" ng-show="debug">
+    <div class="box-body">
+      <pre>{{node | json}}</pre>
+      <pre>{{cell | json}}</pre>
+    </div>
+  </div>
 </div>

@@ -1,16 +1,39 @@
-<div class="well">
-  <h4>Reservoirs</h4>
-  <ul class="list-unstyled">
-    <li ng-repeat="node in nodes|NodeType:'reservoir'"><a ui-sref="model.reservoir({nodeId:node.id})">{{ node.get('name') }}</a></li>
-  </ul>
-  <hr>
-  <h4>Demands</h4>
-  <ul class="list-unstyled">
-    <li ng-repeat="node in nodes|NodeType:'demand'"><a ui-sref="model.demand({nodeId:node.id})">{{ node.get('name') }}</a></li>
-  </ul>
-  <hr>
-  <h4>Inflows</h4>
-  <ul class="list-unstyled">
-    <li ng-repeat="node in nodes|NodeType:'inflow'"><a ui-sref="model.inflow({nodeId:node.id})">{{ node.get('name') }}</a></li>
-  </ul>
+<div class="box">
+  <div class="box-header with-border">
+    <div class="box-title">Reservoirs</div>
+    <div class="box-tools pull-right">
+      <button class="btn btn-box-tool" ng-click="addReservoir()"><i class="fa fa-plus"></i> Add</button>
+    </div>
+  </div>
+  <div class="box-body">
+    <ul class="list-unstyled">
+      <li ng-repeat="node in nodes|NodeType:'reservoir'"><a ui-sref="model.reservoir({nodeId:node.id})">{{ node.get('name') }}</a></li>
+    </ul>
+  </div>
+</div>
+<div class="box">
+  <div class="box-header with-border">
+    <div class="box-title">Demands</div>
+    <div class="box-tools pull-right">
+      <button class="btn btn-box-tool" ng-click="addDemand()"><i class="fa fa-plus"></i> Add</button>
+    </div>
+  </div>
+  <div class="box-body">
+    <ul class="list-unstyled">
+      <li ng-repeat="node in nodes|NodeType:'demand'"><a ui-sref="model.demand({nodeId:node.id})">{{ node.get('name') }}</a></li>
+    </ul>
+  </div>
+</div>
+<div class="box">
+  <div class="box-header with-border">
+    <div class="box-title">Inflows</div>
+    <div class="box-tools pull-right">
+      <button class="btn btn-box-tool" ng-click="addInflow()"><i class="fa fa-plus"></i> Add</button>
+    </div>
+  </div>
+  <div class="box-body">
+    <ul class="list-unstyled">
+      <li ng-repeat="node in nodes|NodeType:'inflow'"><a ui-sref="model.inflow({nodeId:node.id})">{{ node.get('name') }}</a></li>
+    </ul>
+  </div>
 </div>
