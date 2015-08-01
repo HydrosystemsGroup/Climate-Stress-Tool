@@ -9,7 +9,7 @@
     <div class="col-lg-4">
       <div class="box">
         <div class="box-header with-border">
-          <h3 class="box-title">Info</h3>
+          <h3 class="box-title">Simulation Info</h3>
           <div class="box-tools pull-right">
             <div ng-switch on="job.job.state">
               <span class="label label-info" ng-switch-when="inactive">Queued</span>
@@ -22,15 +22,27 @@
         </div>
         <div class="box-body">
           <ul class='list-unstyled'>
-            <!-- <li>UID: {{job.job.data.uid}}</li> -->
-            <li>Started: {{job.job.created_at | date:"short"}}</li>
+            <li>Run Started: {{job.job.created_at | date:"short"}}</li>
           </ul>
-          <pre ng-show="job && job.job.data">{{job.job.data.inputs | json}}</pre>
-        </div>
-        <div class="box-footer" ng-show="job.complete">
-          <a class="btn btn-primary" ng-href="/api/wgen/{{job.job.id}}/files/sim.csv" target="_self"><i class="fa fa-download"></i> Download CSV</a>
+          <br>
+          <p><b>Input Parameters</b></p>
+          <table class="table">
+            <tbody>
+              <tr><td># Years:</td><td>{{job.job.data.inputs.n_year}}</td></tr>
+              <tr><td>Start Month:</td><td>{{job.job.data.inputs.start_month}}</td></tr>
+              <tr><td>Start Year:</td><td>{{job.job.data.inputs.start_water_year}}</td></tr>
+              <tr><td>Dry Spell Factor:</td><td>{{job.job.data.inputs.dry_spell_changes}}</td></tr>
+              <tr><td>Wet Spell Factor:</td><td>{{job.job.data.inputs.wet_spell_changes}}</td></tr>
+              <tr><td>Mean Precip. Factor:</td><td>{{job.job.data.inputs.prcp_mean_changes}}</td></tr>
+              <tr><td>Precip. CV Factor:</td><td>{{job.job.data.inputs.prcp_cv_changes}}</td></tr>
+              <tr><td>Mean Temp. Factor:</td><td>{{job.job.data.inputs.temp_mean_changes}}</td></tr>
+            </tbody>
+          </table>
+          <pre ng-show="job && job.job.data && wgen.debug">{{job.job.data.inputs | json}}</pre>
         </div>
       </div>
+    </div>
+    <div class="col-lg-8" ng-show="job.complete">
       <div class="box" ng-show="job.job.error">
         <div class="box-header with-border">
           <h3 class="box-title">Error</h3>
@@ -39,8 +51,6 @@
           <pre>{{job.job.error}}</pre>
         </div>
       </div>
-    </div>
-    <div class="col-lg-8" ng-show="job.complete">
       <div ng-switch="job.job.type" ng-show="!job.job.error">
         <div class="box" ng-switch-when="wgen">
           <div class="box-header with-border">
@@ -57,6 +67,9 @@
               </div>
             </div>
             <timeseries-chart data="chart.data" accessor-x="date" accessor-y="{{chart.variable}}" label-y="{{chart.labels[chart.variable]}}" min-y="0"></timeseries-chart>
+          </div>
+          <div class="box-footer" ng-show="job.complete && !job.job.error">
+            <a class="btn btn-primary" ng-href="/api/wgen/{{job.job.id}}/files/sim.csv" target="_self"><i class="fa fa-download"></i> Download CSV</a>
           </div>
         </div>
 
